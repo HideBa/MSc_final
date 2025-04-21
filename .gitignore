@@ -1,39 +1,67 @@
-# LaTeX intermediate files
+# LaTeX temporary files
 *.aux
-*.bbl
-*.blg
-*.brf
-*.idx
-*.ilg
-*.ind
 *.lof
 *.log
 *.lot
+*.fls
 *.out
 *.toc
-*.acn
-*.acr
-*.alg
-*.glg
-*.glo
-*.gls
-*.ist
-*.fls
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+# Bibliography auxiliary files (bibtex/biblatex/biber)
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# Build tool auxiliary files
 *.fdb_latexmk
-
-# LaTeX PDF files
-*.pdf
-
-# SyncTeX files
+*.synctex
+*.synctex(busy)
 *.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
 
-# Backup files
+# Intermediate documents
+*.dvi
+*.xdv
+*-converted-to.*
+
+# Generated figures
+*.pdf
+!figures/*.pdf
+
+# Build directory
+build/
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Editor files
 *~
 *.bak
-
-# Editor-specific files
+*.swp
 .vscode/
 .idea/
-*.swp
-*.swo
-.DS_Store
+
+# Output files
+*.pdf
+!thesis.pdf
+*.log

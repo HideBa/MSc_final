@@ -1,0 +1,127 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Scientific Writing Guidelines for GIS Research Papers
+
+## 1  Purpose
+Provide a shared, discipline‑appropriate framework that ensures consistency, clarity, and academic rigour across all manuscripts produced by our group.
+
+## 2  Target Audience
+Master’s and PhD students, research assistants, and staff collaborating on Geographic Information Science (GIS) research at TU Delft.
+
+---
+
+## 3  Document Structure (IMRaD‑plus)
+| Section | Key Points | Typical Length |
+|---------|------------|----------------|
+| **Title Page** | Informative title (≤ 15 words), author list with ORCID IDs, institutional affiliation, word count | 1 page |
+| **Abstract** | Structured (Background, Methods, Results, Conclusions), ≤ 250 words, 3–6 keywords | ½ page |
+| **1 Introduction** | Context ➜ Gap ➜ Aim ➜ Overview of paper | ~15 % |
+| **2 Methods** | Study area, data sources, preprocessing, algorithms, software (incl. version), CRS, statistical tests; written in past tense | ~25 % |
+| **3 Results** | Present findings without interpretation; include tables, figures, statistics | ~25 % |
+| **4 Discussion** | Interpret findings, compare with literature, limitations, implications | ~20 % |
+| **5 Conclusion** | Concise answers to research questions + future work | ~5 % |
+| **Acknowledgements** | Funding (grant #), data providers, contributions | – |
+| **References** | APA 7th or journal‑specified style (use Zotero/Mendeley); all DOIs hyperlinked | – |
+| **Appendices / Supplementary** | Extended tables, code, large maps | – |
+
+---
+
+## 4  Formatting & Layout
+* **Page setup:** A4, 2.5 cm margins, single‑column.
+* **Font:** 11 pt Calibri (body), 14 pt bold for level‑1 headings; sentence‑case headings; automatic numbering (1, 1.1, 1.1.1).
+* **Line spacing:** 1.15; 6 pt spacing after paragraphs.
+* **Indentation:** None; use a blank line between paragraphs.
+* **Figures & Tables:** Centred, numbered consecutively (Figure 1, Table 1). Captions below figures, above tables, ≤ 2 sentences; reference in text (e.g., *Figure 2 shows …*).
+* **Maps:** Include north arrow, scale bar, CRS, legend; minimum 300 dpi when exported.
+* **Equations:** LaTeX, left‑aligned, numbered (Eq. 1). Define variables immediately after first use.
+* **Code Blocks:** Place in Appendix or public repository; specify language and version.
+
+---
+
+## 5  Writing Style & Language
+### 5.1  Tone and Voice
+- Replace subjective or informal language with precise, objective terms.
+- Use measured language that reflects academic writing standards.
+- Avoid colloquialisms and conversational phrases.
+- Employ discipline‑specific terminology where appropriate.
+- Maintain **third‑person perspective**; use **passive voice** when the focus is on processes or results. First‑person plural (*we*) is acceptable only when the target journal explicitly permits it.
+
+### 5.2  Word Choice and Emphasis
+- Limit use of intensifiers (e.g., *very*, *extremely*).
+- Reserve the word *significant* strictly for statistical contexts (e.g., p‑values, confidence intervals).
+- Prefer *substantial*, *notable*, or *observable* to describe magnitude when statistics are not provided.
+- Replace *crucial* with *essential*, *necessary*, or *fundamental* according to nuance.
+- Quantify claims where possible instead of relying on qualitative descriptors.
+
+### 5.3  General Language Guidelines
+- Support every claim with citations or empirical evidence.
+- Maintain consistent technical terminology throughout the manuscript.
+- Use precise measurements and specific spatial/temporal descriptions.
+- Focus on objective observations, analysis, and reproducible methodology.
+- Employ neutral language to describe findings.
+- Ensure grammar is correct and adopt **British English spelling** (e.g., *organisation*, *analyse*).
+
+### 5.4  Tense Usage
+- **Introduction & Discussion:** Present tense for established knowledge; past tense for your own findings.
+- **Methods & Results:** Past tense.
+
+### 5.5  Style Summary
+Clarity, conciseness, and precision take precedence over stylistic flourish. Write short, direct sentences that convey unambiguous meaning.
+
+---
+
+## 6  Data, Reproducibility & FAIR Principles
+* **Data Availability Statement:** Describe where datasets can be accessed (e.g., 4TU.ResearchData), licence, persistent identifier.
+* **Code Availability Statement:** Link to public repository (e.g., GitHub ➜ Zenodo DOI); include README and environment.yml.
+* **Workflow Transparency:** Provide a schematic (e.g., figure in Methods) of the processing pipeline.
+* **Version Control:** Commit messages in imperative mood; tag the version used for the paper (e.g., `v1.0‑paper`).
+
+---
+
+## 7  Citation & Reference Management
+* Use in‑text author‑date style (Smith & Jones, 2024).
+* Cite datasets and software (QGIS Development Team, 2025).
+* Avoid secondary citations; always consult original works.
+* Check all references for completeness (authors, year, title, journal, volume, pages, DOI).
+
+---
+
+## 8  Ethical & Legal Considerations
+* **Plagiarism:** < 10 % similarity index (Turnitin); always paraphrase and cite.
+* **Authorship:** Follows ICMJE criteria: substantial contribution, drafting/revising, approval, accountability.
+* **Sensitive Data:** Anonymise personal data per GDPR; obtain ethics approval (HREC) when required.
+
+---
+
+## 9  Internal Review Workflow
+1. **Pre‑submission Checklist** (see Appendix A).
+2. **Peer Review:** Each manuscript reviewed by two group members.
+3. **Supervisor Approval:** Required before external submission.
+4. **File Naming Convention:** `YYYY-MM-DD_FirstAuthor_Keyword_vX.docx`.
+5. **Submission Package:** PDF + source files + supplementary material + cover letter.
+
+---
+
+## 10  Appendix A – Pre‑submission Checklist (Author)
+- [ ] Title reflects results & methods.
+- [ ] Abstract ≤ 250 words, structured.
+- [ ] All figures/tables referenced in text.
+- [ ] All citations in reference list and vice versa.
+- [ ] Data & code availability statements completed.
+- [ ] Turnitin report attached (< 10 %).
+- [ ] Grammar/spell‑check complete (British English).
+
+## 11  Appendix B – Resources
+* **Writing Guides:**
+  * Day & Gaston (2012) *How to Write and Publish a Scientific Paper*.
+  * Elsevier (2024) *Researcher Academy* modules.
+* **Style Manuals:** APA 7th, IEEE, Chicago 17th.
+* **Software:** Zotero, Overleaf, QGIS, Python (Anaconda), R.
+
+---
+
+*Version 1.1 – April 21, 2025*
+
