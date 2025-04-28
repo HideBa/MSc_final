@@ -1,0 +1,67 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Outline for the paper
+
+- Introduction
+  - Brief background about 3D city model and cloud optimised formats
+  - Problem statement
+  - Research question
+  - Proposed framework
+  - Scope of the research
+- Theoretical background and related works
+  - Related works
+    - 3D City models
+    - CityGML, CityJSON
+    - CityJSONSeq and binary encoding of CityJSON, etc
+    - Preliminary work
+  - Data serialisation frameworks
+    - FlatBuffers
+    - Protocol buffers
+    - Arrow/Parquet
+    - Capn’t proto
+  - Data serialisation
+    - Zero-copy
+    -
+  - Cloud optimised geospatial data format
+    - FlatGeobuf
+    - GeoParquet
+    - PMTiles
+    - MVT
+    - Cloud Optimized GeoTIFF, etc
+    - 3D Tiles
+    - Comparison of data formats
+  - FlatBuffers
+- Methodology
+  - Overview
+  - Overview of FlatBuffers
+  - Encoding strategy of CityJSONSeq with FlatBuffers
+    - Schema design
+    - Header
+    - Feature
+  - Spatial index
+    - packed RTree index
+  - Attribute index
+    - Static B+Tree
+    - Payload and offset bytes to feature section
+  - Partial fetch with HTTP range request
+- Result and Analysis
+  - Benchmark and comparison with various datasets (incl PLATEAU)
+  - Benchmark over the web
+  - System architecture review with proposed method and existing method
+- Discussion
+  - Usecase of proposed data format
+  - Evaluation of benchmark
+  - Talk about Parquet
+- Future work
+  - support more programming languages
+  - viewer with using it
+  - Explore other data serialization framework such as Parquet, Arrow
+- Conclusion
+- Appendix
+  - Dataset and characteristics
+  - List of used tools
+  - Details of benchmark results
+  - FlatBuffers schema detail

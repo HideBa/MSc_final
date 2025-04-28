@@ -63,5 +63,4 @@ Icon
 
 # Output files
 *.pdf
-!thesis.pdf
 *.log

@@ -4,22 +4,22 @@
                BCOR=5mm,DIV=10,footinclude=false%
                numbers=noenddot,cleardoublepage=empty]{scrbook}
 
-\usepackage[utf8]{inputenc} 
+\usepackage[utf8]{inputenc}
 \usepackage[sc]{mathpazo} %-- use Palatino font
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[square]{natbib}
-\usepackage{subcaption} 
+\usepackage{subcaption}
 \usepackage{xspace}
 \usepackage[breaklinks=true,
             colorlinks=true,
             linktocpage=true,
-            allcolors=colorforlinks]{hyperref} 
+            allcolors=colorforlinks]{hyperref}
 \usepackage[ruled,vlined,algochapter,linesnumbered]{algorithm2e}
 \usepackage{calc}
-\usepackage{ccicons} 
-\usepackage{xspace} 
-\usepackage{booktabs} 
-\usepackage[english]{babel}  
+\usepackage{ccicons}
+\usepackage{xspace}
+\usepackage{booktabs}
+\usepackage[english]{babel}
 \usepackage{listings}
 \usepackage{scrhack} % ignore warnings about deprecated KOMA-Script
 \usepackage[printonlyused,smaller,withpage]{acronym}
@@ -51,27 +51,30 @@
 \frontmatter
 
 %******************************************************************
-% The cover page 
+% The cover page
 % (it needs to be manually edited and exported as a PDF)
 % (see folder README.txt in folder 'cover')
 % (I would not include it for the version you put in the repository)
 %******************************************************************
 
-\includepdf{cover/cover_front.pdf}
-\cleardoublepage
+% temporary comment out front pages as it's annoying when writing
+% ********************************
+% \includepdf{cover/cover_front.pdf}
+% \cleardoublepage
 
-\maketitle[3]
+% \maketitle[3]
 
+% % \clearpage
+% \input{front/titleback}
+% \cleardoublepage
+% \include{front/abstract}
+% \include{front/acknow}
 % \clearpage
-\input{front/titleback}
-\cleardoublepage
-\include{front/abstract}
-\include{front/acknow}
-\clearpage
-\include{front/contents}
-\clearpage
-\include{front/acronyms}
-\cleardoublepage
+% \include{front/contents}
+% \clearpage
+% \include{front/acronyms}
+% \cleardoublepage
+% ********************************
 
 %******************************************************************
 % Mainmatter
@@ -79,8 +82,35 @@
 \mainmatter
 
 \include{chapters/introduction}
-\include{chapters/relatedwork}
 
+\include{chapters/related_work_theoretical_bg/related_work}
+
+\include{chapters/related_work_theoretical_bg/theoretical_bg}
+
+% Methodology-----------------------
+\include{chapters/methodology/overview}
+
+\include{chapters/methodology/flatbuffers}
+
+\include{chapters/methodology/file_structure}
+
+\include{chapters/methodology/spatial_index}
+
+\include{chapters/methodology/attribute_index}
+
+\include{chapters/methodology/feature_encoding}
+
+\include{chapters/methodology/http_range_request}
+
+% Methodology-----------------------
+
+\include{chapters/result_analysis}
+
+\include{chapters/discussion}
+
+\include{chapters/future_work}
+
+\include{chapters/conclusion}
 
 \appendix
 
@@ -94,7 +124,7 @@
 % *****************************************************************
 % Backmatter
 %******************************************************************
-\backmatter 
+\backmatter
 
 %- bibliography
 \bibliographystyle{apalike}
@@ -110,8 +140,3 @@
 \includepdf{cover/cover_back.pdf}
 
 \end{document}
-
-
-
-
-
