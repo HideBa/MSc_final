@@ -1,3 +1,6 @@
 [submodule "MSc_thesis_p2"]
 	path = MSc_thesis_p2
 	url = git@github.com:HideBa/MSc_thesis_p2.git
+[submodule "flatcitybuf"]
+	path = flatcitybuf
+	url = git@github.com:HideBa/flatcitybuf.git
