@@ -1,0 +1,265 @@
+\section{Feature Encoding}
+\label{sec:feature_encoding}
+
+The feature encoding section of FlatCityBuf is responsible for the binary representation of 3D city objects and their associated data. This component preserves the semantic richness of the CityJSON model while leveraging FlatBuffers' efficient binary serialisation. This section details the encoding strategies for city objects, geometry, attributes, appearances, and extensions.
+
+\subsection{CityFeature and CityObject Structure}
+\label{subsec:cityfeature_cityobject_structure}
+
+FlatCityBuf organises data following CityJSON's hierarchical model, but with optimisations for binary serialisation:
+
+\begin{itemize}
+    \item \textbf{CityFeature}: The top-level container encoded as a FlatBuffers table, repre`senting a collection of city objects that share common vertices and other properties.
+    \item \textbf{CityObject}: Individual 3D features (e.g., buildings, bridges) that compose a city model, with their own geometry, attributes, and semantic information.
+\end{itemize}
+
+The schema establishes a one-to-many relationship between CityFeatures and CityObjects, allowing efficient vertex sharing while maintaining semantic distinctions between different city objects. This structure is implemented through the following FlatBuffers schema:
+
+\begin{verbatim}
+table CityFeature {
+  id: string (key, required);
+  objects: [CityObject];
+  vertices: [Vertex];
+  appearance: Appearance;
+}
+
+table CityObject {
+  type: CityObjectType;
+  id: string (key, required);
+  geographical_extent: GeographicalExtent;
+  geometry: [Geometry];
+  attributes: [ubyte];
+  columns: [Column];
+  children: [string];
+  children_roles: [string];
+  parents: [string];
+}
+\end{verbatim}
+
+This structure enables efficient access to individual city objects without loading the entire dataset, while maintaining the relationships and hierarchies defined in the CityJSON model.
+
+\subsection{Geometry Encoding}
+\label{subsec:geometry_encoding}
+
+Geometry encoding is one of the most critical aspects of FlatCityBuf, as it represents the 3D shapes that constitute city models. The approach follows CityJSON's boundary representation (B-rep) model with optimisations for binary storage:
+
+\subsubsection{Boundary Representation}
+\label{subsubsec:boundary_representation}
+
+FlatCityBuf encodes geometry boundaries using a hierarchical indexing approach that aligns with CityJSON's dimensional hierarchy:
+
+\begin{itemize}
+    \item \textbf{Indices/Boundaries}: A flattened array of vertex indices that reference vertices in the containing CityFeature's vertex array.
+    \item \textbf{Strings}: Arrays defining the number of vertices in each boundary ring (typically 3 or 4 vertices per string).
+    \item \textbf{Surfaces}: Arrays indicating the number of rings (strings) that compose each surface.
+    \item \textbf{Shells}: Arrays specifying the number of surfaces in each shell.
+    \item \textbf{Solids}: Arrays denoting the number of shells in each solid.
+\end{itemize}
+
+This hierarchical structure efficiently represents multi-dimensional geometry with minimal redundancy. For example, a simple triangle surface would be encoded as:
+
+\begin{verbatim}
+boundaries: [0, 1, 2]  // Vertex indices
+strings: [3]           // 3 vertices in the string
+surfaces: [1]          // 1 string in the surface
+\end{verbatim}
+
+While a cube (a solid with 6 quadrilateral surfaces) would be represented as:
+
+\begin{verbatim}
+boundaries: [0, 1, 2, 3, 0, 3, 7, 4, ...]  // 24 vertex indices
+strings: [4, 4, 4, 4, 4, 4]               // 6 strings with 4 vertices each
+surfaces: [1, 1, 1, 1, 1, 1]              // 6 surfaces with 1 string each
+shells: [6]                               // 1 shell with 6 surfaces
+solids: [1]                               // 1 solid with 1 shell
+\end{verbatim}
+
+\subsubsection{Semantic Surface Classification}
+\label{subsubsec:semantic_surface_classification}
+
+Semantic information is essential for distinguishing different functional parts of city objects (e.g., walls, roofs, doors). FlatCityBuf encodes these semantics through:
+
+\begin{itemize}
+    \item \textbf{SemanticObjects}: Tables containing type classification and attributes for each semantic unit.
+    \item \textbf{Semantic Arrays}: Parallel arrays to the geometry hierarchy that reference semantic objects.
+\end{itemize}
+
+The schema defines semantic objects as:
+
+\begin{verbatim}
+table SemanticObject {
+  type: SemanticSurfaceType;
+  extension_type: string;
+  attributes: [ubyte];
+  columns: [Column];
+  parent: uint;
+  children: [uint];
+}
+\end{verbatim}
+
+This approach preserves the semantically rich information of CityJSON while optimising for binary storage and retrieval efficiency. Surface types are encoded as enumerated values (e.g., \texttt{WallSurface}, \texttt{RoofSurface}) for compact representation.
+
+\subsubsection{Geometry Templates}
+\label{subsubsec:geometry_templates}
+
+For city models containing repeated geometries (e.g., identical building types), FlatCityBuf supports CityJSON's template mechanism with optimisations for binary representation:
+
+\begin{itemize}
+    \item \textbf{Template Definition}: Geometry templates are stored once in the header section with double-precision coordinates to maintain precision:
+
+    \begin{verbatim}
+    table Header {
+      // ...
+      templates: [Geometry];
+      templates_vertices: [DoubleVertex];
+      // ...
+    }
+    \end{verbatim}
+
+    \item \textbf{Template Instance}: CityObjects reference templates using a compact representation:
+
+    \begin{verbatim}
+    table GeometryInstance {
+      transformation: TransformationMatrix;
+      template: uint;
+      boundaries: [uint];
+    }
+    \end{verbatim}
+\end{itemize}
+
+Each instance consists of:
+\begin{itemize}
+    \item A reference to the template geometry
+    \item A single vertex index serving as the reference point
+    \item A 4×4 transformation matrix for positioning, rotating, and scaling
+\end{itemize}
+
+This approach significantly reduces file size for datasets with repeated structures, commonly found in planned urban developments with standardised building designs.
+
+\subsubsection{Appearances: Materials and Textures}
+\label{subsubsec:appearances}
+
+FlatCityBuf supports CityJSON's appearance model, including materials and textures, through a reference-based approach:
+
+\begin{itemize}
+    \item \textbf{Materials}: Defined as FlatBuffers tables with properties for colour, transparency, and shininess.
+    \item \textbf{Textures}: Represented as metadata with URI references to external texture files.
+\end{itemize}
+
+For textures, FlatCityBuf optimises for selective loading by storing only texture metadata and references rather than embedding texture data directly:
+
+\begin{verbatim}
+table Texture {
+  type: TextureType;
+  image: string;
+  wrap_mode: WrapMode;
+  texture_type: TextureSemanticType;
+  border_color: Color;
+}
+\end{verbatim}
+
+This design choice prioritises:
+\begin{itemize}
+    \item Efficient storage and retrieval of geometric data
+    \item Support for asynchronous texture loading
+    \item Compatibility with web-based caching mechanisms
+    \item Selective loading based on application requirements
+\end{itemize}
+
+Material and texture assignments are managed through mapping tables that associate specific surfaces with appearance definitions.
+
+\subsection{Attribute Encoding}
+\label{subsec:attribute_encoding}
+
+Attributes store non-geometric properties of city objects (e.g., year of construction, owner, function). FlatCityBuf implements an efficient binary representation:
+
+\begin{itemize}
+    \item \textbf{Schema Declaration}: The header section contains column definitions describing the name, type, and other metadata for each attribute:
+
+    \begin{verbatim}
+    table Column {
+      index: ushort;
+      name: string (required);
+      type: ColumnType;
+    }
+    \end{verbatim}
+
+    \item \textbf{Binary Storage}: Attributes are serialised as a binary blob using type-specific encoding:
+    \begin{itemize}
+        \item Numeric types (integers, floats): Native binary representation
+        \item Strings: Length-prefixed UTF-8 encoding
+        \item Booleans: Single-byte representation
+        \item Dates/Times: Standardised binary format
+    \end{itemize}
+
+    \item \textbf{Variable-Length Fields}: For variable-length types like strings, a length prefix is stored before the data to enable efficient traversal.
+\end{itemize}
+
+This approach balances flexibility with efficiency, allowing FlatCityBuf to represent the diverse attribute sets found in city models while maintaining high performance. By moving type information to the schema level rather than self-describing each value, this encoding achieves significant storage reductions compared to JSON-based formats.
+
+\subsection{Extension Mechanism}
+\label{subsec:extension_mechanism}
+
+FlatCityBuf provides comprehensive support for CityJSON's extension mechanism, allowing customisation beyond the core schema. Unlike CityJSON's approach of referencing external schema files, FlatCityBuf implements a self-contained extension model:
+
+\begin{itemize}
+    \item \textbf{Extension Definition}: Extensions are defined in the header as FlatBuffers tables:
+
+    \begin{verbatim}
+    table Extension {
+      name: string;
+      description: string;
+      url: string;
+      version: string;
+      version_cityjson: string;
+      extra_attributes: string;
+      extra_city_objects: string;
+      extra_root_properties: string;
+      extra_semantic_surfaces: string;
+    }
+    \end{verbatim}
+
+    \item \textbf{Extended CityObjects}: Custom types are encoded using a special enum value with an explicit extension type string:
+
+    \begin{verbatim}
+    enum CityObjectType:ubyte {
+      // ... standard types ...
+      ExtensionObject
+    }
+
+    table CityObject {
+      type: CityObjectType;
+      extension_type: string; // e.g. "+NoiseCityFurnitureSegment"
+      // ...
+    }
+    \end{verbatim}
+
+    \item \textbf{Extended Semantics}: Similar to CityObjects, custom semantic surface types use a special enum value with an extension type string.
+
+    \item \textbf{Attribute Integration}: Extension attributes are encoded in the same binary attribute array as core attributes, simplifying implementation.
+\end{itemize}
+
+This approach offers several advantages:
+\begin{itemize}
+    \item Self-contained files that don't require external schema references
+    \item Efficient representation of extended types using a hybrid enum-string approach
+    \item Consistent attribute handling for both core and extension properties
+    \item Preservation of extension semantics despite binary encoding
+\end{itemize}
+
+The extension mechanism enables FlatCityBuf to support domain-specific additions (e.g., noise simulation data, energy modelling parameters) without compromising the efficiency of the core format.
+
+\subsection{Performance Considerations}
+\label{subsec:feature_performance}
+
+The feature encoding strategy in FlatCityBuf was designed with several performance considerations:
+
+\begin{itemize}
+    \item \textbf{Memory Locality}: Related data (e.g., vertices, boundaries) are stored contiguously to improve cache efficiency.
+    \item \textbf{Size Reduction}: Binary encoding reduces storage requirements by 50-70\% compared to JSON representations.
+    \item \textbf{Random Access}: FlatBuffers' table structure enables direct access to specific components without parsing entire objects.
+    \item \textbf{Zero-Copy Access}: The binary format allows direct memory mapping without intermediate parsing steps.
+    \item \textbf{Minimal Redundancy}: Shared vertices and template mechanisms reduce duplication.
+\end{itemize}
+
+These optimisations contribute to the overall performance of FlatCityBuf, particularly for large datasets accessed over network connections where minimising data transfer and parsing overhead is critical.
