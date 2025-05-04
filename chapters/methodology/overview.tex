@@ -1,9 +1,10 @@
 \chapter{Methodology}
+\label{methodology}
 
 This chapter presents the design and implementation of FlatCityBuf, a cloud-optimised binary format for 3D city models based on CityJSON. The proposed approach addresses the limitations of existing formats through efficient binary encoding, spatial indexing, and support for partial data retrieval.
 
 \section{Overview}
-
+\label{methodology:overview}
 Current 3D city model formats like CityJSON and CityJSONSeq exhibit significant limitations when deployed in cloud environments with large-scale datasets. Analysis of these formats revealed persistent challenges including excessive storage requirements (typically 30-50\% larger than necessary), latency in data retrieval operations (>1s for moderate-sized models), inefficient spatial querying mechanisms, and insufficient support for partial data access—all critical factors for cloud-native applications.
 
 This research methodology addresses these limitations through three interconnected objectives:

@@ -1,10 +1,10 @@
 \section{Attribute Indexing}
-\label{sec:attribute_indexing}
+\label{methodology:attribute_index}
 
 Attribute indexing is a fundamental component of the FlatCityBuf format, enabling efficient filtering and retrieval of city objects based on their non-spatial properties. This section details the requirements, design considerations, and implementation of the attribute indexing system.
 
 \subsection{Query Requirements Analysis}
-\label{subsec:query_requirements}
+\label{methodology:attribute_index:query_requirements}
 
 The attribute indexing system was designed to support specific query patterns commonly used in geospatial applications. Based on an analysis of typical use cases, the following query types were identified as essential:
 
@@ -17,7 +17,7 @@ The attribute indexing system was designed to support specific query patterns co
 The system prioritises these query types while ensuring compatibility with remote access patterns through HTTP Range Requests. Other query types, such as aggregation or complex text searches, are delegated to the application layer since FlatCityBuf is primarily a storage format rather than a query processing system.
 
 \subsection{Indexing Strategy Evaluation}
-\label{subsec:indexing_strategy_evaluation}
+\label{methodology:attribute_index:indexing_strategy_evaluation}
 
 Several indexing strategies were evaluated to determine the most appropriate approach for the FlatCityBuf format:
 
@@ -40,7 +40,7 @@ Several indexing strategies were evaluated to determine the most appropriate app
 Initial implementation used a sorted array with binary search for its simplicity and space efficiency. However, performance testing revealed significant I/O latency issues when accessing this structure over HTTP, as each binary search step potentially required a separate HTTP request. This insight led to a re-evaluation of the indexing approach.
 
 \subsection{Static B+tree Design}
-\label{subsec:static_btree_design}
+\label{methodology:attribute_index:static_btree_design}
 
 After evaluating alternatives, a Static B+tree (S+tree) approach was adopted. This decision was based on the following considerations:
 
@@ -54,7 +54,7 @@ After evaluating alternatives, a Static B+tree (S+tree) approach was adopted. Th
 The implementation uses a static variant of the B+tree, built once and used for read-only operations. This design choice aligns with the immutable nature of the FlatCityBuf format and enables additional optimisations not possible with dynamic tree structures.
 
 \subsection{Implicit Layout and Memory Efficiency}
-\label{subsec:implicit_layout}
+\label{methodology:attribute_index:implicit_layout}
 
 The Static B+tree implementation uses an Eytzinger layout for node placement, offering several benefits:
 
@@ -74,7 +74,7 @@ This approach produces a compact, cache-friendly structure that requires minimal
 \end{enumerate}
 
 \subsection{Type-Specific Serialisation}
-\label{subsec:type_specific_serialisation}
+\label{methodology:attribute_index:type_specific_serialisation}
 
 The attribute index supports various data types common in 3D city models, including:
 
@@ -88,7 +88,7 @@ The attribute index supports various data types common in 3D city models, includ
 Each type implements a specialised serialisation strategy that preserves ordering semantics while optimising storage efficiency. For floating-point values, the implementation uses `OrderedFloat` to handle NaN values correctly. Strings utilise a fixed-width prefix encoding that balances storage requirements with efficient comparison operations.
 
 \subsection{Duplicate Key Handling}
-\label{subsec:duplicate_key_handling}
+\label{methodology:attribute_index:duplicate_key_handling}
 
 A significant optimisation in the attribute index is the handling of duplicate keys:
 
@@ -101,7 +101,7 @@ A significant optimisation in the attribute index is the handling of duplicate k
 This approach maintains the efficiency of the tree structure while properly handling attributes with many duplicate values. For example, building type attributes often have many identical values (e.g., hundreds of "residential" buildings), which are all efficiently indexed through a single payload reference.
 
 \subsection{HTTP Optimisation Techniques}
-\label{subsec:http_optimisation}
+\label{methodology:attribute_index:http_optimisation}
 
 The attribute index implements several techniques specifically designed to optimise performance over HTTP:
 
@@ -115,7 +115,7 @@ The attribute index implements several techniques specifically designed to optim
 Internal testing demonstrated that these optimisations reduce HTTP requests by up to 90\% for typical queries compared to naïve implementations, significantly improving overall query performance for web-based applications.
 
 \subsection{Multi-Index Query Execution}
-\label{subsec:multi_index_query}
+\label{methodology:attribute_index:multi_index_query}
 
 The attribute indexing system supports complex queries across multiple attributes through a coordinated query execution strategy:
 
@@ -137,7 +137,7 @@ The implementation provides specialised index structures for different access pa
 Each implementation provides semantically equivalent operations while optimising for its specific access pattern, ensuring consistent results regardless of the access method.
 
 \subsection{Performance Characteristics}
-\label{subsec:performance_characteristics}
+\label{methodology:attribute_index:performance_characteristics}
 
 The Static B+tree implementation demonstrates several key performance characteristics:
 

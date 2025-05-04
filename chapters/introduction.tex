@@ -6,7 +6,7 @@
 
 This is a complete template for the MSc Geomatics thesis.
 It contains all the parts that are required and is structured in such a way that most/all supervisors expect.
-Observe that the MSc Geomatics at TU Delft has no formal requirements, how the document looks like (fonts, margins, headers, etc) is entirely up to you. 
+Observe that the MSc Geomatics at TU Delft has no formal requirements, how the document looks like (fonts, margins, headers, etc) is entirely up to you.
 
 We basically took the template \texttt{KOMA-Script scrbook}, added the front/back matters (cover page, copyright, abstract, etc.), and gave examples for the insertion of figures, tables and algorithms.
 
@@ -14,7 +14,7 @@ We basically took the template \texttt{KOMA-Script scrbook}, added the front/bac
 
 But we hope it will encourage everyone to use \LaTeX\ for writing their thesis, and we also hope that it will \emph{discourage} some from using Word.
 
-If you run into mistakes/problems/issues, please report them on the GitHub page, and if you fix an error, then please submit a pull request. 
+If you run into mistakes/problems/issues, please report them on the GitHub page, and if you fix an error, then please submit a pull request.
 
 \url{https://github.com/tudelft3d/msc_geomatics_thesis_template}.
 
@@ -116,11 +116,11 @@ You include a PDF the same way as you do for a PNG, see \autoref{fig:pdffig},
 \section{How to add references?}
 
 References are best handled using Bib\TeX.
-See the \texttt{myreferences.bib} file. 
+See the \texttt{myreferences.bib} file.
 A good cross-platform reference manager is \href{http://jabref.sourceforge.net/}{JabRef}.
 
-\citet{Descartes37} wrote this and that~\citep{Voronoi08,Delaunay34}.
-Instead of citing the whole paper~\citep{Delaunay34}, it is also possible to cite only the authors (\eg\ \citeauthor{Delaunay34}).
+% \citet{Descartes37} wrote this and that~\citep{Voronoi08,Delaunay34}.
+% Instead of citing the whole paper~\citep{Delaunay34}, it is also possible to cite only the authors (\eg\ \citeauthor{Delaunay34}).
 
 %%%
 %
@@ -134,10 +134,10 @@ Footnotes are a good way to write text that is not essential for the understandi
 
 Equations and variables can be put inline in the text, but also numbered.
 
-Let $S$ be a set of points in $\mathbb{R}^d$. 
+Let $S$ be a set of points in $\mathbb{R}^d$.
 The Voronoi cell of a point $p \in S$, defined $\mathcal{V}_{p}$, is the set of points $x \in \mathbb{R}^d$ that are closer to $p$ than to any other point in $S$; that is:
 \begin{equation}
-\mathcal{V}_p = \{x \in \mathbb{R}^{d} \ | \ \|x-p\| \, \leq \, \|x-q\|, \ \forall \, q \in S \}. 
+\mathcal{V}_p = \{x \in \mathbb{R}^{d} \ | \ \|x-p\| \, \leq \, \|x-q\|, \ \forall \, q \in S \}.
 \end{equation}
 The union of the Voronoi cells of all generating points $p \in S$ form the Voronoi diagram of $S$, defined VD($S$).
 
@@ -153,12 +153,12 @@ See for instance \autoref{tab:example}.
   \centering
   \begin{tabular}{@{}lrrcrrc@{}} \toprule
     & \multicolumn{2}{c}{3D model} && \multicolumn{2}{c}{input} \\
-    \cmidrule{2-3}  \cmidrule{5-6} 
-    & solids & faces && vertices & constraints  \\ 
+    \cmidrule{2-3}  \cmidrule{5-6}
+    & solids & faces && vertices & constraints  \\
     \toprule
     \textbf{campus}  & 370   & 4~298  && 5~970  & 3~976   \\
     \textbf{kvz}     & 637   & 6~549  && 8~951  & 13~571  \\
-    \textbf{engelen} & 1~629 & 15~870 && 23~732 & 15~868 \\ 
+    \textbf{engelen} & 1~629 & 15~870 && 23~732 & 15~868 \\
     \bottomrule
    \end{tabular}
   \caption{Details concerning the datasets used for the experiments.}%
@@ -202,12 +202,12 @@ All your algorithms will be automatically added to the list of algorithms at the
     \For{$i \leftarrow 0$ \KwTo 3}
     {
       $\sigma_i \leftarrow$ get face opposite vertex $i$ in $\tau$\;
-      \If{Orient($\sigma_i, p$) $< 0$\nllabel{l:walk}} 
+      \If{Orient($\sigma_i, p$) $< 0$\nllabel{l:walk}}
       {
         $\tau \leftarrow$ get neighbouring tetrahedron of $\tau$ incident to $\sigma_i$\;
         break\;
       }
-    }  
+    }
     \If{$i=3$}
     {
       \tcp{all the faces of $\tau$ have been tested}
@@ -255,7 +255,7 @@ If you want to put some code (or XML for instance), use the package \texttt{list
 \label{sec:acronyms}
 
 If you want to have a list of acronyms you use in your thesis, use the \texttt{acronym} package.
-The first time you speak about \ac{gis}, it will be spelled out. 
+The first time you speak about \ac{gis}, it will be spelled out.
 Further use, \ac{gis}, you'll get the acronym plus a hyperlink to the list in the preambule of the thesis.
 
 Add yours to \texttt{front/acronyms.tex}.
@@ -286,4 +286,3 @@ This is the way to properly write these abbreviations, \ie\ so that the spacing 
 And this is how you use an example, \eg\ like this.
 
 You should use one \texttt{-} for an hyphen between words (`multi-dimensional'), two \texttt{--} for a range between numbers (`1990--1995'), and three \texttt{---} for a punctuation in a sentence (`I like---unlike my father---to build multi-dimensional models').
-

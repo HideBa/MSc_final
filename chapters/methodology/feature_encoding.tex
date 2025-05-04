@@ -1,10 +1,10 @@
 \section{Feature Encoding}
-\label{sec:feature_encoding}
+\label{methodology:feature_encoding}
 
 The feature encoding section of FlatCityBuf is responsible for the binary representation of 3D city objects and their associated data. This component preserves the semantic richness of the CityJSON model while leveraging FlatBuffers' efficient binary serialisation. This section details the encoding strategies for city objects, geometry, attributes, appearances, and extensions.
 
 \subsection{CityFeature and CityObject Structure}
-\label{subsec:cityfeature_cityobject_structure}
+\label{methodology:feature_encoding:cityfeature_cityobject_structure}
 
 FlatCityBuf organises data following CityJSON's hierarchical model, but with optimisations for binary serialisation:
 
@@ -39,12 +39,12 @@ table CityObject {
 This structure enables efficient access to individual city objects without loading the entire dataset, while maintaining the relationships and hierarchies defined in the CityJSON model.
 
 \subsection{Geometry Encoding}
-\label{subsec:geometry_encoding}
+\label{methodology:feature_encoding:geometry_encoding}
 
 Geometry encoding is one of the most critical aspects of FlatCityBuf, as it represents the 3D shapes that constitute city models. The approach follows CityJSON's boundary representation (B-rep) model with optimisations for binary storage:
 
 \subsubsection{Boundary Representation}
-\label{subsubsec:boundary_representation}
+\label{methodology:feature_encoding:geometry_encoding:boundary_representation}
 
 FlatCityBuf encodes geometry boundaries using a hierarchical indexing approach that aligns with CityJSON's dimensional hierarchy:
 
@@ -75,7 +75,7 @@ solids: [1]                               // 1 solid with 1 shell
 \end{verbatim}
 
 \subsubsection{Semantic Surface Classification}
-\label{subsubsec:semantic_surface_classification}
+\label{methodology:feature_encoding:geometry_encoding:semantic_surface_classification}
 
 Semantic information is essential for distinguishing different functional parts of city objects (e.g., walls, roofs, doors). FlatCityBuf encodes these semantics through:
 
@@ -100,7 +100,7 @@ table SemanticObject {
 This approach preserves the semantically rich information of CityJSON while optimising for binary storage and retrieval efficiency. Surface types are encoded as enumerated values (e.g., \texttt{WallSurface}, \texttt{RoofSurface}) for compact representation.
 
 \subsubsection{Geometry Templates}
-\label{subsubsec:geometry_templates}
+\label{methodology:feature_encoding:geometry_encoding:geometry_templates}
 
 For city models containing repeated geometries (e.g., identical building types), FlatCityBuf supports CityJSON's template mechanism with optimisations for binary representation:
 
@@ -137,7 +137,7 @@ Each instance consists of:
 This approach significantly reduces file size for datasets with repeated structures, commonly found in planned urban developments with standardised building designs.
 
 \subsubsection{Appearances: Materials and Textures}
-\label{subsubsec:appearances}
+\label{methodology:feature_encoding:appearances}
 
 FlatCityBuf supports CityJSON's appearance model, including materials and textures, through a reference-based approach:
 
@@ -169,7 +169,9 @@ This design choice prioritises:
 Material and texture assignments are managed through mapping tables that associate specific surfaces with appearance definitions.
 
 \subsection{Attribute Encoding}
-\label{subsec:attribute_encoding}
+\label{methodology:feature_encoding:attribute_encoding}
+
+%TODO: write about how we extract attributes schema from CityJSON
 
 Attributes store non-geometric properties of city objects (e.g., year of construction, owner, function). FlatCityBuf implements an efficient binary representation:
 
@@ -198,7 +200,7 @@ Attributes store non-geometric properties of city objects (e.g., year of constru
 This approach balances flexibility with efficiency, allowing FlatCityBuf to represent the diverse attribute sets found in city models while maintaining high performance. By moving type information to the schema level rather than self-describing each value, this encoding achieves significant storage reductions compared to JSON-based formats.
 
 \subsection{Extension Mechanism}
-\label{subsec:extension_mechanism}
+\label{methodology:feature_encoding:extension_mechanism}
 
 FlatCityBuf provides comprehensive support for CityJSON's extension mechanism, allowing customisation beyond the core schema. Unlike CityJSON's approach of referencing external schema files, FlatCityBuf implements a self-contained extension model:
 
@@ -250,7 +252,7 @@ This approach offers several advantages:
 The extension mechanism enables FlatCityBuf to support domain-specific additions (e.g., noise simulation data, energy modelling parameters) without compromising the efficiency of the core format.
 
 \subsection{Performance Considerations}
-\label{subsec:feature_performance}
+\label{methodology:feature_encoding:performance_considerations}
 
 The feature encoding strategy in FlatCityBuf was designed with several performance considerations:
 

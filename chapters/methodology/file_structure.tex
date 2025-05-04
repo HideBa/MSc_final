@@ -1,10 +1,10 @@
 \section{File Structure}
-\label{sec:file_structure}
+\label{methodology:file_structure}
 
 The FlatCityBuf format implements a structured binary encoding designed specifically for efficient storage and retrieval of 3D city models in cloud environments. This section details the physical organisation of the file format and its constituent components.
 
 \subsection{Overall Encoding Structure}
-\label{subsec:overall_encoding_structure}
+\label{methodology:overall_encoding_structure}
 
 FlatCityBuf employs a hybrid encoding approach that combines FlatBuffers serialisation with custom binary formats for indexing structures. The file consists of five sequentially arranged segments:
 
@@ -28,7 +28,7 @@ Figure~\ref{fig:file-structure} illustrates the structural organisation of a Fla
 This sequence-based structure enables incremental file access through HTTP Range Requests—a critical capability for cloud-based applications where minimising data transfer is essential. Each section was designed with explicit consideration for alignment boundaries to optimise I/O operations in both local and networked environments.
 
 \subsection{Magic Bytes and Identification}
-\label{subsec:magic_bytes}
+\label{methodology:overview:magic_bytes}
 
 The magic bytes section comprises the first four bytes of the file and serves as an immediate identifier for the FlatCityBuf format. This implementation follows established conventions in binary file formats:
 
@@ -41,7 +41,7 @@ The magic bytes section comprises the first four bytes of the file and serves as
 Following the magic bytes, a 4-byte unsigned integer specifies the size of the header section, enabling applications to locate subsequent sections without parsing the header content.
 
 \subsection{Header Section}
-\label{subsec:header_section}
+\label{methodology:overview:header_section}
 
 The header section encapsulates metadata essential for interpreting the file contents. Implemented as a FlatBuffers-serialised \texttt{Header} table, it contains:
 
@@ -57,7 +57,7 @@ The header section encapsulates metadata essential for interpreting the file con
 The header preserves all mandatory elements from the CityJSON specification while adding additional metadata specific to the FlatCityBuf format. This design ensures backward compatibility with existing CityJSON processors while enabling optimised operation for FlatCityBuf-aware applications.
 
 \subsection{Spatial Index Section}
-\label{subsec:spatial_index_section}
+\label{methodology:overview:spatial_index_section}
 
 The spatial index immediately follows the header and implements a Packed Hilbert R-tree structure optimised for two-dimensional spatial queries. This index provides:
 
@@ -67,10 +67,10 @@ The spatial index immediately follows the header and implements a Packed Hilbert
   \item \textbf{Hilbert Curve Ordering}: Enhances spatial locality for improved query performance
 \end{itemize}
 
-The implementation details of the spatial indexing algorithm are fully explained in Section~\ref{subsec:spatial_indexing_implementation}, including node structure, tree construction, and query optimisation techniques.
+The implementation details of the spatial indexing algorithm are fully explained in Section~\ref{methodology:spatial_index}, including node structure, tree construction, and query optimisation techniques.
 
 \subsection{Attribute Index Section}
-\label{subsec:attribute_index_section}
+\label{methodology:overview:attribute_index_section}
 
 Following the spatial index, the attribute index section provides efficient access to features based on their non-spatial properties. Implemented as a series of Static B+trees:
 
@@ -81,10 +81,10 @@ Following the spatial index, the attribute index section provides efficient acce
   \item Type-specific serialisation ensures efficient representation of different attribute types
 \end{itemize}
 
-The attribute indexing system supports exact-match and range-based queries across multiple attribute types, including numeric, string, and temporal values. Section~\ref{subsec:attribute_indexing_implementation} provides a comprehensive explanation of the B+tree implementation and query algorithms.
+The attribute indexing system supports exact-match and range-based queries across multiple attribute types, including numeric, string, and temporal values. Section~\ref{methodology:attribute_index} provides a comprehensive explanation of the B+tree implementation and query algorithms.
 
 \subsection{Features Section}
-\label{subsec:features_section}
+\label{methodology:overview:features_section}
 
 The features section contains the actual city objects and their associated data, serialised as FlatBuffers tables. Key characteristics include:
 
@@ -97,4 +97,4 @@ The features section contains the actual city objects and their associated data,
 
 The internal structure of features follows the CityJSON conceptual model while leveraging FlatBuffers' efficient binary representation. This approach preserves the semantic richness of CityJSON while significantly reducing storage requirements and parse time.
 
-Section~\ref{subsec:feature_encoding_implementation} provides detailed information on the feature encoding methodology, including geometry representation, attribute encoding, and semantic model preservation.
+Section~\ref{methodology:feature_encoding} provides detailed information on the feature encoding methodology, including geometry representation, attribute encoding, and semantic model preservation.

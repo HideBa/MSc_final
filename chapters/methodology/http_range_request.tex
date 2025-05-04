@@ -1,0 +1,139 @@
+\section{HTTP Range Requests and Cloud Optimisation}
+\label{methodology:http_range_requests}
+
+A critical component of cloud-optimised geospatial formats is their ability to support selective data retrieval without downloading entire datasets. FlatCityBuf achieves this capability through strategic implementation of HTTP Range Requests, enabling efficient web-based access to 3D city models. This section details the technical implementation, optimisation strategies, and cross-platform compatibility of this mechanism.
+
+\subsection{Principles of Partial Data Retrieval}
+\label{methodology:http_range_requests:partial_retrieval_principles}
+
+HTTP Range Requests, defined in RFC 7233, allow clients to request specific byte ranges from server resources instead of entire files. FlatCityBuf's structure is specifically designed to leverage this capability, with particular attention to:
+
+\begin{itemize}
+    \item \textbf{Aligned Section Boundaries}: File sections are aligned to facilitate efficient range requests
+    \item \textbf{Decoupled Components}: Header, indices, and features can be accessed independently
+    \item \textbf{Index-Driven Retrieval}: Spatial and attribute indices determine which feature ranges to request
+    \item \textbf{Request Minimisation}: Algorithms optimise for reducing the number of HTTP requests
+\end{itemize}
+
+The format's hierarchical indexing enables clients to perform sophisticated spatial and attribute queries while transferring only the minimal amount of data required, a critical factor for large-scale 3D city models that can exceed several gigabytes in size.
+
+\subsection{Range Request Workflow}
+\label{methodology:http_range_requests:range_request_workflow}
+
+The HTTP Range Request workflow in FlatCityBuf follows a sequential process optimised for minimising network traffic:
+
+\begin{enumerate}
+    \item \textbf{Header Retrieval}: The client requests the magic bytes (4 bytes) and header size (4 bytes), followed by the complete header section. This provides essential metadata including coordinate reference systems, transformations, and index structure information.
+
+    \item \textbf{Index Navigation}: Based on the query parameters (spatial bounding box or attribute conditions), the client navigates the appropriate index structures:
+    \begin{itemize}
+        \item For spatial queries, selective traversal of the R-tree requires retrieving only the nodes along the query path
+        \item For attribute queries, traversal of the appropriate B+tree indices with similar selectivity
+    \end{itemize}
+
+    \item \textbf{Feature Resolution}: Using the byte offsets obtained from the indices, the client makes targeted range requests for specific features. The size of each feature is determined implicitly by the difference between consecutive offsets.
+
+    \item \textbf{Progressive Processing}: Features are processed incrementally as they arrive, allowing applications to begin rendering or analysis before all data is received.
+\end{enumerate}
+
+This workflow achieves significant efficiency improvements over traditional approaches that require downloading entire datasets before processing can begin.
+
+\subsection{Optimisation Techniques}
+\label{methodology:http_range_requests:range_request_optimisations}
+
+Network latency often dominates performance when accessing data over HTTP, with each request incurring significant overhead regardless of payload size. FlatCityBuf implements several techniques to minimise this overhead:
+
+\begin{itemize}
+    \item \textbf{Request Batching}: Adjacent feature requests are combined into single range requests when their proximity falls below a configurable threshold (typically 4KB). This significantly reduces the number of HTTP requests while avoiding excessive data transfer.
+
+    \item \textbf{Prefetching Strategy}: The client proactively fetches portions of the index and payload sections based on statistical predictions of access patterns. For instance, the header retrieval also prefetches a small portion of the spatial index to optimise subsequent spatial queries.
+
+    \item \textbf{Payload Prefetching}: For attribute indices with duplicate keys, a portion of the payload section (typically 16KB-1MB) is prefetched during initial query execution. This cache-first approach can eliminate up to 90\% of payload-related HTTP requests in typical workflows.
+
+    \item \textbf{Buffered HTTP Client}: The implementation uses a buffered HTTP client that caches previously fetched data ranges, avoiding redundant requests when overlapping ranges are accessed.
+
+    \item \textbf{Progressive Index Loading}: Only the portions of indices required for a specific query are loaded, rather than retrieving entire index structures.
+\end{itemize}
+
+These optimisations work in concert to minimise both the number of HTTP requests and the total data transferred, resulting in significantly improved performance for cloud-based 3D city model applications.
+
+\subsection{Cross-Platform Implementation}
+\label{methodology:http_range_requests:cross_platform_implementation}
+
+FlatCityBuf provides range request capabilities across multiple platforms to maximise accessibility and integration options:
+
+\subsubsection{Native Rust Implementation}
+\label{methodology:http_range_requests:cross_platform_implementation:native_rust}
+
+The primary implementation is a Rust library that provides:
+
+\begin{itemize}
+    \item \textbf{Async HTTP Client}: Non-blocking implementation using Rust's asynchronous I/O capabilities
+    \item \textbf{Buffer Management}: Sophisticated caching of previously fetched ranges to minimise redundant requests
+    \item \textbf{Query Optimisation}: Intelligent batching and request merging based on spatial and temporal locality
+    \item \textbf{Streaming Interface}: Incremental processing through iterator-based APIs
+\end{itemize}
+
+This native implementation achieves optimal performance for server-side applications and desktop GIS tools.
+
+\subsubsection{WebAssembly Module}
+\label{methodology:http_range_requests:cross_platform_implementation:webassembly_module}
+
+To support browser-based applications, FlatCityBuf includes a WebAssembly (WASM) module built from the same Rust codebase:
+
+\begin{itemize}
+    \item \textbf{JavaScript Interoperability}: Clean API for integration with web mapping libraries like Cesium and Mapbox
+    \item \textbf{Fetch API Integration}: Uses the browser's native Fetch API with appropriate range headers
+    \item \textbf{In-Browser Processing}: Performs index traversal and feature decoding directly in the browser
+    \item \textbf{Memory-Efficient Design}: Implements streaming approaches to work within browser memory constraints
+\end{itemize}
+
+The WASM implementation currently has a limitation related to memory addressing. WebAssembly in browsers currently uses a 32-bit memory model, limiting addressable space to 4GB. While this is sufficient for most city-scale datasets, it can be a constraint for country-level models. The upcoming WebAssembly Memory64 proposal (currently at Stage 4 in the standardisation process) will eliminate this limitation by supporting 64-bit addressing.
+
+\subsection{Performance Analysis}
+\label{methodology:http_range_requests:performance_analysis}
+
+Empirical testing with various datasets demonstrates the substantial performance benefits of HTTP Range Requests for FlatCityBuf:
+
+\begin{itemize}
+    \item \textbf{Data Transfer Reduction}: Spatial queries typically retrieve only 3-10\% of the total dataset size
+    \item \textbf{Request Efficiency}: Optimisation techniques reduce HTTP requests by 80-95\% compared to naïve implementations
+    \item \textbf{Latency Improvement}: Initial visualisation time improves by 10-20× compared to downloading complete datasets
+    \item \textbf{Progressive Rendering}: Features appear incrementally, with first elements visible within milliseconds
+\end{itemize}
+
+These improvements are particularly pronounced for large datasets and bandwidth-constrained environments, enabling interactive 3D city model exploration even on mobile networks.
+
+\subsection{Integration with Cloud Infrastructure}
+\label{methodology:http_range_requests:cloud_integration}
+
+The HTTP Range Request mechanism integrates seamlessly with modern cloud storage services:
+
+\begin{itemize}
+    \item \textbf{Static Hosting}: FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing.
+
+    \item \textbf{Content Delivery Networks}: The format works effectively with CDNs, which can cache range responses independently
+
+    \item \textbf{CORS Configuration}: Cross-origin resource sharing headers allow browser-based clients to access remote datasets
+
+    \item \textbf{Serverless Processing}: The client-side filtering approach eliminates the need for dedicated server-side processing
+\end{itemize}
+
+This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised server software or complex data pipelines.
+
+\subsection{Real-World Applications}
+\label{methodology:http_range_requests:real_world_applications}
+
+The HTTP Range Request capabilities of FlatCityBuf enable several key application scenarios:
+
+\begin{itemize}
+    \item \textbf{Web-Based 3D Visualisation}: Browser applications can render specific city districts without downloading entire city models
+
+    \item \textbf{Mobile Applications}: Resource-constrained devices can access only the data they need, reducing bandwidth usage and memory requirements
+
+    \item \textbf{Distributed Analysis}: Cloud-based processing can extract specific features of interest for analysis without transferring complete datasets
+
+    \item \textbf{Real-Time Updates}: New data can be appended to existing datasets and made immediately available through range requests
+\end{itemize}
+
+These application patterns demonstrate how the format's HTTP Range Request capabilities transform the accessibility and usability of large-scale 3D city models in cloud and web environments.
