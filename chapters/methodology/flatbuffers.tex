@@ -1,0 +1,89 @@
+\section{FlatBuffers Framework}
+
+FlatBuffers, developed by Google, is a cross-platform serialisation framework designed specifically for performance-critical applications with a focus on memory efficiency and processing speed. Unlike traditional serialisation approaches, FlatBuffers implements a zero-copy deserialisation mechanism that enables direct access to serialised data without an intermediate parsing step. This characteristic is particularly advantageous for large geospatial datasets where parsing overhead can significantly impact performance.
+
+\subsection{Schema-Based Serialisation}
+\label{subsec:schema_based_serialisation}
+
+FlatBuffers employs a strongly typed, schema-based approach to data serialisation. The workflow involves:
+
+\begin{enumerate}
+    \item Definition of data structures in schema files with the `.fbs` extension
+    \item Compilation of schema files using the FlatBuffers compiler (`flatc`)
+    \item Generation of language-specific code for data access
+    \item Implementation of application logic using the generated code
+\end{enumerate}
+
+This schema-first approach enforces data consistency and type safety, which is essential for maintaining the semantic richness of 3D city models. The generated code provides memory-efficient access patterns to the underlying binary data without requiring full deserialisation. FlatCityBuf utilises this capability to achieve a balance between parsing speed and storage efficiency.
+
+The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics and memory safety guarantees.
+
+\subsection{Data Type System}
+\label{subsec:data_type_system}
+
+FlatBuffers provides a comprehensive type system that balances efficiency and expressiveness:
+
+\begin{itemize}
+  \item \textbf{Tables}: Variable-sized object containers that support:
+    \begin{itemize}
+      \item Named fields with type annotations
+      \item Optional fields with default values
+      \item Schema evolution through backward compatibility
+      \item Non-sequential field storage for memory optimisation
+    \end{itemize}
+
+  \item \textbf{Structs}: Fixed-size, inline aggregates that:
+    \begin{itemize}
+      \item Require all fields to be present (no optionality)
+      \item Are stored directly within their containing object
+      \item Provide faster access at the cost of schema flexibility
+      \item Optimise memory layout for primitive types
+    \end{itemize}
+
+  \item \textbf{Scalar Types}:
+    \begin{itemize}
+      \item 8-bit integers: \texttt{byte} (int8), \texttt{ubyte} (uint8), \texttt{bool}
+      \item 16-bit integers: \texttt{short} (int16), \texttt{ushort} (uint16)
+      \item 32-bit values: \texttt{int} (int32), \texttt{uint} (uint32), \texttt{float}
+      \item 64-bit values: \texttt{long} (int64), \texttt{ulong} (uint64), \texttt{double}
+    \end{itemize}
+
+  \item \textbf{Complex Types}:
+    \begin{itemize}
+      \item \texttt{[T]}: Vectors (single-dimension arrays) of any supported type
+      \item \texttt{string}: UTF-8 encoded text with length prefix
+      \item References to other tables, structs, or unions
+    \end{itemize}
+
+  \item \textbf{Enums}: Type-safe constants mapped to underlying integer types
+  \item \textbf{Unions}: Tagged unions supporting variant types
+\end{itemize}
+
+\subsection{Binary Structure and Memory Layout}
+\label{subsec:binary_structure}
+
+FlatBuffers organises serialised data in a flat binary buffer with the following characteristics:
+
+\begin{itemize}
+    \item \textbf{Prefix-based vtables} that enable field access without full parsing
+    \item \textbf{Offset-based references} that allow direct navigation within the buffer
+    \item \textbf{Aligned memory layout} optimised for CPU cache efficiency
+    \item \textbf{Endian-aware serialisation} supporting both little and big-endian platforms
+\end{itemize}
+
+For complex data structures like 3D city models, FlatBuffers allows for modular schema composition through file inclusion. This capability enabled the separation of FlatCityBuf's schema into logical components (\texttt{header.fbs}, \texttt{feature.fbs}, \texttt{geometry.fbs}, etc.) while maintaining efficient serialisation. In our implementation, the \texttt{Header} and \texttt{CityFeature} tables serve as root types that anchor the overall data structure.
+
+\subsection{Advantages for Geospatial Applications}
+\label{subsec:geospatial_advantages}
+
+FlatBuffers offers several specific advantages for geospatial applications:
+
+\begin{itemize}
+    \item \textbf{Random access}: Enables direct access to specific city objects without parsing the entire dataset
+    \item \textbf{Memory mapping}: Supports memory-mapped file access for extremely large datasets
+    \item \textbf{Compact representation}: Reduces storage requirements compared to text-based formats
+    \item \textbf{Forward/backward compatibility}: Supports schema evolution while maintaining compatibility
+    \item \textbf{Cross-platform support}: Enables consistent data access across different environments
+\end{itemize}
+
+These characteristics align with the requirements for cloud-optimised geospatial formats, making FlatBuffers an appropriate foundation for the FlatCityBuf specification.

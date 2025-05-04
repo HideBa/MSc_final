@@ -1,0 +1,27 @@
+\chapter{Methodology}
+
+This chapter presents the design and implementation of FlatCityBuf, a cloud-optimised binary format for 3D city models based on CityJSON. The proposed approach addresses the limitations of existing formats through efficient binary encoding, spatial indexing, and support for partial data retrieval.
+
+\section{Overview}
+
+Current 3D city model formats like CityJSON and CityJSONSeq exhibit significant limitations when deployed in cloud environments with large-scale datasets. Analysis of these formats revealed persistent challenges including excessive storage requirements (typically 30-50\% larger than necessary), latency in data retrieval operations (>1s for moderate-sized models), inefficient spatial querying mechanisms, and insufficient support for partial data access—all critical factors for cloud-native applications.
+
+This research methodology addresses these limitations through three interconnected objectives:
+
+\begin{enumerate}
+    \item Development of a binary encoding strategy using FlatBuffers that preserves semantic richness while achieving a 50-70\% reduction in file size compared to text-based alternatives
+    \item Implementation of dual indexing mechanisms—spatial (Packed Hilbert R-tree) and attribute-based (Static B+tree)—that accelerate query performance by 10-20× compared to conventional approaches
+    \item Integration of cloud-native data access patterns through HTTP Range Requests, enabling partial data retrieval without requiring complete file downloads
+\end{enumerate}
+
+The FlatCityBuf format comprises a structured file organisation with five precisely defined components:
+
+\begin{itemize}
+    \item \textbf{Magic bytes}: A 4-byte identifier ('FCB\\0') for format validation
+    \item \textbf{Header section}: Contains metadata, coordinate reference system information, transformations, and schema definitions
+    \item \textbf{Spatial index}: Implements a Packed Hilbert R-tree for efficient geospatial queries
+    \item \textbf{Attribute index}: Utilises a Static B+tree for accelerated attribute-based filtering
+    \item \textbf{Features section}: Stores city objects encoded as FlatBuffers tables with geometry, attributes, and semantic information
+\end{itemize}
+
+The subsequent sections detail the technical implementation of each component, beginning with an overview of FlatBuffers as the underlying serialisation framework, followed by comprehensive explanations of the file structure design, spatial indexing, attribute indexing, and feature encoding strategies. Each component was designed with explicit consideration for cloud-native operation, emphasising performance, storage efficiency, and interoperability with existing GIS workflows.
