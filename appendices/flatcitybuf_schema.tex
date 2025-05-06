@@ -1,3 +1,32 @@
 
 \chapter{FlatCityBuf Schema}
 \label{appendix:flatcitybuf_schema}
+
+\section{Header}
+\label{appendix:flatcitybuf_schema:header}
+\todo{add description of header}
+\begin{lstlisting}[caption={Header schema}, label={appendix:flatcitybuf_schema:header}]
+
+  table Header {
+    version: string;
+    transform: Transform;
+    reference_system: ReferenceSystem;
+    geographical_extent: GeographicalExtent;
+    identifier: string;
+    title: string;
+    reference_date: string;
+  }
+\end{lstlisting}
+
+\section{Feature}
+\label{appendix:flatcitybuf_schema:feature}
+\todo{add description of feature}
+\begin{lstlisting}[caption={Feature schema}, label={appendix:flatcitybuf_schema:feature}]
+
+  table Feature {
+    id: string;
+    objects: [CityObject];
+    vertices: [Vertex];
+    appearance: Appearance;
+  }
+\end{lstlisting}

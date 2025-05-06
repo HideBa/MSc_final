@@ -5,10 +5,10 @@ The magic bytes section comprises the first eight bytes of the file:
 \todo{check detail again}
 \begin{itemize}
   \item The first four bytes contain the ASCII sequence 'FCB\\0' (0x46 0x43 0x42 0x00) serving as an immediate identifier
-  \item The remaining four bytes follow a pattern similar to FlatGeoBuf \citep{flatgeobuf}, with byte 5-6 containing major version (currently 01), followed by ASCII 'FB' (0x46 0x42), and byte 8 containing patch version (currently 00)
+  \item The remaining four bytes follow a pattern similar to FlatGeoBuf \citep{flatgeobuf}, with byte 5-6 containing the major version (currently 01), followed by ASCII 'FB' (0x46 0x42) representing 'FlatBuffers', and byte 8 containing patch version (currently 00)
 \end{itemize}
 
-This signature design enables applications to validate file type and version compatibility without parsing the entire header content.
+This signature design enables applications to validate file type and version compatibility without parsing the entire header content. The approach was directly inspired by FlatGeoBuf's methodology, which uses 'FGB' (F, G, B characters) in its magic bytes to indicate 'FlatGeoBuf' \citep{horance_2022}.
 
 \section{Header Section}
 \label{methodology:file_components:header}
@@ -103,7 +103,7 @@ Fields supporting geometry reuse:
   \item \textbf{templates\_vertices} - \textit{Array of DoubleVertex structs} - Double-precision vertices used by templates, stored separately from feature vertices for higher precision in the local coordinate system \citep{cityjson_spec}
 \end{itemize}
 
-The templates mechanism enables significant storage efficiency for datasets containing repetitive structures such as standardised building designs, street furniture, or vegetation. The detailed structure of geometry encoding, including boundary representation and semantic surface classification, will be explained further in \autoref{methodology:feature_encoding}.
+The templates mechanism enables significant storage efficiency for datasets containing repetitive structures such as standardised building designs, street furniture, or vegetation. The detailed structure of geometry encoding, including boundary representation and semantic surface classification, will be explained further in \autoref{methodology:feature_encoding:geometry_encoding}.
 
 \subsection{Extension Support}
 \label{methodology:header:extensions}
@@ -153,6 +153,6 @@ Fields supporting attribute interpretation and efficient querying:
 
 \todo{add more details about here}
 \subsection{Implementation Considerations}
-\label{methodology:header:implementation}
+\label{methodology:header:implementation_considerations}
 
 The header is designed to be compact while providing all necessary information to interpret the file. The size-prefixed FlatBuffers encoding enables efficient skipping of the header when only specific features are needed, important for cloud-based access patterns where minimising data transfer is essential. All numeric values in the header use little-endian encoding for consistency with modern architectures.
