@@ -1,3 +1,5 @@
+%!TEX root = ../../thesis.tex
+
 \section{Attribute Indexing}
 \label{methodology:attribute_index}
 
@@ -14,30 +16,12 @@ The attribute indexing system was designed to support specific query patterns co
     \item \textbf{Compound Conditions}: Multiple conditions combined with logical operators (e.g., \texttt{building\_type = "residential" AND height > 15})
 \end{itemize}
 
-The system prioritises these query types while ensuring compatibility with remote access patterns through HTTP Range Requests. Other query types, such as aggregation or complex text searches, are delegated to the application layer since FlatCityBuf is primarily a storage format rather than a query processing system.
+While the SQL standard \citep{iso_9075_2_2023} defines a comprehensive set of predicates and operators for database querying, implementing the full spectrum of these capabilities is beyond the scope of this research. FlatCityBuf deliberately focuses on a subset of operators that provide the greatest utility for typical 3D city model queries while maintaining efficient implementation over HTTP.
 
-\subsection{Indexing Strategy Evaluation}
-\label{methodology:attribute_index:indexing_strategy_evaluation}
+Notably absent are pattern-matching operations such as the SQL \texttt{LIKE} operator (e.g., \texttt{city LIKE "Delf\%"}), which would require specialized text indexing structures. Similarly, functions like \texttt{CONTAINS}, \texttt{BETWEEN}, aggregate functions (\texttt{COUNT}, \texttt{SUM}, etc.), and advanced text search capabilities were deemed lower priority compared to the core comparison operators. These advanced query types can be implemented at the application layer after retrieving the relevant data.
 
-Several indexing strategies were evaluated to determine the most appropriate approach for the FlatCityBuf format:
+The system prioritises these core query types while ensuring compatibility with remote access patterns through HTTP Range Requests. This focused approach aligns with FlatCityBuf's primary goal as an efficient storage and retrieval format rather than a comprehensive query processing system.
 
-\begin{table}[ht]
-    \centering
-    \caption{Comparison of Indexing Strategies}
-    \begin{tabular}{l|c|c|c|c}
-        \hline
-        \textbf{Strategy} & \textbf{Exact Match} & \textbf{Range Query} & \textbf{Space Efficiency} & \textbf{HTTP Suitability} \\
-        \hline
-        Hash Tables & $O(1)$ & Poor & Medium & Poor \\
-        Sorted Array & $O(\log n)$ & Good & Excellent & Limited \\
-        Binary Search Tree & $O(\log n)$ & Good & Good & Limited \\
-        B-tree/B+tree & $O(\log_B n)$ & Excellent & Good & Excellent \\
-        \hline
-    \end{tabular}
-    \label{tab:indexing_strategies}
-\end{table}
-
-Initial implementation used a sorted array with binary search for its simplicity and space efficiency. However, performance testing revealed significant I/O latency issues when accessing this structure over HTTP, as each binary search step potentially required a separate HTTP request. This insight led to a re-evaluation of the indexing approach.
 
 \subsection{Static B+tree Design}
 \label{methodology:attribute_index:static_btree_design}

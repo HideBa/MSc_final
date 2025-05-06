@@ -35,17 +35,23 @@ alwaysApply: true
     - Comparison of data formats
   - FlatBuffers
 - Methodology
-  - Overview
-  - Overview of FlatBuffers
-  - Encoding strategy of CityJSONSeq with FlatBuffers
-    - Schema design
-    - Header
-    - Feature
+  - Overview and file structure
+  - Magic Bytes
+  - Header
   - Spatial index
     - packed RTree index
   - Attribute index
     - Static B+Tree
     - Payload and offset bytes to feature section
+  - Feature encoding
+    - Geometry encoding
+      - Boundaries
+      - Semantic surfaces
+    - Attribute encoding
+    - Appearance/Material/Texture encoding
+    - Geometry template/instance encoding
+    - Extension encoding
+    - Feature
   - Partial fetch with HTTP range request
 - Result and Analysis
   - Benchmark and comparison with various datasets (incl PLATEAU)

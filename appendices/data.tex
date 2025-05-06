@@ -1,0 +1,19 @@
+\section{Tables}
+
+The package \texttt{booktabs} permits you to make nicer tables than the basic ones in \LaTeX.
+See for instance \autoref{tab:example}.
+\begin{table}
+  \centering
+  \begin{tabular}{@{}lrrcrrc@{}} \toprule
+    & \multicolumn{2}{c}{3D model} && \multicolumn{2}{c}{input} \\
+    \cmidrule{2-3}  \cmidrule{5-6}
+    & solids & faces && vertices & constraints  \\
+    \toprule
+    \textbf{campus}  & 370   & 4~298  && 5~970  & 3~976   \\
+    \textbf{kvz}     & 637   & 6~549  && 8~951  & 13~571  \\
+    \textbf{engelen} & 1~629 & 15~870 && 23~732 & 15~868 \\
+    \bottomrule
+   \end{tabular}
+  \caption{Details concerning the datasets used for the experiments.}%
+\label{tab:example}
+\end{table}

@@ -1,0 +1,102 @@
+%!TEX root = ../../thesis.tex
+
+\section{Spatial Indexing}
+\label{methodology:spatial_index}
+
+Efficient spatial querying is a critical requirement for 3D city model formats, particularly in cloud environments where minimising data transfer is essential. FlatCityBuf implements a packed Hilbert R-tree spatial indexing mechanism \citep{Roussopoulos_Leifker_1985} to enable selective retrieval of city features based on their geographic location. This section details the implementation approach, design decisions, and performance characteristics of the spatial indexing component.
+
+\subsection{Design Attribution}
+\label{methodology:spatial_index:attribution}
+
+The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{flatgeobuf_spatial_index}. Both the conceptual design and implementation details were sourced from FlatGeoBuf's approach as documented in \citet{horance_2022} and \citet{}. This includes the Hilbert curve ordering strategy, node structure, tree construction methodology, and query algorithms.
+
+While the original FlatGeoBuf implementation targets 2D vector geometries, FlatCityBuf extends this approach to work with 3D city models by applying the indexing to 2D projections (centroids) of the 3D features. The decision to reuse this proven approach rather than developing a novel indexing mechanism was based on FlatGeoBuf's demonstrated effectiveness for cloud-optimized geospatial data formats.
+
+\subsection{Spatial Indexing Requirements}
+\label{methodology:spatial_index:requirements}
+
+The spatial indexing mechanism in FlatCityBuf was designed to address several key requirements:
+
+\todo{make more concise}
+\begin{itemize}
+    \item \textbf{Selective Data Access}: Allow retrieval of city features within a specified bounding box without downloading the entire dataset
+    \item \textbf{HTTP Range Request Compatibility}: Support efficient operation over HTTP using range requests
+    \item \textbf{Compact Representation}: Minimise storage overhead while maintaining query efficiency
+    \item \textbf{Cloud Optimisation}: Reduce network traffic and improve query responsiveness in cloud environments
+\end{itemize}
+
+These requirements led to the adoption of a packed R-tree structure, specifically optimised for static datasets accessed through block-oriented I/O patterns.
+
+\subsection{Packed Hilbert R-tree Implementation}
+\label{methodology:spatial_index:packed_rtree_implementation}
+
+The spatial index in FlatCityBuf implements a packed R-tree structure with Hilbert curve ordering, following the implementation pattern established by FlatGeoBuf \citep{williams2022implementers}. This approach offers several advantages over traditional R-tree variants:
+
+\begin{itemize}
+    \item \textbf{Static Structure}: The tree is built once and remains immutable, eliminating the need for complex insertion and rebalancing algorithms
+    \item \textbf{Perfect Packing}: Nodes are filled to capacity (except possibly the rightmost nodes at each level), maximising space efficiency
+    \item \textbf{Hilbert Ordering}: Features are sorted using a Hilbert space-filling curve to improve spatial locality \citep{Kamel_Faloutsos_1993}
+    \item \textbf{Block-Aligned Design}: Node sizes align with common block sizes for efficient I/O operations
+\end{itemize}
+
+The index is organised as a sequence of nodes, each containing:
+
+\begin{itemize}
+    \item \textbf{Minimum X,Y}: The minimum coordinates of the node's bounding box (8 bytes each)
+    \item \textbf{Maximum X,Y}: The maximum coordinates of the node's bounding box (8 bytes each)
+    \item \textbf{Offset}: The byte offset to either a child node or a feature in the features section (8 bytes)
+\end{itemize}
+
+This results in a fixed node size, allowing for predictable memory layout and efficient search within nodes.
+
+\subsection{2D vs 3D Indexing Considerations}
+\label{methodology:spatial_index:2d_vs_3d_indexing}
+
+Although FlatCityBuf is designed for 3D city models, the spatial indexing mechanism deliberately uses a 2D approach rather than a full 3D implementation. This design decision was based on several key observations:
+
+\begin{itemize}
+    \item \textbf{Horizontal Distribution}: Most 3D city models are primarily distributed horizontally in global scale, with limited vertical extent relative to their horizontal footprint
+    \item \textbf{Query Patterns}: Typical spatial queries for city models focus on horizontal regions (e.g., retrieving buildings within a district), rather than volumetric queries
+    \item \textbf{Standards Compatibility}: OGC API Features and similar standards primarily support 2D spatial querying, making 2D indexing more broadly compatible \todo{add citation}
+    \item \textbf{Implementation Efficiency}: 2D indexing is computationally simpler and more storage-efficient than 3D alternatives
+\end{itemize}
+
+For implementation, the centroid of each CityFeature's vertices is calculated using only X and Y coordinates, and this 2D centroid is used for Hilbert encoding and spatial indexing. This approach provides a reasonable balance between query performance and implementation complexity for most urban modelling use cases.
+
+% \subsection{Index Construction Process}
+% \label{methodology:spatial_index:index_construction}
+
+% The construction of the spatial index follows a bottom-up approach:
+
+% \begin{enumerate}
+%     \item \textbf{Feature Preparation}: Calculate the 2D bounding box (minimum/maximum X,Y) for each CityFeature
+%     \item \textbf{Centroid Calculation}: Compute the geometric centroid of each feature using only X,Y coordinates
+%     \item \textbf{Hilbert Encoding}: Convert each centroid to a 32-bit Hilbert value using the reference algorithm from FlatGeoBuf
+%     \item \textbf{Spatial Sorting}: Sort features according to their Hilbert values
+%     \item \textbf{Leaf Node Creation}: Create the bottom layer of the R-tree using the sorted features' bounding boxes and byte offsets
+%     \item \textbf{Interior Node Creation}: Build the interior nodes level by level, bottom-up, grouping child nodes according to the specified node size
+%     \item \textbf{Tree Finalisation}: Write the complete tree to the index section of the file in level order, starting with the root node
+% \end{enumerate}
+
+% The resulting tree structure is determined by the number of features and the node size (branching factor), which is configurable but defaults to 16 in the current implementation.
+
+% \subsection{Spatial Query Algorithm}
+% \label{methodology:spatial_index:spatial_query_algorithm}
+
+% The query algorithm for retrieving features within a specified bounding box operates as follows:
+
+% \begin{enumerate}
+%     \item Begin at the root node of the R-tree
+%     \item For each entry in the current node, check if its bounding box intersects the query bounding box
+%     \item If the current node is an interior node and the bounding boxes intersect, recursively search the corresponding child node
+%     \item If the current node is a leaf node and the bounding boxes intersect, record the feature offset for retrieval
+%     \item After traversing all relevant paths, use the collected feature offsets to retrieve the matching features from the features section
+% \end{enumerate}
+
+% In an HTTP context, this process is optimised by:
+
+% \begin{itemize}
+%     \item Grouping adjacent node accesses to minimise the number of HTTP requests
+%     \item Using HTTP range requests to fetch only the required nodes rather than the entire index
+%     \item Implementing a buffering layer to cache previously read nodes and reduce redundant requests
+% \end{itemize}

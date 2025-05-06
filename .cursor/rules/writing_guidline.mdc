@@ -12,22 +12,23 @@ Provide a shared, discipline‑appropriate framework that ensures consistency, c
 Master’s and PhD students, research assistants, and staff collaborating on Geographic Information Science (GIS) research at TU Delft.
 
 ---
+## 3.1  Extended Document Structure (IMRaD+ for GIS Data Format Papers)
 
-## 3  Document Structure (IMRaD‑plus)
-| Section | Key Points | Typical Length |
-|---------|------------|----------------|
-| **Title Page** | Informative title (≤ 15 words), author list with ORCID IDs, institutional affiliation, word count | 1 page |
-| **Abstract** | Structured (Background, Methods, Results, Conclusions), ≤ 250 words, 3–6 keywords | ½ page |
-| **1 Introduction** | Context ➜ Gap ➜ Aim ➜ Overview of paper | ~15 % |
-| **2 Methods** | Study area, data sources, preprocessing, algorithms, software (incl. version), CRS, statistical tests; written in past tense | ~25 % |
-| **3 Results** | Present findings without interpretation; include tables, figures, statistics | ~25 % |
-| **4 Discussion** | Interpret findings, compare with literature, limitations, implications | ~20 % |
-| **5 Conclusion** | Concise answers to research questions + future work | ~5 % |
-| **Acknowledgements** | Funding (grant #), data providers, contributions | – |
-| **References** | APA 7th or journal‑specified style (use Zotero/Mendeley); all DOIs hyperlinked | – |
-| **Appendices / Supplementary** | Extended tables, code, large maps | – |
+| Section                                      | Key Points                                                                                        | Typical Length |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------- |
+| **Title Page**                               | Informative title (≤ 15 words), author list with ORCID IDs, institutional affiliation, word count | 1 page         |
+| **Abstract**                                 | Structured (Background, Methods, Results, Conclusions), ≤ 250 words, 3–6 keywords                 | ½ page         |
+| **1 Introduction**                           | 3D model context ➜ Gap in cloud optimisation ➜ Research aim ➜ Paper overview                      | \~15 %         |
+| **2 Theoretical Background & Related Works** | Summarise CityGML/CityJSON ecosystem, related serialisation work, optimisation needs              | \~20 %         |
+| **3 Methodology**                            | Encoding strategy, schema, indexing, HTTP range access, FlatBuffers structure                     | \~25 %         |
+| **4 Results and Analysis**                   | Benchmarks (e.g., PLATEAU), comparisons, web performance                                          | \~20 %         |
+| **5 Discussion**                             | Application scenarios, evaluation, format trade-offs                                              | \~10 %         |
+| **6 Future Work**                            | Language bindings, viewer support, alternative serialisation                                      | \~5 %          |
+| **7 Conclusion**                             | Clear, specific answers to research questions                                                     | 1–2 paragraphs |
+| **Appendix**                                 | Benchmark data, schema detail, tool list                                                          | –              |
 
 ---
+
 
 ## 4  Formatting & Layout
 * **Page setup:** A4, 2.5 cm margins, single‑column.
@@ -123,5 +124,95 @@ Clarity, conciseness, and precision take precedence over stylistic flourish. Wri
 
 ---
 
-*Version 1.1 – April 21, 2025*
+## 12  LaTeX-Specific Guidelines
 
+### 12.1  Recommended Template
+
+For MSc Geomatics students at TU Delft, we recommend the unofficial thesis template maintained by the 3D geoinformation group:
+
+> 📎 **Template:** [TU Delft MSc Geomatics Thesis Template (GitHub)](https://github.com/tudelft3d/msc_geomatics_thesis_template)
+> 📌 Based on the `KOMA-Script scrbook` class, with custom front/back matter, examples of figures, algorithms, references, and more.
+
+*Using this LaTeX template is not mandatory but highly encouraged to ensure a structured and professional appearance of your thesis.*
+
+### 12.2  Getting Started with LaTeX
+
+* Use [Overleaf's *Learn LaTeX in 30 Minutes*](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes) for a quick introduction.
+* For citation management, follow [Overleaf's *natbib* tutorial](https://www.overleaf.com/learn/latex/Bibliography_management_with_natbib).
+* A recommended BibTeX manager: [JabRef](http://jabref.sourceforge.net/).
+
+### 12.3  Referencing, Figures, and Tables
+
+* Use `\autoref{}` and `\nameref{}` for automatic and descriptive cross-referencing.
+* Place figures/tables close to their first reference; avoid forcing their location.
+* Always cite figures/tables in the main text (e.g., "Figure\~\ref{fig\:myplot} shows...").
+* Use `subfigure` or `subcaption` for side-by-side visuals.
+* Preferred formats: `.pdf` or `.svg` for vector figures.
+
+### 12.4  Equations
+
+* Display equations using numbered environments:
+
+  ```latex
+  \begin{equation}
+  \mathcal{V}_p = \{x \in \mathbb{R}^{d} \ | \ \|x-p\| \leq \|x-q\|, \ \forall q \in S \}
+  \end{equation}
+  ```
+* Define variables right after they appear.
+* Use inline math only for short expressions.
+
+### 12.5  Algorithms and Code
+
+* Use `algorithm2e` for pseudocode with numbered lines and comments.
+* Reference lines using `\nllabel{}` and `\ref{}`.
+* Use the `listings` package for XML, JSON, or code snippets. Avoid long listings in the main text—link to GitHub instead.
+
+### 12.6  Vector and PDF Figures
+
+* Prefer vector graphics exported as `.pdf`.
+* Use tools like Adobe Illustrator or Ipe.
+* Embed as:
+
+  ```latex
+  \includegraphics[width=0.8\linewidth]{figs/myfig.pdf}
+  ```
+
+### 12.7  Acronyms and Abbreviations
+
+* Use the `acronym` package. Add acronyms to `front/acronyms.tex`.
+* First use: "Geographic Information System (GIS)" ➜ then `\ac{GIS}`.
+
+### 12.8  Annotations and TODOs
+
+* Use `todonotes` package to indicate missing content (e.g., `\todo{add benchmark figure}`).
+* TODOs can be listed at the beginning for overview.
+
+### 12.9  Miscellaneous LaTeX Tips
+
+* Use:
+
+  * `-` for hyphen: "multi-format"
+  * `--` for range: "2000--2020"
+  * `---` for interruption: "this format---unlike others---supports..."
+* Abbreviations: `\ie`, `\eg`, `\etc` (spacing automatically handled)
+* Use `\emph{}` rather than underlining
+* Configure `booktabs` for cleaner tables.
+* Organise plots with Python/Matplotlib and embed PDFs into LaTeX.
+
+### 12.10  Label and Citation Naming Convention
+
+#### Label Convention
+
+Use the pattern `{chapter acronym}:{section}:{subsection}` to generate unique and interpretable labels.
+
+* Example: for a label in chapter "related work", section "FlatBuffers", subsection "Supported languages" ➜ `rw:flat_buffers:supported_languages`
+
+#### Citation Key Convention
+
+Use `{author}_{year}` as the citation key in your `.bib` file:
+
+* Example: A paper by Hugo Ledoux from 2024 ➜ `ledoux_2024`
+
+This promotes consistency and traceability throughout long documents.
+
+*Version 1.1 – April 21, 2025*
