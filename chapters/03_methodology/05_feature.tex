@@ -83,10 +83,10 @@ Geometry in FlatCityBuf follows CityJSON's boundary representation (B-rep) model
 
 A key challenge in adapting CityJSON's recursive boundary representation to FlatBuffers is that FlatBuffers does not support nested arrays. FlatCityBuf addresses this by implementing a dimensional hierarchy encoded as parallel flattened arrays:
 
+\todo{replace with proper figure}
 \begin{figure}[h]
   \centering
-  \todo{add figure}
-  % \includegraphics[width=0.8\textwidth]{figs/methodology/boundary_encoding.png}
+  \includegraphics[width=0.8\textwidth]{figs/methodology/attribute_index.png}
   \caption{Hierarchical encoding of boundary representation using flattened arrays}
   \label{fig:methodology:boundary_encoding}
 \end{figure}
@@ -242,10 +242,10 @@ Attributes in FlatCityBuf are encoded as binary data with a schema defined throu
 
 By encoding attributes as type-specific binary values with a corresponding schema, FlatCityBuf achieves significant storage efficiency compared to self-describing formats like JSON. The column-based approach also aligns with common database practices, facilitating integration with existing GIS and database systems. The figure below highlights the binary encoding process for different attribute types, demonstrating how the schema-driven approach reduces storage requirements while maintaining full data fidelity.
 
-\todo{add figure}
+\todo{replace with proper figure}
 \begin{figure}[h]
   \centering
-  % \includegraphics[width=0.8\textwidth]{figures/attribute_encoding.png}
+  \includegraphics[width=0.8\textwidth]{figs/methodology/attribute_index.png}
   \caption{Attribute Encoding Process}
   \label{methodology:feature_encoding:attribute_encoding:figure}
 \end{figure}

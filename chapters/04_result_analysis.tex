@@ -1,0 +1,127 @@
+\chapter{Result}
+\label{chp:result}
+
+\section{Overview}
+\label{result:overview}
+
+This chapter presents the results of comprehensive evaluations conducted to assess the performance and suitability of the proposed FlatCitybuf format against existing CityJSON encoding approaches. The evaluation followed three complementary methodologies to provide a holistic understanding of the format's capabilities.
+
+
+
+\subsection{Evaluation Methodology}
+\label{result:overview:evaluation_methodology}
+
+The assessment framework employed three distinct methodological approaches:
+
+\subsubsection{File Size Comparison}
+\label{result:overview:file_size_comparison}
+
+
+
+\subsubsection{Local Benchmark Performance}
+\label{result:overview:local_benchmark_performance}
+
+Performance benchmarks were conducted on a laptop environment to evaluate the computational efficiency of the encoding format. These benchmarks measured:
+\begin{itemize}
+  \item Read operation time for files of varying sizes
+  \item Memory consumption during processing operations
+  \item Storage efficiency through file size comparisons
+\end{itemize}
+
+The benchmark utilised the datasets from \citet{ledoux_2024} and additional datasets from PLATEAU, providing direct comparability with previous studies on CityJSON and CityJSONSeq formats. All operations were conducted multiple times to ensure statistical reliability, with warm-up iterations to eliminate caching effects.
+
+\subsubsection{Web-Based Performance}
+\label{result:overview:web_based_performance}
+
+To assess real-world application performance in cloud environments, web-based benchmarks were implemented using load testing frameworks to measure:
+\begin{itemize}
+  \item HTTP request-response cycle duration
+  \item Effective throughput under various concurrent load scenarios
+  \item Bandwidth utilisation, particularly for partial data retrieval operations
+  \item Client-side rendering performance with progressive data loading
+  \item Performance of HTTP Range requests for spatial and attribute queries
+\end{itemize}
+
+These measurements provide critical insights into the cloud optimisation benefits of the format, particularly regarding selective data retrieval and progressive rendering capabilities.
+
+\subsubsection{System Architecture Analysis}
+\label{result:overview:system_architecture_analysis}
+
+A comparative analysis of system architectures evaluated how the proposed format affects:
+\begin{itemize}
+  \item Architectural complexity reduction potential
+  \item Server-side resource requirements
+  \item Client-side processing overhead
+  \item Interoperability with existing GIS ecosystems
+  \item Scalability characteristics for large datasets
+\end{itemize}
+
+This qualitative and quantitative analysis examines how the encoding format influences the overall system design, particularly focusing on cloud-based deployments and web mapping applications.
+
+The following sections present detailed results from each evaluation approach, followed by integrated analyses that synthesise findings across methodologies to provide comprehensive insights into the performance characteristics of the FlatCitybuf format.
+
+
+\section{File Size Comparison}
+\label{result:file_size_comparison}
+
+
+\subsubsection{Dataset}
+\label{result:overview:dataset}
+
+\subsection{Filesize comparison}
+\label{result:overview:filesize_comparison}
+
+
+
+\begin{table*}
+  \centering
+  \begin{threeparttable}
+  \caption{The datasets used for the benchmark. }
+  \label{tab:dataset_comparison}
+  \small
+  \begin{tabular}
+    {@{}lcccccrrrcrrr@{}}\toprule
+    &&  \multicolumn{2}{c}{\textbf{dataset}} && \multicolumn{3}{c}{\textbf{size of file}} && \multicolumn{3}{c}{\textbf{vertices}}   \\
+    \cmidrule{3-4} \cmidrule{6-8} \cmidrule{10-12}
+     && CityObjects &  app.\footnotesize ${}^{\text{(a)}}$ && CityJSON & CityJSONSeq & compr.\footnotesize ${}^{\text{(b)}}$ && total & largest\footnotesize ${}^{\text{(c)}}$ & shared\footnotesize ${}^{\text{(d)}}$ \\
+    \midrule
+    \textbf{3DBAG}          && \qty{1110} bldgs    &         && \qty{6.7}{\mega\byte} & \qty{5.9}{\mega\byte} & 12\%  &&     \num{82509} &    \num{4112} &  0.1\% \\
+    \textbf{3DBV}           && \qty{71634} misc   &         && \qty{378}{\mega\byte} & \qty{317}{\mega\byte} & 16\%  &&   \num{4110319} &  \num{116670} & 21.0\% \\
+    \textbf{Helsinki}       && \qty{77231} bldgs   &         && \qty{572}{\mega\byte} & \qty{412}{\mega\byte} & 28\%  &&   \num{3038576} &    \num{2202} &  0.0\% \\
+    \textbf{Helsinki\_tex}  && \qty{77231} bldgs   & tex     && \qty{713}{\mega\byte} & \qty{644}{\mega\byte} & 10\%  &&   \num{3038576} &    \num{2202} &  0.0\% \\
+    \textbf{Ingolstadt}     && \qty{55} bldgs      &         && \qty{4.8}{\mega\byte} & \qty{3.8}{\mega\byte} & 25\%  &&     \num{87972} &   \num{12800} &  0.0\% \\
+    \textbf{Montréal}       && \qty{294} bldgs     & tex     && \qty{5.4}{\mega\byte} & \qty{4.6}{\mega\byte} & 15\%  &&     \num{31585} &    \num{3393} &  2.0\% \\
+    \textbf{NYC}            && \qty{23777} bldgs   &         && \qty{105}{\mega\byte} &  \qty{95}{\mega\byte} & 10\%  &&   \num{1035804} &    \num{2608} &  0.8\% \\
+    \textbf{Railway}        && \qty{50} misc      & tex+mat && \qty{4.3}{\mega\byte} & \qty{4.0}{\mega\byte} &  8\%  &&     \num{73554} &   \num{14966} &  0.4\% \\
+    \textbf{Rotterdam}      && \qty{853} bldgs     & tex     && \qty{2.6}{\mega\byte} & \qty{2.7}{\mega\byte} & -4\%  &&     \num{22246} &     \num{631} & 20.0\% \\
+    \textbf{Vienna}         && \qty{307} bldgs     &         && \qty{5.4}{\mega\byte} & \qty{4.8}{\mega\byte} & 11\%  &&     \num{47220} &    \num{2025} &  0.0\% \\
+    \textbf{Zürich}         && \qty{52834} bldgs   &         && \qty{279}{\mega\byte} & \qty{247}{\mega\byte} & 11\%  &&   \num{3472989} &    \num{4069} &  2.6\% \\
+    \bottomrule
+  \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+      \item ${}^{\text{(a)}}$ appearance: `tex' is textures stored; `mat' is material stored
+      \item ${}^{\text{(b)}}$ compressi{}on factor is $\frac{size(CityJSON) - size(CityJSONSeq)}{size(CityJSON)}$
+      \item ${}^{\text{(c)}}$ number of vertices in the largest feature of the stream
+      \item ${}^{\text{(d)}}$ percentage of vertices that are used to represent different city objects
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table*}
+
+
+\section{Benchmark on Local Environment}
+\label{result:benchmark_on_local_environment}
+
+
+
+\subsection{Benchmark over the web}
+\label{result:benchmark_on_local_environment:benchmark_over_the_web}
+
+\subsection{System architecture review with proposed method and existing method}
+\label{result:overview:system_architecture_review_with_proposed_method_and_existing_method}
+
+\subsection{Performance evaluation}
+\label{result:overview:performance_evaluation}
+
+\subsection{Case study}
+\label{result:overview:case_study}
