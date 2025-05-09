@@ -112,7 +112,67 @@ The following sections present detailed results from each evaluation approach, f
 \section{Benchmark on Local Environment}
 \label{result:benchmark_on_local_environment}
 
+This section details the performance evaluation of the proposed FlatCitybuf format in a controlled local environment, focusing on read operations, memory consumption, and processing efficiency.
 
+\subsection{Test Environment}
+\label{result:benchmark_on_local_environment:test_environment}
+
+All benchmarks were conducted on a consistent hardware and software configuration to ensure reliable and reproducible results:
+
+\begin{itemize}
+  \item \textbf{Hardware:} Apple MacBook Pro with M1 Max chip, 32GB unified memory
+  \item \textbf{Operating System:} macOS Sequoia 15.4
+  \item \textbf{Filesystem:} APFS (Apple File System)
+  \item \textbf{Disk Configuration:} 1TB SSD with approximately 500GB free space
+  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds (-O3 optimisation)
+\end{itemize}
+
+To minimise environmental variables affecting the measurements, all tests were performed with:
+\begin{itemize}
+  \item Minimal background processes running
+  \item No active network connections (except where required for web benchmarks)
+  \item Consistent thermal conditions (ambient temperature and system cooling)
+  \item Power connected to eliminate battery state influence
+\end{itemize}
+
+\subsection{Benchmark Methodology}
+\label{result:benchmark_on_local_environment:benchmark_methodology}
+
+The benchmark procedure followed a systematic approach to ensure measurement accuracy:
+
+\begin{itemize}
+  \item \textbf{Warm-up Phase:} Prior to measurement, each format underwent a 5-second warm-up period with repeated operations to ensure CPU caches were properly primed and JIT optimisations were applied
+
+  \item \textbf{Measurement Iterations:} Each operation was executed 100 times consecutively, with measurements recorded for each iteration
+
+  \item \textbf{Statistical Processing:} Measurements were processed to obtain mean values, standard deviations, and confidence intervals (95\%)
+
+  \item \textbf{Process Isolation:} Each format test was run in a separate process to prevent cross-contamination of memory or cache state
+
+  \item \textbf{File System Cache Control:} Between format tests, file system caches were cleared to ensure fair comparison of I/O performance
+\end{itemize}
+
+\subsection{Measurement Parameters}
+\label{result:benchmark_on_local_environment:measurement_parameters}
+
+The benchmark captured several key performance indicators:
+
+\begin{itemize}
+  \item \textbf{Read Time:} The duration required to deserialise the file and access the complete CityJSON structure, measured in milliseconds
+
+  \item \textbf{Memory Consumption:} Peak Resident Set Size (RSS) during file processing, indicating the maximum memory footprint of the operation
+
+  \item \textbf{CPU Utilisation:} Percentage of CPU resources consumed during the operation, measured as an average across the process lifetime
+
+  \item \textbf{Storage Efficiency:} File size comparison between formats, measured in megabytes and percentage reduction relative to the original CityJSON format
+
+  \item \textbf{Partial Data Access:} For formats supporting it, the time required to access specific city objects without loading the entire dataset
+\end{itemize}
+
+For each dataset, these parameters were measured across all encoding formats (CityJSON, CityJSONSeq, CBOR, BSON, and FlatCitybuf) to enable direct comparison. The following section presents the results of these measurements and analyses their implications for format performance.
+
+\subsection{Read Performance Results}
+\label{result:benchmark_on_local_environment:read_performance_results}
 
 \subsection{Benchmark over the web}
 \label{result:benchmark_on_local_environment:benchmark_over_the_web}

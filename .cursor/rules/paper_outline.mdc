@@ -71,3 +71,104 @@ alwaysApply: true
   - List of used tools
   - Details of benchmark results
   - FlatBuffers schema detail
+
+# Directory structure
+.
+├── appendices
+│   ├── data.tex
+│   ├── flatcitybuf_schema.tex
+│   ├── reproducibility.tex
+│   └── someumldia.tex
+├── back
+│   └── colophon.tex
+├── chapters
+│   ├── 01_introduction.tex
+│   ├── 02_related_work_theoretical_bg
+│   │   ├── flatbuffers.tex
+│   │   ├── related_work.tex
+│   │   └── theoretical_bg.tex
+│   ├── 03_methodology
+│   │   ├── 01_overview.tex
+│   │   ├── 02_magic_bytes_header.tex
+│   │   ├── 03_spatial_index.tex
+│   │   ├── 04_attribute_index.tex
+│   │   ├── 05_feature.tex
+│   │   └── 06_http_range_request.tex
+│   ├── 04_result_analysis.tex
+│   ├── 05_discussion.tex
+│   ├── 06_future_work.tex
+│   └── 07_conclusion.tex
+├── cover
+│   ├── cover_back.afdesign
+│   ├── cover_back.pdf
+│   ├── cover_back.psd
+│   ├── cover_front.afdesign
+│   ├── cover_front.pdf
+│   ├── cover_front.psd
+│   ├── README.txt
+│   ├── TU_Delft_logo_Black.eps
+│   └── TU_Delft_logo_White.eps
+├── figs
+│   └── methodology
+│       ├── attribute_index.png
+│       ├── drawio
+│       │   └── file_stucture.drawio
+│       ├── file_structure_rtree.png
+│       ├── file_structure.png
+│       ├── packed_rtree.png
+│       ├── rtree_structure.png
+│       └── web_prototype.png
+├── front
+│   ├── abstract.tex
+│   ├── acknow.tex
+│   ├── acronyms.tex
+│   ├── contents.tex
+│   └── titleback.tex
+├── LICENSE.md
+├── MSc_thesis_p2
+│   ├── figures
+│   │   ├── cloud-optimised_formats
+│   │   │   └── protobuf_workflow.png
+│   │   └── methodology
+│   │       ├── file_structure_rtree.png
+│   │       ├── file_structure.png
+│   │       ├── image.png
+│   │       ├── packed_rtree.png
+│   │       ├── rtree_structure.png
+│   │       └── web_prototype.png
+│   ├── main.tex
+│   ├── presentation
+│   │   ├── figures
+│   │   │   ├── cityjson.png
+│   │   │   ├── cityjsonseq.png
+│   │   │   ├── dataformat_comparison.png
+│   │   │   ├── file_structure_rtree.png
+│   │   │   ├── file_structure.png
+│   │   │   ├── icon.png
+│   │   │   ├── packed_rtree.png
+│   │   │   ├── performance_comparison.png
+│   │   │   └── ravi_work.png
+│   │   ├── presentation.md
+│   │   └── theme.css
+│   ├── references.bib
+│   └── sections
+│       ├── cloud-optimised_formats.tex
+│       ├── footnotes.tex
+│       ├── introduction.tex
+│       ├── methodology.tex
+│       ├── related_work.tex
+│       ├── research_questions.tex
+│       ├── time_planning.tex
+│       └── tools_and_datasets.tex
+├── myreferences.bib
+├── mysettings.tex
+├── plots
+│   ├── createplot.py
+│   ├── delft.csv
+│   └── myplot.pdf
+├── README.md
+├── thesis.loa
+├── thesis.out
+├── thesis.pdf
+├── thesis.synctex.gz
+└── thesis.tex
