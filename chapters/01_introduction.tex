@@ -49,7 +49,7 @@ The next chapter (\nameref{chap:rw}), is on page~\pageref{chap:rw}.
 Figure~\ref{fig:sometriangles} is a simple figure.
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\linewidth]{figs/sometriangles.png}
+  % \includegraphics[width=0.8\linewidth]{figs/sometriangles.png}
   \caption{One nice figure}%
 \label{fig:sometriangles}
 \end{figure}
@@ -65,13 +65,13 @@ As shown in \autoref{fig:sidebyside},
   \centering
   \begin{subfigure}[b]{0.3\linewidth}
     \centering
-    \includegraphics[angle=90,width=\linewidth]{figs/sometriangles.png}
+    % \includegraphics[angle=90,width=\linewidth]{figs/sometriangles.png}
     \caption{}\label{fig:sidebyside:1}
   \end{subfigure}%
   \qquad %-- that adds some space between th 2 figures
   \begin{subfigure}[b]{0.6\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{figs/lod1.png}
+    % \includegraphics[width=\linewidth]{figs/lod1.png}
     \caption{}\label{fig:sidebyside:2}
   \end{subfigure}%
   \caption[Shortened title for the list of figures]{Two figures side-by-side. (a) A triangulation of 2 polygons. (b) Something not related at all.}%
@@ -91,19 +91,19 @@ You include a PDF the same way as you do for a PNG, see \autoref{fig:pdffig},
   \centering
   \begin{subfigure}[b]{0.28\linewidth}
     \centering
-    \includegraphics[page=1,width=\linewidth]{figs/tricat.pdf}
+    % \includegraphics[page=1,width=\linewidth]{figs/tricat.pdf}
     \caption{2 polygons}\label{fig:pdffig:1}
   \end{subfigure}%
   \qquad %-- that adds some space between th 2 figures
   \begin{subfigure}[b]{0.28\linewidth}
     \centering
-    \includegraphics[page=2,width=\linewidth]{figs/tricat.pdf}
+    % \includegraphics[page=2,width=\linewidth]{figs/tricat.pdf}
     \caption{CDT }\label{fig:pdffig:2}
   \end{subfigure}%
   \qquad %-- that adds some space between th 2 figures
   \begin{subfigure}[b]{0.28\linewidth}
     \centering
-    \includegraphics[page=3,width=\linewidth]{figs/tricat.pdf}
+    % \includegraphics[page=3,width=\linewidth]{figs/tricat.pdf}
     \caption{with colours}\label{fig:pdffig:3}
   \end{subfigure}%
   \caption{Three PDF figures.}%
