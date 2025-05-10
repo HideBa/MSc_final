@@ -17,9 +17,24 @@ This research methodology addresses these limitations through three interconnect
 
 \begin{enumerate}
     \item Development of a binary encoding strategy using FlatBuffers that preserves semantic richness while achieving faster read performance
-    \item Implementation of dual indexing mechanisms—spatial (Packed Hilbert R-tree) and attribute-based (Static B+tree)—that accelerate query performance
+    \item Implementation of dual indexing mechanisms—spatial (\ac{s+tree}) and attribute-based (\ac{s+tree})—that accelerate query performance
     \item Integration of cloud-native data access patterns through HTTP Range Requests, enabling partial data retrieval
 \end{enumerate}
+
+\subsection{Outcomes of the Methodology}
+\label{methodology:overview:outcomes}
+
+Before delving into the methodological details, it is important to highlight the tangible research outcomes produced through this work:
+
+\begin{itemize}
+    \item \textbf{Data format specification}: FlatCityBuf, a cloud-optimised binary format for 3D city models that maintains semantic compatibility with CityJSON while enabling efficient cloud-based access patterns.
+
+    \item \textbf{Reference implementation}: A comprehensive Rust library for encoding, decoding, and querying FlatCityBuf files, accompanied by command-line interface (CLI) tools for conversion and validation.
+
+    \item \textbf{Web demonstration}: A web-based prototype application that showcases the partial data retrieval capabilities of FlatCityBuf through HTTP range requests, demonstrating practical performance improvements in real-world scenarios.
+\end{itemize}
+
+These outcomes collectively address the research objectives by providing both a theoretical framework and practical implementations that validate the approach to cloud-optimised 3D city model storage and retrieval.
 
 \subsection{File Structure Overview}
 \label{methodology:overview:file_structure}
@@ -27,11 +42,11 @@ This research methodology addresses these limitations through three interconnect
 The FlatCityBuf format implements a structured binary encoding with five sequentially arranged components:
 
 \begin{itemize}
-    \item \textbf{Magic bytes}: Eight-byte identifier ('FCB\\0') for format validation
+    \item \textbf{Magic bytes}: Eight-byte identifier ('F', 'C', 'B', '0', '1', '0', '0', '0') for format validation
     \item \textbf{Header section}: Contains metadata, schema definitions, and CityJSON properties
     \item \textbf{Spatial index}: Implements a Packed Hilbert R-tree for efficient geospatial queries
-    \item \textbf{Attribute index}: Utilises a Static B+tree for accelerated attribute-based filtering
-    \item \textbf{Features section}: Stores city objects encoded as FlatBuffers tables
+    \item \textbf{Attribute index}: Utilises a \ac{s+tree} for accelerated attribute-based filtering
+    \item \textbf{Features section}: Stores \ac{cityfeature} encoded as FlatBuffers tables
 \end{itemize}
 
 \begin{figure}[h]

@@ -25,18 +25,18 @@ Notably absent are pattern-matching operations such as the SQL \texttt{LIKE} ope
 The decision to exclude complex text search operations like \texttt{LIKE} was further justified by:
 
 \begin{itemize}
-    \item \textbf{Increased Index Size}: Full text indexing typically increases index size by 50-100\% \citep{leis_2016}.
-    \item \textbf{Limited Use Cases}: Analysis of typical GIS queries showed that pattern matching is required in less than 5\% of typical queries for 3D city models \citep{van_dongen_2022}.
+    \item \textbf{Increased Index Size}: Full text indexing typically increases index size by 50-100\% \citep{leis_2016}. \todo{add source}
+    \item \textbf{Limited Use Cases}: Analysis of typical GIS queries showed that pattern matching is required in less than 5\% of typical queries for 3D city models \citep{van_dongen_2022}. \todo{add source}
     \item \textbf{HTTP Overhead}: Complex pattern matching over HTTP would require transferring larger index portions, potentially negating the benefits of cloud optimization.
     \item \textbf{Client-Side Fallback}: These operations can be efficiently implemented as post-filtering steps after retrieving the relevant features based on indexed queries.
 \end{itemize}
 
 The system prioritises these core query types while ensuring compatibility with remote access patterns through HTTP Range Requests. This focused approach aligns with FlatCityBuf's primary goal as an efficient storage and retrieval format rather than a comprehensive query processing system.
 
-\subsection{Static B+tree Design and Modifications}
+\subsection{\texorpdfstring{\ac{s+tree}}{S+tree} Design and Modifications}
 \label{methodology:attribute_index:static_btree_design}
 
-After evaluating alternatives, a Static B+tree (S+tree) with significant modifications was adopted for FlatCityBuf's attribute indexing. This decision was based on the following considerations:
+After evaluating alternatives, a \ac{s+tree} with significant modifications was adopted for FlatCityBuf's attribute indexing. This decision was based on the following considerations:
 
 \begin{itemize}
     \item \textbf{I/O Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common block sizes (4KB), offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of I/O operations and network roundtrips compared to binary search, making it ideal for HTTP Range Requests where each roundtrip incurs substantial latency.
@@ -44,18 +44,18 @@ After evaluating alternatives, a Static B+tree (S+tree) with significant modific
     \item \textbf{Query Versatility}: Unlike specialized data structures such as hash tables (optimized for exact matches) or sorted arrays (better for range queries), the B+tree structure efficiently supports both exact match and range queries without compromising performance in either case. This versatility makes it well-suited for the diverse query patterns common in 3D city model applications.
 \end{itemize}
 
-\subsubsection{Static B+tree Characteristics}
+\subsubsection{\ac{s+tree} Characteristics}
 \label{methodology:attribute_index:static_btree_characteristics}
 
-A Static B+tree differs from a traditional B+tree in several important aspects:
+A \ac{s+tree} differs from a traditional B+tree in several important aspects:
 
 \begin{itemize}
     \item \textbf{Immutability}: Once constructed, the tree structure remains fixed, eliminating the need for complex rebalancing operations.
-    
+
     \item \textbf{Perfect Node Fill}: All nodes except possibly the rightmost nodes at each level are filled to capacity, maximizing space efficiency.
-    
+
     \item \textbf{Predictable Structure}: The tree shape is determined solely by the number of elements and the node size, making navigation more efficient.
-    
+
     \item \textbf{Bulk Construction}: The tree is built bottom-up in a single pass from sorted data, rather than through incremental insertions.
 \end{itemize}
 
@@ -67,9 +67,9 @@ The original S+tree algorithm as described by \citet{static_b_trees} provides an
     \item \textbf{Multi-type Support}: The index structure was extended to handle various attribute data types commonly found in 3D city models, including numeric types (integers, floating-point), string values, boolean flags, and temporal data (dates, timestamps). Each type implements specialized serialization and comparison logic while maintaining a consistent interface for the search algorithm, enabling unified access patterns regardless of the underlying data type.
 
     \item \textbf{Explicit Node Offsets}: While the original S+tree uses mathematical calculations to determine node positions, FlatCityBuf's implementation stores explicit byte offsets to child nodes. This modification simplifies the implementation, improves robustness against potential errors, and enables more flexible memory layouts without compromising performance. The small additional storage requirement is offset by the implementation and maintenance benefits.
-    
+
     \item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimizes the storage overhead for duplicate keys while maintaining efficient access.
-    
+
     \item \textbf{Node Alignment}: Nodes are aligned to 4KB boundaries to match typical file system and HTTP cache patterns, improving I/O efficiency in cloud environments.
 \end{itemize}
 
@@ -87,7 +87,7 @@ The attribute indexing system in FlatCityBuf is implemented as a binary encoded 
     \item \textbf{Payload Section}: Stores arrays of feature offsets for duplicate key values.
 \end{enumerate}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figs/methodology/attribute_index.png}
   \caption{Attribute index implementation in FlatCityBuf}
@@ -98,9 +98,9 @@ The B+tree structure is organized as follows:
 
 \begin{itemize}
     \item \textbf{Internal Nodes}: Each internal node contains a sequence of key-pointer pairs, where keys are attribute values and pointers are byte offsets to child nodes. The number of pairs per node is determined by the branching factor.
-    
+
     \item \textbf{Leaf Nodes}: Leaf nodes contain key-offset pairs, where keys are attribute values and offsets either point directly to features or to the payload section for duplicate keys.
-    
+
     \item \textbf{Payload Section}: A contiguous area storing arrays of feature offsets for duplicate key values. Each array begins with a 32-bit count followed by the corresponding feature offsets.
 \end{itemize}
 

@@ -72,12 +72,12 @@ This layout significantly improves memory access patterns. When the array is acc
 
 The Eytzinger layout can provide up to 4× performance improvement over a standard binary search implementation due to better utilization of the CPU cache hierarchy, despite having the same algorithmic time complexity. This makes it particularly valuable for applications where search operations need to be performed repeatedly on static datasets.
 
-\section{Static B+Tree}
+\section{\texorpdfstring{\ac{s+tree}}{S+tree}}
 \label{tb:static_btree}
 
 While the Eytzinger layout improves cache utilization for binary search, the number of memory read operations remains proportional to the height of the tree—$\log_2(n)$ for $n$ elements. This is still suboptimal for large datasets, especially when the access pattern involves disk I/O or remote data access \citep{static_b_trees}.
 
-The Static B+Tree (S+Tree) approach addresses this limitation by fetching multiple keys at once instead of single elements. This aligns with modern hardware characteristics where:
+The \ac{s+tree} approach addresses this limitation by fetching multiple keys at once instead of single elements. This aligns with modern hardware characteristics where:
 
 \begin{itemize}
     \item The latency of fetching a single byte is comparable to fetching an entire cache line (64 bytes)
@@ -96,6 +96,6 @@ Unlike traditional B+Trees that use explicit pointers between nodes, the Static 
     \item Child positions follow a predictable pattern based on the block size
 \end{itemize}
 
-For a Static B+Tree with block size $B$, a node with index $k$ has its children at indices calculated by a simple formula: $\text{child}_i(k) = k \cdot (B+1) + i + 1$ for $i \in [0, B]$ \citep{static_b_trees}. This eliminates the need to store and fetch explicit pointer values, further reducing memory usage and improving cache efficiency.
+For a \ac{s+tree} with block size $B$, a node with index $k$ has its children at indices calculated by a simple formula: $\text{child}_i(k) = k \cdot (B+1) + i + 1$ for $i \in [0, B]$ \citep{static_b_trees}. This eliminates the need to store and fetch explicit pointer values, further reducing memory usage and improving cache efficiency.
 
 The S+Tree layout achieves up to 15× performance improvement over standard binary search implementations while requiring only 6-7\% additional memory \citep{static_b_trees}. This makes it particularly valuable for applications that perform frequent searches on large, relatively static datasets, especially when accessed over high-latency connections such as disk, network, or HTTP.

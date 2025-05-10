@@ -8,7 +8,7 @@ Efficient spatial querying is a critical requirement for 3D city model formats, 
 \subsection{Design Attribution}
 \label{methodology:spatial_index:attribution}
 
-The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{flatgeobuf_spatial_index}. Both the conceptual design and implementation details were sourced from FlatGeoBuf's approach as documented in \citet{horance_2022} and the FlatGeoBuf GitHub repository. This includes the Hilbert curve ordering strategy, node structure, tree construction methodology, and query algorithms.
+The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{horance_2022_detail}. Both the conceptual design and implementation details were sourced from FlatGeoBuf's approach as documented in \citet{horance_2022_overview} and the FlatGeoBuf GitHub repository. This includes the Hilbert curve ordering strategy, node structure, tree construction methodology, and query algorithms.
 
 It is important to explicitly acknowledge that the spatial indexing code in FlatCityBuf is a direct adaptation of FlatGeoBuf's implementation, with modifications primarily focused on integration with the 3D city model data structure rather than fundamental algorithmic changes. The original implementation by Björn Harrtell and other FlatGeoBuf contributors \citep{flatgeobuf} provided an excellent foundation that has been proven effective for cloud-optimized geospatial data.
 
@@ -32,7 +32,7 @@ These requirements led to the adoption of a packed R-tree structure, specificall
 \subsection{Packed Hilbert R-tree Implementation}
 \label{methodology:spatial_index:packed_rtree_implementation}
 
-The spatial index in FlatCityBuf implements a packed R-tree structure with Hilbert curve ordering, following the implementation pattern established by FlatGeoBuf \citep{williams2022implementers}. This approach offers several advantages over traditional R-tree variants:
+The spatial index in FlatCityBuf implements a packed R-tree structure with Hilbert curve ordering, following the implementation pattern established by FlatGeoBuf \citep{horance_2022_detail}. This approach offers several advantages over traditional R-tree variants:
 
 \begin{itemize}
     \item \textbf{Static Structure}: The tree is built once and remains immutable, eliminating the need for complex insertion and rebalancing algorithms
@@ -63,7 +63,7 @@ Although FlatCityBuf is designed for 3D city models, the spatial indexing mechan
     \item \textbf{Implementation Efficiency}: 2D indexing is computationally simpler and more storage-efficient than 3D alternatives
 \end{itemize}
 
-For implementation, the centroid of each CityFeature's vertices is calculated using only X and Y coordinates, and this 2D centroid is used for Hilbert encoding and spatial indexing. This approach provides a reasonable balance between query performance and implementation complexity for most urban modelling use cases.
+For implementation, the centroid of each \ac{cityfeature}'s vertices is calculated using only X and Y coordinates, and this 2D centroid is used for Hilbert encoding and spatial indexing. This approach provides a reasonable balance between query performance and implementation complexity for most urban modelling use cases.
 
 % \subsection{Index Construction Process}
 % \label{methodology:spatial_index:index_construction}

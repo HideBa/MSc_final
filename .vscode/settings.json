@@ -1,0 +1,99 @@
+{
+  // -------------------------------
+  //  VS Code ‑‑ LaTeX‑Workshop
+  // -------------------------------
+  // Ensure MacTeX binaries are on PATH for the integrated terminal
+  "terminal.integrated.env.osx": {
+    "PATH": "/Library/TeX/texbin:${env:PATH}"
+  },
+  // ========== BUILD TOOLS ==========
+  "latex-workshop.latex.tools": [
+    {
+      // latexmk does the heavy lifting (pdflatex + bibtex/biber + reruns)
+      "name": "latexmk (pdf)",
+      "command": "latexmk",
+      "args": [
+        "-pdf", // build PDF with pdflatex
+        "-synctex=1", // enable SyncTeX
+        "-file-line-error", // rich error reporting
+        "-interaction=nonstopmode",
+        "-shell-escape", // comment out if you never use \write18
+        "-outdir=%OUTDIR%", // keep aux files outside source dir
+        "%DOC%"
+      ]
+    },
+    {
+      // Optional manual BibTeX target (rarely needed; latexmk handles it)
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": [
+        "%DOCFILE%"
+      ]
+    }
+  ],
+  // ========== RECIPES ==========
+  "latex-workshop.latex.recipes": [
+    {
+      // One‑click build
+      "name": "latexmk ➜ PDF",
+      "tools": [
+        "latexmk (pdf)"
+      ]
+    },
+    {
+      // Force a full clean build (handy when bibliography or glossaries mis‑behave)
+      "name": "latexmk ➜ clean & build",
+      "tools": [
+        "latexmk -C", // built‑in clean target
+        "latexmk (pdf)"
+      ]
+    }
+  ],
+  // ========== CLEAN AUXILIARY FILES ==========
+  "latex-workshop.latex.clean.enabled": true,
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.bcf",
+    "*.blg",
+    "*.fdb_latexmk",
+    "*.fls",
+    "*.log",
+    "*.nav",
+    "*.out",
+    "*.run.xml",
+    "*.synctex.gz",
+    "*.toc"
+  ],
+  // ========== PDF VIEWER & SYNC ==========
+  // External viewer (Skim) with forward/inverse search
+  "latex-workshop.view.pdf.viewer": "external",
+  "latex-workshop.view.pdf.external.viewer.command": "open",
+  "latex-workshop.view.pdf.external.viewer.args": [
+    "-a",
+    "Skim",
+    "%PDF%"
+  ],
+  // If you prefer VS Code’s built‑in tab viewer, replace the two
+  // keys above with:
+  // "latex-workshop.view.pdf.viewer": "tab",
+  // Turn on synctex‑js for instant forward/inverse search in tab mode
+  "latex-workshop.synctex.synctexjs.enabled": true,
+  // ========== INTELLISENSE & FORMATTING ==========
+  "latex-workshop.intellisense.package.enabled": true,
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latexindent.path": "latexindent", // assumes latexindent is on PATH
+  "latex-workshop.latexindent.args": [
+    "-l",
+    "-m",
+    "-w"
+  ], // format .tex on save
+  // ========== QUICKFIX ==========
+  "latex-workshop.message.error.show": true,
+  "latex-workshop.chktex.enabled": true,
+  // Optional: hide aux directory from Explorer
+  "files.watcherExclude": {
+    "**/.aux/**": true,
+    "**/.out/**": true
+  }
+}

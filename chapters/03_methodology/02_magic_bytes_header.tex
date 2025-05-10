@@ -4,8 +4,8 @@
 The magic bytes section comprises the first eight bytes of the file:
 \todo{check detail again}
 \begin{itemize}
-  \item The first four bytes contain the ASCII sequence 'FCB\\0' (0x46 0x43 0x42 0x00) serving as an immediate identifier
-  \item The remaining four bytes follow a pattern similar to FlatGeoBuf \citep{flatgeobuf}, with byte 5-6 containing the major version (currently 01), followed by ASCII 'FB' (0x46 0x42) representing 'FlatBuffers', and byte 8 containing patch version (currently 00)
+  \item The first three bytes contain the ASCII sequence 'FCB' (0x46 0x43 0x42) serving as an immediate identifier
+  \item The remaining five bytes represent the version number of the file format, comprised with Semantic Versioning (SemVer) \citep{semver}. As the current version is 0.1.0, the magic bytes are 'FCB010' (0x46 0x43 0x42 0x30 0x31 0x30). The last two bytes are reserved for future use and must be set to zero.
 \end{itemize}
 
 This signature design enables applications to validate file type and version compatibility without parsing the entire header content. The approach was directly inspired by FlatGeoBuf's methodology, which uses 'FGB' (F, G, B characters) in its magic bytes to indicate 'FlatGeoBuf' \citep{horance_2022}.
@@ -13,9 +13,9 @@ This signature design enables applications to validate file type and version com
 \section{Header Section}
 \label{methodology:file_components:header}
 
-The header section encapsulates metadata essential for interpreting the file contents, implemented as a size-prefixed FlatBuffers-serialised \texttt{Header} table. The header serves a dual purpose: it maintains compatibility with CityJSON by encoding the equivalent of the first line of a CityJSONSeq stream \citep{ledoux_2024}—which contains the root CityJSON object with metadata, coordinate reference system, and transformations—while adding FlatCityBuf-specific extensions for optimised retrieval and indexing. The full schema definition for the header can be found in \autoref{appendix:flatcitybuf_schema}.
+The header section encapsulates metadata essential for interpreting the file contents, implemented as a size-prefixed FlatBuffers-serialised \texttt{Header} table. The header serves a dual purpose: it maintains compatibility with CityJSON by encoding the equivalent of the first line of a \ac{cjseq} stream \citep{ledoux_2024}—which contains the root CityJSON object with metadata, coordinate reference system, and transformations—while adding FlatCityBuf-specific extensions for optimised retrieval and indexing. The full schema definition for the header can be found in \autoref{appendix:flatcitybuf_schema}.
 
-In a CityJSONSeq file, the first line contains a valid CityJSON object with empty \texttt{CityObjects} and \texttt{vertices} arrays but with essential global properties like \texttt{transform}, \texttt{metadata}, and \texttt{version}. The FlatCityBuf header encodes these same properties alongside additional indexing information required for cloud-optimised access patterns.
+In a \ac{cjseq} file, the first line contains a valid CityJSON object with empty \texttt{CityObjects} and \texttt{vertices} arrays but with essential global properties like \texttt{transform}, \texttt{metadata}, and \texttt{version}. The FlatCityBuf header encodes these same properties alongside additional indexing information required for cloud-optimised access patterns.
 
 \subsection{CityJSON Metadata Fields}
 \label{methodology:header:cityjson_fields}
@@ -90,7 +90,7 @@ Fields storing global appearance definitions:
     \end{itemize}
 \end{itemize}
 
-The appearance model provides a standardized way to define visual properties of city objects, supporting multiple rendering engines and visualization tools. Materials define surface properties while textures allow mapping of image data onto geometry surfaces. The separation of appearance definitions from geometry enables efficient storage by allowing multiple surfaces to reference the same materials or textures.
+The appearance model standardizes visual properties of city objects, with materials defining surface properties and textures mapping images onto geometry. This separation from geometry allows efficient storage through shared material and texture references.
 
 \subsection{Geometry Templates}
 \label{methodology:header:geometry_templates}
@@ -108,7 +108,7 @@ The templates mechanism enables significant storage efficiency for datasets cont
 \subsection{Extension Support}
 \label{methodology:header:extensions}
 
-Fields enabling schema extensibility:
+Fields enabling to accommodate CityJSON's extension mechanism:
 
 \begin{itemize}
   \item \textbf{extensions} - \textit{Array of Extension tables} - Definitions for CityJSON extensions \citep{cityjson_spec}, each containing:
@@ -138,6 +138,8 @@ Fields supporting attribute interpretation and efficient querying:
       \item \textit{nullable}, \textit{unique}, \textit{precision} - Optional metadata for validating and interpreting values
     \end{itemize}
 
+  \item \textbf{semantic\_columns} - \textit{Array of Column tables} - Schema definitions for semantic surface attributes. Similar to the \texttt{columns} field, but specifically for interpreting attribute data attached to semantic surfaces in the geometry. This separation allows for different attribute schemas between city objects and their semantic surfaces.
+
   \item \textbf{features\_count} - \textit{ulong} - Total number of features in the dataset, enables client applications to pre-allocate resources
 
   \item \textbf{index\_node\_size} - \textit{ushort} - Number of entries per node in the spatial index, defaults to 16, tuned for typical HTTP request sizes
@@ -151,7 +153,8 @@ Fields supporting attribute interpretation and efficient querying:
     \end{itemize}
 \end{itemize}
 
-\todo{add more details about here}
+The attribute schema system in FlatCityBuf is designed to efficiently interpret binary-encoded attribute values. By separating city object attributes from semantic surface attributes through the distinct \texttt{columns} and \texttt{semantic\_columns} arrays, the format enables more flexible modelling of properties at different levels of the city model hierarchy. This separation is particularly useful for modelling scenarios where semantic surfaces require specialized attributes (such as material properties, thermal characteristics, or solar potential) distinct from the attributes of their parent city objects.
+
 \subsection{Implementation Considerations}
 \label{methodology:header:implementation_considerations}
 

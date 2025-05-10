@@ -58,7 +58,6 @@ Icon
 *~
 *.bak
 *.swp
-.vscode/
 .idea/
 
 # Output files
