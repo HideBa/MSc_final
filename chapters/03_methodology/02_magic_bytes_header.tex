@@ -29,9 +29,9 @@ Here are the core header fields with their data types and significance:
 
   \item \textbf{reference\_system} - \textit{ReferenceSystem table} - Coordinate reference system information including:
     \begin{itemize}
-      \item \textit{authority} - Authority name, typically "EPSG"
-      \item \textit{code} - Numeric identifier of the CRS
-      \item \textit{version} - Version of the CRS definition
+      \item \textbf{authority} - \textit{string} - Authority name, typically "EPSG"
+      \item \textbf{code} - \textit{string} - Numeric identifier of the CRS
+      \item \textbf{version} - \textit{string} - Version of the CRS definition
     \end{itemize}
 
   \item \textbf{geographical\_extent} - \textit{GeographicalExtent struct} - 3D bounding box containing min/max coordinates for the dataset \citep{cityjson_spec}
@@ -42,15 +42,15 @@ Here are the core header fields with their data types and significance:
 
   \item \textbf{reference\_date} - \textit{string} - Date of reference for the dataset
 
-  \item \textbf{point of contact} - Contact information for the dataset provider \citep{cityjson_spec}:
+  \item \textbf{point of contact} - \textit{Contact table} - Contact information for the dataset provider \citep{cityjson_spec}, containing:
     \begin{itemize}
-      \item \textit{poc\_contact\_name} - Name of the point of contact
-      \item \textit{poc\_contact\_type} - Type of contact (\eg, "individual", "organization")
-      \item \textit{poc\_role} - Role of the contact (\eg, "author", "custodian")
-      \item \textit{poc\_email} - Email address of the contact
-      \item \textit{poc\_website} - Website for the contact
-      \item \textit{poc\_phone} - Phone number of the contact
-      \item \textit{poc\_address\_*} - Address components including thoroughfare number, name, locality, postcode, country
+      \item \textbf{poc\_contact\_name} - \textit{string} - Name of the point of contact
+      \item \textbf{poc\_contact\_type} - \textit{string} - Type of contact (\eg, "individual", "organization")
+      \item \textbf{poc\_role} - \textit{string} - Role of the contact (\eg, "author", "custodian")
+      \item \textbf{poc\_email} - \textit{string} - Email address of the contact
+      \item \textbf{poc\_website} - \textit{string} - Website for the contact
+      \item \textbf{poc\_phone} - \textit{string} - Phone number of the contact
+      \item \textbf{poc\_address\_*} - \textit{string} - Address components including thoroughfare number, name, locality, postcode, country
     \end{itemize}
 \end{itemize}
 
@@ -63,30 +63,31 @@ Fields storing global appearance definitions:
 \begin{itemize}
   \item \textbf{appearance} - \textit{Appearance table} - Container for visual representation properties, following CityJSON's appearance model \citep{cityjson_spec}, containing:
     \begin{itemize}
-      \item \textit{materials} - Array of Material tables with the following properties:
+      \item \textbf{materials} - \textit{Array of Material tables} with the following properties:
         \begin{itemize}
-          \item \textit{name} - Required string identifier for the material
-          \item \textit{ambient\_intensity} - Double precision value from 0.0 to 1.0
-          \item \textit{diffuse\_color} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textit{emissive\_color} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textit{specular\_color} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textit{shininess} - Double precision value from 0.0 to 1.0
-          \item \textit{transparency} - Double precision value from 0.0 to 1.0
-          \item \textit{is\_smooth} - Boolean flag for smooth shading
+          \item \textbf{name} - \textit{string} - Required string identifier for the material
+          \item \textbf{ambient\_intensity} - \textit{double} - Double precision value from 0.0 to 1.0
+          \item \textbf{diffuse\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
+          \item \textbf{emissive\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
+          \item \textbf{specular\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
+          \item \textbf{shininess} - \textit{double} - Double precision value from 0.0 to 1.0
+          \item \textbf{transparency} - \textit{double} - Double precision value from 0.0 to 1.0
+          \item \textbf{is\_smooth} - \textit{boolean} - Boolean flag for smooth shading
         \end{itemize}
 
-      \item \textit{textures} - Array of Texture tables with the following properties:
+      \item \textbf{textures} - \textit{Array of Texture tables} with the following properties:
         \begin{itemize}
-          \item \textit{type} - TextureFormat enum (PNG, JPG)
-          \item \textit{image} - Required string containing image file name or URL
-          \item \textit{wrap\_mode} - WrapMode enum (None, Wrap, Mirror, Clamp, Border)
-          \item \textit{texture\_type} - TextureType enum (Unknown, Specific, Typical)
-          \item \textit{border\_color} - Array of double values (RGBA) from 0.0 to 1.0
+          \item \textbf{type} - \textit{TextureFormat enum} - TextureFormat enum (PNG, JPG)
+          \item \textbf{image} - \textit{string} - Required string containing image file name or URL
+          \item \textbf{wrap\_mode} - \textit{WrapMode enum} - WrapMode enum (None, Wrap, Mirror, Clamp, Border)
+          \item \textbf{texture\_type} - \textit{TextureType enum} - TextureType enum (Unknown, Specific, Typical)
+          \item \textbf{border\_color} - \textit{Array of double} - Array of double values (RGBA) from 0.0 to 1.0
         \end{itemize}
 
-      \item \textit{vertices\_texture} - Array of Vec2 structs containing UV coordinates (u,v), each coordinate value must be between 0.0 and 1.0 for proper texture mapping
+      \item \textbf{vertices\_texture} - \textit{Array of Vec2 structs} - Array containing UV coordinates (u,v), each coordinate value must be between 0.0 and 1.0 for proper texture mapping
 
-      \item \textit{default\_theme\_material} and \textit{default\_theme\_texture} - Strings identifying default themes for rendering when multiple themes are defined
+      \item \textbf{default\_theme\_material} - \textit{string} - String identifying default material theme for rendering when multiple themes are defined
+      \item \textbf{default\_theme\_texture} - \textit{string} - String identifying default texture theme for rendering when multiple themes are defined
     \end{itemize}
 \end{itemize}
 
@@ -113,10 +114,13 @@ Fields enabling to accommodate CityJSON's extension mechanism:
 \begin{itemize}
   \item \textbf{extensions} - \textit{Array of Extension tables} - Definitions for CityJSON extensions \citep{cityjson_spec}, each containing:
     \begin{itemize}
-      \item \textit{name} - Extension identifier (\eg, "+Noise")
-      \item \textit{url} - Reference to the extension schema
-      \item \textit{version} - Extension version identifier
-      \item \textit{extra\_attributes}, \textit{extra\_city\_objects}, \textit{extra\_root\_properties}, \textit{extra\_semantic\_surfaces} - Stringified JSON schemas for extension components
+      \item \textbf{name} - \textit{string} - Extension identifier (\eg, "+Noise")
+      \item \textbf{url} - \textit{string} - Reference to the extension schema
+      \item \textbf{version} - \textit{string} - Extension version identifier
+      \item \textbf{extra\_attributes} - \textit{string} - Stringified JSON schema for extension attributes
+      \item \textbf{extra\_city\_objects} - \textit{string} - Stringified JSON schema for extension city objects
+      \item \textbf{extra\_root\_properties} - \textit{string} - Stringified JSON schema for extension root properties
+      \item \textbf{extra\_semantic\_surfaces} - \textit{string} - Stringified JSON schema for extension semantic surfaces
     \end{itemize}
 \end{itemize}
 
@@ -132,13 +136,15 @@ Fields supporting attribute interpretation and efficient querying:
 \begin{itemize}
   \item \textbf{columns} - \textit{Array of Column tables} - Schema definitions for attribute data. This metadata is used to interpret the values of the attributes in the features. Each containing:
     \begin{itemize}
-      \item \textit{index} - Numeric identifier of the column
-      \item \textit{name} - Name of the attribute (\eg, "cityname", "owner", \etc)
-      \item \textit{type} - Data type enumeration (\eg, "Int", "String", \etc)
-      \item \textit{nullable}, \textit{unique}, \textit{precision} - Optional metadata for validating and interpreting values
+      \item \textbf{index} - \textit{int} - Numeric identifier of the column
+      \item \textbf{name} - \textit{string} - Name of the attribute (\eg, "cityname", "owner", \etc)
+      \item \textbf{type} - \textit{DataType enum} - Data type enumeration (\eg, "Int", "String", \etc)
+      \item \textbf{nullable} - \textit{boolean} - Optional metadata for validating and interpreting values
+      \item \textbf{unique} - \textit{boolean} - Optional metadata for validating and interpreting values
+      \item \textbf{precision} - \textit{int} - Optional metadata for validating and interpreting values
     \end{itemize}
 
-  \item \textbf{semantic\_columns} - \textit{Array of Column tables} - Schema definitions for semantic surface attributes. Similar to the \texttt{columns} field, but specifically for interpreting attribute data attached to semantic surfaces in the geometry. This separation allows for different attribute schemas between city objects and their semantic surfaces.
+  \item \textbf{semantic\_columns} - \textit{Array of Column tables} - Schema definitions for semantic surface attributes. Similar to the \textbf{columns} field, but specifically for interpreting attribute data attached to semantic surfaces in the geometry. This separation allows for different attribute schemas between city objects and their semantic surfaces.
 
   \item \textbf{features\_count} - \textit{ulong} - Total number of features in the dataset, enables client applications to pre-allocate resources
 
@@ -146,14 +152,14 @@ Fields supporting attribute interpretation and efficient querying:
 
   \item \textbf{attribute\_index} - \textit{Array of AttributeIndex structs} - Metadata for each attribute index, containing:
     \begin{itemize}
-      \item \textit{index} - Reference to the column being indexed
-      \item \textit{length} - Size of the index in bytes
-      \item \textit{branching\_factor} - Branching factor of the index, number of items in each node is equal to $\text{branching factor} - 1$
-      \item \textit{num\_unique\_items} - Count of unique values for this attribute
+      \item \textbf{index} - \textit{int} - Reference to the column being indexed
+      \item \textbf{length} - \textit{ulong} - Size of the index in bytes
+      \item \textbf{branching\_factor} - \textit{ushort} - Branching factor of the index, number of items in each node is equal to $\text{branching factor} - 1$
+      \item \textbf{num\_unique\_items} - \textit{ulong} - Count of unique values for this attribute
     \end{itemize}
 \end{itemize}
 
-The attribute schema system in FlatCityBuf is designed to efficiently interpret binary-encoded attribute values. By separating city object attributes from semantic surface attributes through the distinct \texttt{columns} and \texttt{semantic\_columns} arrays, the format enables more flexible modelling of properties at different levels of the city model hierarchy. This separation is particularly useful for modelling scenarios where semantic surfaces require specialized attributes (such as material properties, thermal characteristics, or solar potential) distinct from the attributes of their parent city objects.
+The attribute schema system in FlatCityBuf is designed to efficiently interpret binary-encoded attribute values. The Column table structure is directly adopted from FlatGeoBuf's approach \citep{horance_2022_detail}, which provides a flexible and extensible way to define attribute schemas. While optional fields such as \textbf{nullable}, \textbf{unique}, and \textbf{precision} are currently not utilized, they are included in the schema to accommodate potential future use cases.
 
 \subsection{Implementation Considerations}
 \label{methodology:header:implementation_considerations}
