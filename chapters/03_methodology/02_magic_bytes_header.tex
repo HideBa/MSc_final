@@ -8,7 +8,7 @@ The magic bytes section comprises the first eight bytes of the file:
   \item The remaining five bytes represent the version number of the file format, comprised with Semantic Versioning (SemVer) \citep{semver}. As the current version is 0.1.0, the magic bytes are 'FCB010' (0x46 0x43 0x42 0x30 0x31 0x30). The last two bytes are reserved for future use and must be set to zero.
 \end{itemize}
 
-This signature design enables applications to validate file type and version compatibility without parsing the entire header content. The approach was directly inspired by FlatGeoBuf's methodology, which uses 'FGB' (F, G, B characters) in its magic bytes to indicate 'FlatGeoBuf' \citep{horance_2022}.
+This signature design enables applications to validate file type and version compatibility without parsing the entire header content. The approach was directly inspired by FlatGeoBuf's methodology, which uses 'FGB' (F, G, B characters) in its magic bytes to indicate 'FlatGeoBuf' \citep{horance_2022_detail}.
 
 \section{Header Section}
 \label{methodology:file_components:header}
@@ -53,7 +53,6 @@ Here are the core header fields with their data types and significance:
       \item \textbf{poc\_address\_*} - \textit{string} - Address components including thoroughfare number, name, locality, postcode, country
     \end{itemize}
 \end{itemize}
-
 
 \subsection{Appearance Information}
 \label{methodology:header:appearance}

@@ -215,7 +215,7 @@ These fundamental functions support both exact match and range queries. Range qu
 
 For complex logical operations, the implementation supports compound queries by executing multiple index lookups and combining the results. For \texttt{AND} operations, it computes the intersection of result sets, while \texttt{OR} operations would use the union of results. Currently, only the \texttt{AND} logical operator is fully implemented.
 
-\subsection{Streaming \ac{s+tree} over HTTP}
+\subsection{Streaming \texorpdfstring{\ac{s+tree}}{S+tree} over HTTP}
 \label{methodology:attribute_index:streaming_s_tree}
 
 The index is structured to optimize for HTTP Range Requests, with several techniques employed to minimize network overhead:
