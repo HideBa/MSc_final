@@ -1,20 +1,20 @@
 %!TEX root = ../../thesis.tex
 
 \section{FlatBuffers Framework}
-\label{rw_tb:fb}
+\label{tb:flatbuffers}
 
 FlatBuffers, developed by \citet{flatbuffers}, is a cross-platform serialisation framework designed specifically for performance-critical applications with a focus on memory efficiency and processing speed. Unlike traditional serialisation approaches, FlatBuffers implements a zero-copy deserialisation mechanism that enables direct access to serialised data without an intermediate parsing step \citep{flatbuffers_benchmark}, as discussed in \autoref{tb:zero_copy}. This characteristic is particularly advantageous for large geospatial datasets where parsing overhead can significantly impact performance.
 
 \subsection{Schema-Based Serialisation}
-\label{rw_tb:fb:schema_based_serialisation}
+\label{tb:flatbuffers:schema_based_serialisation}
 
 FlatBuffers employs a strongly typed, schema-based approach to data serialisation. The workflow involves:
 
 \begin{enumerate}
-    \item Definition of data structures in schema files with the \texttt{.fbs} extension
-    \item Compilation of schema files using the FlatBuffers compiler (\texttt{flatc})
-    \item Generation of language-specific code for data access
-    \item Implementation of application logic using the generated code
+  \item Definition of data structures in schema files with the \texttt{.fbs} extension
+  \item Compilation of schema files using the FlatBuffers compiler (\texttt{flatc})
+  \item Generation of language-specific code for data access
+  \item Implementation of application logic using the generated code
 \end{enumerate}
 
 This schema-first approach enforces data consistency and type safety, which is essential to be processed in various programming languages and environments. The generated code provides memory-efficient access patterns to the underlying binary data without requiring full deserialisation. FlatCityBuf utilises this capability to achieve a balance between parsing speed and storage efficiency.
@@ -22,7 +22,7 @@ This schema-first approach enforces data consistency and type safety, which is e
 The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C\#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability \citep{flatbuffers_support}. This extensive language support enables developers to work with FlatBuffers data in their preferred environment. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics and memory safety guarantees.
 
 \subsection{Data Type System}
-\label{rw_tb:fb:data_type_system}
+\label{tb:flatbuffers:data_type_system}
 
 FlatBuffers provides a comprehensive type system that balances efficiency and expressiveness \citep{flatbuffers_data_types}:
 
@@ -63,7 +63,7 @@ FlatBuffers provides a comprehensive type system that balances efficiency and ex
 \end{itemize}
 
 \subsection{Schema Organisation Features}
-\label{rw_tb:fb:schema_organisation}
+\label{tb:flatbuffers:schema_organisation}
 
 In addition to the data type system, FlatBuffers provides several key features for organising complex schemas:
 
@@ -77,17 +77,16 @@ In addition to the data type system, FlatBuffers provides several key features f
 
 These features were essential for FlatCityBuf's implementation, enabling modular schema development with separate root types for header and feature components while maintaining consistent type definitions across files.
 
-\todo{move this section to theoretical background?}
 \subsection{Binary Structure and Memory Layout}
-\label{rw_tb:fb:binary_structure}
+\label{tb:flatbuffers:binary_structure}
 
 FlatBuffers organises serialised data in a flat binary buffer with the following characteristics:
 
 \begin{itemize}
-    \item \textbf{Prefix-based vtables} that enable field access without full parsing
-    \item \textbf{Offset-based references} that allow direct navigation within the buffer
-    \item \textbf{Aligned memory layout} optimised for CPU cache efficiency
-    \item \textbf{Endian-aware serialisation} supporting both little and big-endian platforms
+  \item \textbf{Zero-copy access} through a carefully designed memory layout that allows direct access to serialized data without intermediate parsing
+  \item \textbf{Vtable-based field access} where each table starts with an offset to its vtable, enabling efficient field lookup and schema evolution
+  \item \textbf{Little-endian encoding} for all scalar values, with automatic conversion on big-endian platforms
+  \item \textbf{Offset-based references} for all non-inline data (tables, strings, vectors), allowing efficient navigation within the buffer
 \end{itemize}
 
 For complex data structures like 3D city models, FlatBuffers allows for modular schema composition through file inclusion. This capability enabled the separation of FlatCityBuf's schema into logical components (\texttt{header.fbs}, \texttt{feature.fbs}, \texttt{geometry.fbs}, etc.) while maintaining efficient serialisation. In our implementation, the \texttt{Header} and \texttt{CityFeature} tables serve as root types that anchor the overall data structure.

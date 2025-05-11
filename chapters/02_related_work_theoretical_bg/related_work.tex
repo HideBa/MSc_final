@@ -1,13 +1,195 @@
 %!TEX root = ../../thesis.tex
-\chapter{Related work}
+
+\chapter{Related Work}
 \label{rw:related_work}
-This chapter reviews existing work related to 3D city model formats, focusing on their storage efficiency, query performance, and suitability for web-based applications. The review provides context for understanding the design decisions behind FlatCityBuf and positions it within the landscape of geospatial data formats.
+This section reviews the pertinent literature relevant to the optimisation of CityJSON for cloud-native environments, highlighting advancements and identifying existing gaps that this research aims to address.
 
-\section{3D City Model Formats}
-\label{rw:3d_city_model_formats}
+\section{Cloud-Optimised Geospatial Formats}
+\label{rw:cloud_optimised_formats}
+Cloud-optimised geospatial formats constitute specialised data structures engineered to maximise computational efficiency in distributed cloud environments \citep{cloud-optimised-formats}. These formats exhibit several quantifiable advantages:
 
-\section{Data Serialization Frameworks}
-\label{rw:data_serialization_frameworks}
+\begin{itemize}
+  \item \textbf{Reduced Latency}: Facilitates partial data retrieval and processing without necessitating complete file downloads
+  \item \textbf{Scalability}: Supports parallel operations through metadata-driven access mechanisms within cloud storage systems
+  \item \textbf{Flexibility}: Offers advanced query capabilities for selective data access
+  \item \textbf{Cost-Effectiveness}: Optimises storage and transfer expenditures through efficient access patterns
+\end{itemize}
 
-\section{Cloud-Optimized Geospatial Formats}
-\label{rw:cloud_optimized_formats}
+\section{CityJSON and Its Enhancements}
+\label{rw:cityjson_enhancements}
+\subsection{CityJSON}
+\label{rw:cityjson_enhancements:cityjson}
+\citet{cityjson} is an encoding format derived from the CityGML \citep{CityGML} data model, offering a more compact and developer-friendly alternative for representing 3D city models. Currently at version 2.0.1, it supports CityGML 3.0.0 encoding and is officially recognised as an OGC standard \citep{ogc}. Its JSON-based structure provides several enhancements:
+
+\begin{itemize}
+  \item \textbf{Flattened City Objects}: Implements a flattened architecture with unique identifiers, contrasting with CityGML's hierarchical structure
+  \item \textbf{Geometry Handling}: Consolidates geometric data in a shared vertex array with quantised coordinates
+  \item \textbf{Extension Mechanism}: Employs a simplified extension mechanism using JSON Schema instead of XML Schema, similar to CityGML's ADEs
+\end{itemize}
+
+\subsection{CityJSON Text Sequences (CityJSONSeq)}
+\label{rw:cityjson_enhancements:cityjsonseq}
+\citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences. Each object is stored as a CityJSONFeature, representing one feature (e.g., a Building with its BuildingParts and BuildingInstallations) with its own local vertex list. Following the Newline Delimited JSON specification \citep{jsonnd}, CityJSONSeq requires initialisation with a CityJSON object, followed by line-feed-delimited CityJSONFeature objects, adhering to the JSON Data Interchange Format \citep{json_data_interchange_format}. While CityJSONSeq generally offers improved compression and memory efficiency, larger file sizes may occur with minimal vertex counts or extensive vertex/texture sharing. Its text-based format presents opportunities for further cloud-native optimisation.
+
+\subsection{Enhancements to CityJSON Performance}
+\label{rw:cityjson_enhancements:performance}
+\subsubsection{Binary Encoding of CityJSON}
+\label{rw:cityjson_enhancements:performance:binary_encoding}
+\citet{jordi_van_liempt_2020} conducted a systematic evaluation of binary encoding techniques for CityJSON to address challenges associated with transmitting large-scale 3D city models over the web. The study assessed various compression and encoding methodologies, including CBOR, zlib, Draco and their combinations, evaluating visualisation time, querying time, spatial analysis time, editing time, file size compression and lossiness.
+
+The analysis determined that the combination of CBOR and zlib offers optimal general-purpose efficiency due to its implementation simplicity. Conversely, Draco exhibited superior performance for pre-compressed data scenarios. However, the study identified limitations in Draco's applicability, specifically the increased complexity and computational overhead when handling smaller datasets. While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments.
+
+\subsubsection{Experimental Implementation Using FlatBuffers}
+\label{rw:cityjson_enhancements:performance:flatbuffers}
+\citet{ravi_peters_2024_citybuf} explored the application of FlatBuffers \citep{flatbuffers} for encoding CityJSONFeature to enhance performance in cloud-native environments. The preliminary implementation revealed potential advantages in several key areas:
+
+\begin{itemize}
+  \item Faster feature access time
+  \item Lower memory consumption
+  \item Decreased storage requirements
+\end{itemize}
+
+This research extends Peters' preliminary work by developing a comprehensive solution aimed at optimising performance in cloud-native environments, with specific emphasis on scalability and efficient data processing.
+
+\subsection{Research Gaps}
+\label{rw:research_gaps}
+While existing studies have made significant advances in optimising CityJSON through various encoding techniques, and several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}), there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments. Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats (e.g., FlatGeobuf for Simple Features), their application to 3D city models has not been thoroughly investigated. This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies that enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures, with the proposed approach detailed in \autoref{chp:methodology}.
+
+\section{Non-Geospatial Formats in Cloud Environments}
+\label{rw:non_geospatial_formats}
+Modern cloud-optimised geospatial formats leverage established non-geospatial data structures to enhance efficiency in data transfer, storage and processing operations. Notable implementations include GeoParquet \citep{geoparquet}, which employs Parquet \citep{parquet} for optimised geospatial data management; \citet{flatgeobuf}, constructed on FlatBuffers \citep{flatbuffers}; and Mapbox Vector Tiles \citep{mapbox-vector-tiles}, which utilise Protocol Buffers (Protobuf) \citep{protobuf}. These underlying formats are meticulously designed to improve performance metrics such as serialisation/deserialisation speed, memory utilisation and data compression.
+
+\subsection{FlatBuffers}
+\label{rw:non_geospatial_formats:flatbuffers}
+\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}, optimised for efficient data transfer and storage. Its core characteristics include:
+
+\begin{itemize}
+  \item \textbf{Zero-Copy Access}: Stores hierarchical data within a flat binary buffer, enabling direct data access without intermediate parsing or unpacking
+  \item \textbf{Memory Optimisation}: Minimises memory allocation through buffer-only operations, facilitating memory-mapped file access and selective data loading for performance-critical applications
+  \item \textbf{Schema Validation}: Implements strong typing via schema definitions, allowing for compile-time type checking and runtime data validation
+\end{itemize}
+
+Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats, such as \citet{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
+
+\subsection{Protocol Buffers (Protobuf)}
+\label{rw:non_geospatial_formats:protobuf}
+\citet{protobuf}, developed by Google, represents a binary serialisation framework that employs schema-based encoding mechanisms for data serialisation. This framework implements similar fundamental operations to FlatBuffers, including schema definition and binary encoding processes.
+Despite its advantages in simplicity and usability, Protobuf presents several operational constraints:
+
+\begin{itemize}
+  \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks
+  \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data
+  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers
+\end{itemize}
+
+\subsection{Apache Parquet}
+\label{rw:non_geospatial_formats:parquet}
+\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes for managing extensive datasets. The Parquet ecosystem includes the \citet{parquet-format}, which serves as the specification for the Parquet format, alongside various libraries for encoding and decoding Parquet files.
+
+Parquet employs the record shredding and assembly algorithm \citep{dremel_2010} to effectively flatten nested data structures. Additionally, it implements efficient compression and encoding schemes tailored to column-level data, thereby enhancing both storage efficiency and query performance.
+
+\subsection{Comparison of Non-Geospatial Formats}
+\label{rw:non_geospatial_formats:comparison}
+Existing research has evaluated the performance characteristics of non-geospatial formats within cloud environments. \citet{daniel_persson_2020} conducted a comparative analysis of FlatBuffers and Protobuf, focusing on metrics such as serialisation/deserialisation efficiency, memory utilisation, and message size optimisation. Their investigation utilised randomised message sizes to assess format performance in vehicle-to-server communication scenarios. The analysis yielded the following observations:
+
+\begin{itemize}
+  \item \textbf{Processing Efficiency}: Protobuf demonstrated superior serialisation performance but exhibited reduced deserialisation efficiency relative to FlatBuffers.
+  \item \textbf{Memory Optimisation}: FlatBuffers consistently displayed lower memory consumption during both serialisation and deserialisation operations.
+  \item \textbf{Data Compression}: Protobuf achieved greater message size reduction compared to FlatBuffers.
+\end{itemize}
+
+These findings advocate for the selection of FlatBuffers in applications where deserialisation performance and memory efficiency are paramount in data processing operations.
+
+\section{Cloud-Optimised Geospatial Implementations}
+\label{rw:cloud_optimised_implementations}
+Contemporary cloud-optimised geospatial implementations encompass formats such as \citet{mapbox-vector-tiles}, \citet{flatgeobuf}, \citet{pmtiles}, and \citet{geoparquet}.
+
+\subsection{Mapbox Vector Tiles (MVT)}
+\label{rw:cloud_optimised_implementations:mvt}
+\citet{mapbox-vector-tiles} implements a vector tile specification optimised for web-based data delivery. The format utilises Protobuf for the serialisation of two-dimensional geospatial data and adopts a tile pyramid structure to enhance data retrieval operations.
+
+\subsection{PMTiles}
+\label{rw:cloud_optimised_implementations:pmtiles}
+PMTiles offers a standardised format for managing tile data addressed through Z/X/Y coordinates, supporting both vector and raster tile implementations. The format leverages \citet{http_range_requests} to facilitate selective tile retrieval, thereby optimising network resource utilisation.
+
+\subsection{FlatGeobuf}
+\label{rw:cloud_optimised_implementations:flatgeobuf}
+FlatGeobuf adheres to the OGC \citet{simple_features} specification by utilising \citet{flatbuffers} for serialisation. The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations. Notably, its partial data access capabilities allow clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset. \citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
+
+\subsection{GeoParquet}
+\label{rw:cloud_optimised_implementations:geoparquet}
+GeoParquet integrates \citet{parquet}'s columnar storage architecture to facilitate optimised geospatial data operations. The format promotes interoperability across cloud data warehouse platforms, including \citet{bigquery}, \citet{snowflake}, and \citet{redshift}. Key technical characteristics of GeoParquet include:
+
+\begin{itemize}
+  \item \textbf{Compression Efficiency}: Achieves superior compression ratios relative to alternative storage formats through columnar data organisation.
+  \item \textbf{Optimised Read Operations}: The columnar architecture enables selective column access and efficient data filtering via predicate pushdown mechanisms, thereby enhancing performance in read-intensive workflows.
+\end{itemize}
+
+\subsection{3D Tiles}
+\label{rw:cloud_optimised_implementations:3d_tiles}
+\citet{3d_tiles}, an Open Geospatial Consortium (OGC) standard, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements \citet{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
+
+The data structure employs spatial partitioning through bounding volumes, enabling selective rendering based on camera viewpoint requirements. While this architecture demonstrates optimal performance for visual rendering tasks, it presents limitations in two key areas: (1) arbitrary spatial extent retrieval and (2) attribute-based feature querying capabilities.
+
+\subsection{Comparative Analysis of Cloud-Optimised Geospatial Formats}
+\label{rw:cloud_optimised_implementations:comparison}
+While acknowledging the inherent limitations of direct format comparisons due to their distinct design objectives and application domains, \autoref{tab:format-comparison} presents a systematic analysis of key operational characteristics across various cloud-optimised geospatial formats. The evaluation criteria and their corresponding scales are detailed in \autoref{tab:criteria-scale}. This analysis facilitates the understanding of format-specific capabilities within their respective operational contexts.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparative Analysis of Cloud-Optimised Geospatial Formats (Scale: 1-5)}
+  \label{tab:format-comparison}
+  \footnotesize
+  \begin{tabular}{p{3cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}}
+    \hline
+    \textbf{Characteristics} & \textbf{FlatGeobuf} & \textbf{MVT} & \textbf{GeoParquet} & \textbf{GeoJSON} & \textbf{3D Tiles} \\
+    \hline
+    \textbf{Serialisation Performance} & 3 & 4 & 3 & 2 & -- \\
+    \hline
+    \textbf{Deserialisation Performance} & 4 & 3 & 5 & 1 & 4\footnotemark[1] \\
+    \hline
+    \textbf{Storage Efficiency} & 3 & 4 & 5 & 1 & -- \\
+    \hline
+    \textbf{Memory Utilisation} & 5 & 4 & 5 & 1 & -- \\
+    \hline
+    \textbf{Implementation Complexity} & 2 & 2 & 2 & 5 & -- \\
+    \hline
+    \textbf{Spatial Indexing} & 5 & 3\footnotemark[2] & 3\footnotemark[3] & 1 & 3\footnotemark[4] \\
+    \hline
+    \textbf{Random Access Support} & 5 & 1 & 4 & 1 & 1 \\
+    \hline
+    \textbf{Data Writing Complexity} & 1 & 1 & 1 & 5 & 1 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\footnotetext[1]{Optimised for GPU rendering}
+\footnotetext[2]{Tile-based partitioning}
+\footnotetext[3]{Random access to the internal chunks}
+\footnotetext[4]{Volumentric hierarchical partitioning}
+
+\begin{table}[htbp]
+  \caption{Evaluation Criteria Scale (1-5)}
+  \label{tab:criteria-scale}
+  \begin{tabular}{p{3cm}|p{12cm}}
+    \hline
+    \textbf{Criterion} & \textbf{Scale Description} \\
+    \hline
+    Serialisation Performance & 1: Very slow, 2: Slow, 3: Moderate, 4: Fast, 5: Very fast \\
+    \hline
+    Deserialisation Performance & 1: Very slow, 2: Slow, 3: Moderate, 4: Fast, 5: Very fast \\
+    \hline
+    Storage Efficiency & 1: No compression, 3: Moderate compression, 5: Very high compression \\
+    \hline
+    Memory Utilisation & 1: Very high memory usage, 2: High usage, 3: Moderate usage, 4: Low usage, 5: Very low usage \\
+    \hline
+    Implementation Complexity & 1: Complex, 3: Moderate, 5: Simple \\
+    \hline
+    Spatial Indexing & 1: Not supported, 3: Basic support, 5: Indexing with arbitrary spatial extent \\
+    \hline
+    Random Access Support & 1: Not supported, 3: Partial support, 5: Full random access \\
+    \hline
+    Data Writing Complexity & 1: Very complex, 3: Moderate, 5: Simple \\
+    \hline
+  \end{tabular}
+\end{table}

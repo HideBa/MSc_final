@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Outline for the paper
@@ -13,27 +13,36 @@ alwaysApply: true
   - Scope of the research
 - Theoretical background and related works
   - Related works
-    - 3D City models
-    - CityGML, CityJSON
-    - CityJSONSeq and binary encoding of CityJSON, etc
-    - Preliminary work
-  - Data serialisation frameworks
-    - FlatBuffers
-    - Protocol buffers
-    - Arrow/Parquet
-    - Capn’t proto
-  - Data serialisation
+      - 3D City models
+      - CityGML, CityJSON
+      - CityJSONSeq and binary encoding of CityJSON, etc
+      - Preliminary work
+    - Data serialisation frameworks
+      - FlatBuffers
+      - Protocol buffers
+      - Arrow/Parquet
+      - Capn’t proto
+    - Data serialisation
+      - Zero-copy
+      -
+    - Cloud optimised geospatial data format
+      - FlatGeobuf
+      - GeoParquet
+      - PMTiles
+      - MVT
+      - Cloud Optimized GeoTIFF, etc
+      - 3D Tiles
+      - Comparison of data formats
+  - Theoretical background
     - Zero-copy
-    -
-  - Cloud optimised geospatial data format
-    - FlatGeobuf
-    - GeoParquet
-    - PMTiles
-    - MVT
-    - Cloud Optimized GeoTIFF, etc
-    - 3D Tiles
-    - Comparison of data formats
-  - FlatBuffers
+    - Endianness
+    - Indexing algorithms
+    - Indexing Strategy Evaluation
+    - Binary Search
+    - Eytzinger Layout
+    - S+tree
+
+    - FlatBuffers framework
 - Methodology
   - Overview and file structure
   - Magic Bytes
