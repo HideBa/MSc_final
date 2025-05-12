@@ -59,37 +59,128 @@ The following sections present detailed results from each evaluation approach, f
 \section{File Size Comparison}
 \label{result:file_size_comparison}
 
-\subsubsection{Dataset}
+\subsubsection{Datasets}
 \label{result:overview:dataset}
+To evaluate file sizes and conduct both local and web-based benchmarks, we utilized various datasets from \citet{ledoux_2024} along with additional datasets from PLATEAU. Detailed information about these datasets and their attributions can be found in \autoref{appendix:dataset}.
 
-\subsection{Filesize comparison}
+\subsection{File size results}
 \label{result:overview:filesize_comparison}
+
+\autoref{tab:dataset_comparison} shows the datasets in both CityJSONSeq format and FlatCitybuf format. The result shows that FlatCityBuf encoding performed better for some datasets such as Helsinki, Ingolstadt, Montréal, and New York City. The compression factor for those cities are $16.36\%$, $19.09\%$, $-4.38\%$, and $20.17\%$ respectively. On the other hands, PLATEAU datasets show the opposite result, that is, CityJSONSeq format performed better for those datasets.
 
 \begin{table*}
   \centering
   \begin{threeparttable}
-    \caption{The datasets used for the benchmark. }
+    \caption{The datasets used for the benchmark.}
     \label{tab:dataset_comparison}
-    \small
-    \begin{tabular}
-      {@{}lccccccrrrcrrrr@{}}\toprule
-      &&  \multicolumn{2}{c}{\textbf{dataset}} && \multicolumn{3}{c}{\textbf{size of file}} && \multicolumn{3}{c}{\textbf{vertices/attributes}}   \\
-      \cmidrule{3-4} \cmidrule{6-8} \cmidrule{10-12}
-      && CityFeatures & CityObjects &  app.\footnotesize ${}^{\text{(a)}}$ && CityJSONSeq & FlatCityBuf & compr.\footnotesize ${}^{\text{(b)}}$ && total & ave per feature \footnotesize ${}^{\text{(c)}}$ & attributes per feature \footnotesize ${}^{\text{(d)}}$ & semantic attributes \footnotesize ${}^{\text{(e)}}$ \\
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{@{}lrrlrrr@{\hskip 3pt}rrrr@{}}
+      \toprule
+      & \multicolumn{3}{c}{\textbf{dataset}} & \multicolumn{3}{c}{\textbf{size of file}} & \multicolumn{4}{c}{\textbf{attributes}} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-11}
+      & CityObj & CityFeat & app.$^{\text{(a)}}$ & CityJSONSeq & FlatCityBuf & compr.$^{\text{(b)}}$ & verts & avg$^{\text{(c)}}$ & obj$^{\text{(d)}}$ & sem$^{\text{(e)}}$ \\
       \midrule
-      \textbf{3DBAG}          && \qty{1110} bldgs & \qty{1110} bldgs && \qty{6.7}{\mega\byte} & \qty{5.9}{\mega\byte} & 12\%  &&     \num{82509} &    \num{4112} & \num{37} & \num{1} \\
-
+      \textbf{3DBAG}          & 2221    & 1110   &      & \qty{5.87}{\mega\byte}  & \qty{6.23}{\mega\byte}  & $-6.02\%$  & 82612    & 74.43    & 37 & 1 \\
+      \textbf{3DBV}           & 71634   & 71634  &      & \qty{317.34}{\mega\byte}& \qty{280.92}{\mega\byte}& $11.48\%$  & 4992893  & 69.70    & 64 & 0 \\
+      \textbf{Helsinki}       & 77267   & 77231  &      & \qty{412.44}{\mega\byte}& \qty{344.96}{\mega\byte}& $16.36\%$  & 3039107  & 39.35    & 27 & 9 \\
+      \textbf{Helsinki\_tex}  & 77267   & 77231  & tex  & \qty{643.70}{\mega\byte}& \qty{545.29}{\mega\byte}& $15.29\%$  & 3039107  & 39.35    & 28 & 9 \\
+      \textbf{Ingolstadt}     & 379     & 55     &      & \qty{3.84}{\mega\byte}  & \qty{3.11}{\mega\byte}  & $19.09\%$  & 88001    & 1600.02  & 33 & 13 \\
+      \textbf{Montréal}       & 294     & 294    &      & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
+      \textbf{NYC}            & 23777   & 23777  &      & \qty{95.45}{\mega\byte} & \qty{76.20}{\mega\byte} & $20.17\%$  & 1044145  & 43.91    & 3  & 3 \\
+      \textbf{Railway}        & 121     & 38     &      & \qty{4.05}{\mega\byte}  & \qty{3.75}{\mega\byte}  & $7.35\%$   & 73856    & 1943.58  & 3  & 0 \\
+      \textbf{Rotterdam}      & 853     & 853    &      & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
+      \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
+      \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
+      \textbf{PLATEAU\_bldg}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
+      \textbf{PLATEAU\_brid}  & 60      & 8      &      & \qty{4.78}{\mega\byte}  & \qty{5.21}{\mega\byte}  & $-9.09\%$  & 16357    & 2044.62  & 5  & 2 \\
+      \textbf{PLATEAU\_rwy}   & 412     & 412    &      & \qty{4.15}{\mega\byte}  & \qty{4.23}{\mega\byte}  & $-1.90\%$  & 5846     & 14.19    & 3  & 2 \\
+      \textbf{PLATEAU\_tran}  & 8136    & 8136   &      & \qty{26.47}{\mega\byte} & \qty{26.62}{\mega\byte} & $-0.54\%$  & 45992    & 5.65     & 3  & 2 \\
+      \textbf{PLATEAU\_tun}   & 21      & 3      &      & \qty{4.86}{\mega\byte}  & \qty{4.64}{\mega\byte}  & $4.41\%$   & 12306    & 4102.00  & 4  & 1 \\
+      \textbf{PLATEAU\_veg}   & 936     & 936    &      & \qty{1.78}{\mega\byte}  & \qty{2.32}{\mega\byte}  & $-30.50\%$ & 2567     & 2.74     & 3  & 0 \\
+      \textbf{Tokyo\_PLATEAU} & 49764   & 38627  &      & \qty{209.62}{\mega\byte}& \qty{216.76}{\mega\byte}& $-3.41\%$  & 316607   & 8.20     & 15 & 1 \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
-    \item ${}^{\text{(a)}}$ appearance: `tex' is textures stored; `mat' is material stored
-    \item ${}^{\text{(b)}}$ compressi{}on factor is $\frac{size(CityJSON) - size(CityJSONSeq)}{size(CityJSON)}$
-    \item ${}^{\text{(c)}}$ number of vertices in the largest feature of the stream
-    \item ${}^{\text{(d)}}$ percentage of vertices that are used to represent different city objects
+    \item[a] appearance: `tex' indicates textures are stored
+    \item[b] compression factor is $\frac{\text{CityJSONSeq} - \text{FlatCityBuf}}{\text{CityJSONSeq}}$ (positive values indicate size reduction)
+    \item[c] average number of vertices per feature
+    \item[d] number of attributes in city objects
+    \item[e] number of semantic surface attributes
     \end{tablenotes}
   \end{threeparttable}
 \end{table*}
+
+\subsection{Analysis of file size results}
+\label{result:overview:analysis_of_file_size_results}
+Although \autoref{result:overview:filesize_comparison} shows summary of the file size results, it's still not clear what effects on the resulting file size. Therefore, the section tries to analyse the possible cause by experimenting with simplier datasets.
+
+\subsubsection{Level of detail}
+\label{result:overview:analysis_of_file_size_results:level_of_detail}
+
+To understand the impact of level of detail (LOD) on file size, a series of tests were conducted using the TU Delft BK building model at different LOD levels. Each LOD was manually extracted from the original model, and attributes and semantic attributes were deliberately deleted to simplify the problem and focus solely on geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of file sizes across different levels of detail for the TU Delft BK building model.}
+  \label{tab:lod_comparison}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Vertices} \\
+    \midrule
+    TUD BK All & \qty{139.75}{\kilo\byte} & \qty{189.01}{\kilo\byte} & $26.08\%$ & 4549 \\
+    TUD BK LOD0 & \qty{12.77}{\kilo\byte} & \qty{20.72}{\kilo\byte} & $38.11\%$ & 785 \\
+    TUD BK LOD1.2 & \qty{37.45}{\kilo\byte} & \qty{49.40}{\kilo\byte} & $24.23\%$ & 1350 \\
+    TUD BK LOD1.3 & \qty{44.66}{\kilo\byte} & \qty{59.25}{\kilo\byte} & $24.67\%$ & 1600 \\
+    TUD BK LOD2.2 & \qty{62.02} {\kilo\byte} & \qty{82.74}{\kilo\byte} & $25.07\%$ & 2168 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Average feature size in bytes in FlatCityBuf: $\frac{\text{Total FlatCityBuf size}}{\text{Number of features}}$
+  \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
+
+  \end{tablenotes}
+\end{table}
+
+Note that because the given simple dataset only contains 1 city feature, we compare the bytes size of the feature rather than the entire file size. This is because FlatCityBuf tends to have a larger overall file size for tiny features due to its header part, which would skew the comparison if we looked at total file sizes.
+The results show that while there is a natural increase in file size with higher levels of detail, there is actually not much correlation between LOD and compression efficiency. Both formats grow proportionally as geometric complexity increases. The compression advantage of FlatCityBuf over CityJSONSeq remains relatively stable across most LOD levels, typically around 24-25\%.
+
+\subsubsection{Attributes}
+\label{result:overview:analysis_of_file_size_results:attributes}
+
+To analyze the impact of attributes on file size, tests were conducted using simple cube models from \citep{cityjson_dataset} with varying numbers of attributes. Attributes were randomly generated to the specified number for each test case. Both integer and string attributes were tested to understand how different data types affect compression. \autoref{tab:attribute_comparison} presents the results of this analysis.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of file sizes with varying numbers of attributes for simple cube models.}
+  \label{tab:attribute_comparison}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Attributes} \\
+    \midrule
+    10 attributes (int) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ & 10 \\
+    100 attributes (int) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ & 100 \\
+    1000 attributes (int) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ & 1000 \\
+    10 attributes (string) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ & 10 \\
+    100 attributes (string) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ & 100 \\
+    1000 attributes (string) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ & 1000 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Average feature size in bytes in FlatCityBuf: $\frac{\text{Total FlatCityBuf size}}{\text{Number of features}}$
+  \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
+  \end{tablenotes}
+\end{table}
+The results demonstrate a distinct pattern: FlatCityBuf's compression advantage over CityJSONSeq grows substantially as the number of attributes increases. With just 10 attributes, the compression benefit is negligible at 5.07\%. This advantage rises significantly to 33.65\% with 100 attributes and reaches 44.13\% with 1000 attributes. This efficiency stems from FlatCityBuf's design, which stores the attribute schema once in the file header. Each feature then references attributes using only a 2-byte (u16) index, while CityJSONSeq must repeat identical attribute keys across all features. Although additional attributes increase the header size, this cost is distributed across all features in the dataset. The header remains compact—even with 1000 attributes, it occupies only a few tens of kilobytes. These characteristics make FlatCityBuf particularly well-suited for datasets containing numerous attributes.
+
+\subsubsection{Geometric complexity}
+\label{result:overview:analysis_of_file_size_results:geometric_complexity}
+
+\subsubsection{Vertices and coordinates}
+\label{result:overview:analysis_of_file_size_results:vertices_and_coordinates}
 
 \section{Benchmark on Local Environment}
 \label{result:benchmark_on_local_environment}

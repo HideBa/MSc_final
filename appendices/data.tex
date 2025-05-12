@@ -1,19 +1,45 @@
 \section{Tables}
-
-The package \texttt{booktabs} permits you to make nicer tables than the basic ones in \LaTeX.
-See for instance \autoref{tab:example}.
-\begin{table}
-  \centering
-  \begin{tabular}{@{}lrrcrrc@{}} \toprule
-    & \multicolumn{2}{c}{3D model} && \multicolumn{2}{c}{input} \\
-    \cmidrule{2-3}  \cmidrule{5-6}
-    & solids & faces && vertices & constraints  \\
-    \toprule
-    \textbf{campus}  & 370   & 4~298  && 5~970  & 3~976   \\
-    \textbf{kvz}     & 637   & 6~549  && 8~951  & 13~571  \\
-    \textbf{engelen} & 1~629 & 15~870 && 23~732 & 15~868 \\
-    \bottomrule
-   \end{tabular}
-  \caption{Details concerning the datasets used for the experiments.}%
-% \label{tab:example}
-\end{table}
+\label{appendix:dataset}
+% \begin{table*}
+%   \centering
+%   \begin{threeparttable}
+%     \caption{The datasets used for the benchmark.}
+%     \label{tab:appendix:dataset}
+%     \scriptsize
+%     \setlength{\tabcolsep}{4pt}
+%     \begin{tabular}{@{}lrrlrrr@{\hskip 3pt}rrrr@{}}
+%       \toprule
+%       & \multicolumn{3}{c}{\textbf{dataset}} & \multicolumn{3}{c}{\textbf{size of file}} & \multicolumn{4}{c}{\textbf{attributes}} \\
+%       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-11}
+%       & CityObj & CityFeat & app.$^{\text{(a)}}$ & CityJSONSeq & FlatCityBuf & compr.$^{\text{(b)}}$ & verts & avg$^{\text{(c)}}$ & obj$^{\text{(d)}}$ & sem$^{\text{(e)}}$ \\
+%       \midrule
+%       \textbf{3DBAG}          & 2221    & 1110   &      & \qty{5.87}{\mega\byte}  & \qty{6.23}{\mega\byte}  & $-6.02\%$  & 82612    & 74.43    & 37 & 1 \\
+%       \textbf{3DBV}           & 71634   & 71634  &      & \qty{317.34}{\mega\byte}& \qty{280.92}{\mega\byte}& $11.48\%$  & 4992893  & 69.70    & 64 & 0 \\
+%       \textbf{Helsinki}       & 77267   & 77231  &      & \qty{412.44}{\mega\byte}& \qty{344.96}{\mega\byte}& $16.36\%$  & 3039107  & 39.35    & 27 & 9 \\
+%       \textbf{Helsinki\_tex}  & 77267   & 77231  & tex  & \qty{643.70}{\mega\byte}& \qty{545.29}{\mega\byte}& $15.29\%$  & 3039107  & 39.35    & 28 & 9 \\
+%       \textbf{Ingolstadt}     & 379     & 55     &      & \qty{3.84}{\mega\byte}  & \qty{3.11}{\mega\byte}  & $19.09\%$  & 88001    & 1600.02  & 33 & 13 \\
+%       \textbf{Montréal}       & 294     & 294    &      & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
+%       \textbf{NYC}            & 23777   & 23777  &      & \qty{95.45}{\mega\byte} & \qty{76.20}{\mega\byte} & $20.17\%$  & 1044145  & 43.91    & 3  & 3 \\
+%       \textbf{Railway}        & 121     & 38     &      & \qty{4.05}{\mega\byte}  & \qty{3.75}{\mega\byte}  & $7.35\%$   & 73856    & 1943.58  & 3  & 0 \\
+%       \textbf{Rotterdam}      & 853     & 853    &      & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
+%       \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
+%       \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
+%       \textbf{PLATEAU\_bldg}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
+%       \textbf{PLATEAU\_brid}  & 60      & 8      &      & \qty{4.78}{\mega\byte}  & \qty{5.21}{\mega\byte}  & $-9.09\%$  & 16357    & 2044.62  & 5  & 2 \\
+%       \textbf{PLATEAU\_rwy}   & 412     & 412    &      & \qty{4.15}{\mega\byte}  & \qty{4.23}{\mega\byte}  & $-1.90\%$  & 5846     & 14.19    & 3  & 2 \\
+%       \textbf{PLATEAU\_tran}  & 8136    & 8136   &      & \qty{26.47}{\mega\byte} & \qty{26.62}{\mega\byte} & $-0.54\%$  & 45992    & 5.65     & 3  & 2 \\
+%       \textbf{PLATEAU\_tun}   & 21      & 3      &      & \qty{4.86}{\mega\byte}  & \qty{4.64}{\mega\byte}  & $4.41\%$   & 12306    & 4102.00  & 4  & 1 \\
+%       \textbf{PLATEAU\_veg}   & 936     & 936    &      & \qty{1.78}{\mega\byte}  & \qty{2.32}{\mega\byte}  & $-30.50\%$ & 2567     & 2.74     & 3  & 0 \\
+%       \textbf{Tokyo\_PLATEAU} & 49764   & 38627  &      & \qty{209.62}{\mega\byte}& \qty{216.76}{\mega\byte}& $-3.41\%$  & 316607   & 8.20     & 15 & 1 \\
+%       \bottomrule
+%     \end{tabular}
+%     \begin{tablenotes}[flushleft]
+%       \footnotesize
+%     \item[a] appearance: `tex' indicates textures are stored
+%     \item[b] compression factor is $\frac{\text{CityJSONSeq} - \text{FlatCityBuf}}{\text{CityJSONSeq}}$ (positive values indicate size reduction)
+%     \item[c] average number of vertices per feature
+%     \item[d] number of attributes in city objects
+%     \item[e] number of semantic surface attributes
+%     \end{tablenotes}
+%   \end{threeparttable}
+% \end{table*}
