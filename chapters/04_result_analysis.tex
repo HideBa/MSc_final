@@ -61,12 +61,12 @@ The following sections present detailed results from each evaluation approach, f
 
 \subsubsection{Datasets}
 \label{result:overview:dataset}
-To evaluate file sizes and conduct both local and web-based benchmarks, we utilized various datasets from \citet{ledoux_2024} along with additional datasets from PLATEAU. Detailed information about these datasets and their attributions can be found in \autoref{appendix:dataset}.
+To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
 
 \subsection{File size results}
 \label{result:overview:filesize_comparison}
 
-\autoref{tab:dataset_comparison} shows the datasets in both CityJSONSeq format and FlatCitybuf format. The result shows that FlatCityBuf encoding performed better for some datasets such as Helsinki, Ingolstadt, Montréal, and New York City. The compression factor for those cities are $16.36\%$, $19.09\%$, $-4.38\%$, and $20.17\%$ respectively. On the other hands, PLATEAU datasets show the opposite result, that is, CityJSONSeq format performed better for those datasets.
+\autoref{tab:dataset_comparison} presents a comparison of datasets in both CityJSONSeq and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16.36\%, 19.09\%, and 20.17\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with CityJSONSeq format demonstrating better storage efficiency.
 
 \begin{table*}
   \centering
@@ -114,12 +114,16 @@ To evaluate file sizes and conduct both local and web-based benchmarks, we utili
 
 \subsection{Analysis of file size results}
 \label{result:overview:analysis_of_file_size_results}
-Although \autoref{result:overview:filesize_comparison} shows summary of the file size results, it's still not clear what effects on the resulting file size. Therefore, the section tries to analyse the possible cause by experimenting with simplier datasets.
+Although \autoref{result:overview:filesize_comparison} provides a summary of file size comparisons, the factors influencing these outcomes require further investigation. This section analyses the underlying causes through controlled experiments with simplified datasets.
 
 \subsubsection{Level of detail}
 \label{result:overview:analysis_of_file_size_results:level_of_detail}
 
-To understand the impact of level of detail (LOD) on file size, a series of tests were conducted using the TU Delft BK building model at different LOD levels. Each LOD was manually extracted from the original model, and attributes and semantic attributes were deliberately deleted to simplify the problem and focus solely on geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
+To examine how level of detail (LOD) affects file size, we conducted a series of tests using the TU Delft BK building model at various LOD levels. Each LOD variant was systematically extracted from the original model, with attributes and semantic information deliberately removed to isolate the effect of geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
+
+Since each test dataset contains only a single city feature, we compare feature sizes rather than total file sizes. This approach is necessary because FlatCityBuf incorporates a larger header structure, which would disproportionately affect comparisons involving minimal features.
+
+The results indicate that while file sizes naturally increase with higher levels of detail, there is no significant correlation between LOD and compression efficiency. Both formats exhibit proportional growth as geometric complexity increases. FlatCityBuf's compression advantage over CityJSONSeq remains consistent across most LOD levels, typically maintaining a 24-25\% reduction in size.
 
 \begin{table}[htbp]
   \centering
@@ -144,13 +148,10 @@ To understand the impact of level of detail (LOD) on file size, a series of test
   \end{tablenotes}
 \end{table}
 
-Note that because the given simple dataset only contains 1 city feature, we compare the bytes size of the feature rather than the entire file size. This is because FlatCityBuf tends to have a larger overall file size for tiny features due to its header part, which would skew the comparison if we looked at total file sizes.
-The results show that while there is a natural increase in file size with higher levels of detail, there is actually not much correlation between LOD and compression efficiency. Both formats grow proportionally as geometric complexity increases. The compression advantage of FlatCityBuf over CityJSONSeq remains relatively stable across most LOD levels, typically around 24-25\%.
-
 \subsubsection{Attributes}
 \label{result:overview:analysis_of_file_size_results:attributes}
 
-To analyze the impact of attributes on file size, tests were conducted using simple cube models from \citep{cityjson_dataset} with varying numbers of attributes. Attributes were randomly generated to the specified number for each test case. Both integer and string attributes were tested to understand how different data types affect compression. \autoref{tab:attribute_comparison} presents the results of this analysis.
+To assess the impact of attributes on file size, we tested simple cube models from \citep{cityjson_dataset} with varying numbers of attributes. We systematically generated random attributes for each test case, examining both integer and string data types to determine their effect on compression efficiency. \autoref{tab:attribute_comparison} presents the results of this analysis.
 
 \begin{table}[htbp]
   \centering
@@ -174,75 +175,197 @@ To analyze the impact of attributes on file size, tests were conducted using sim
   \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
   \end{tablenotes}
 \end{table}
-The results demonstrate a distinct pattern: FlatCityBuf's compression advantage over CityJSONSeq grows substantially as the number of attributes increases. With just 10 attributes, the compression benefit is negligible at 5.07\%. This advantage rises significantly to 33.65\% with 100 attributes and reaches 44.13\% with 1000 attributes. This efficiency stems from FlatCityBuf's design, which stores the attribute schema once in the file header. Each feature then references attributes using only a 2-byte (u16) index, while CityJSONSeq must repeat identical attribute keys across all features. Although additional attributes increase the header size, this cost is distributed across all features in the dataset. The header remains compact—even with 1000 attributes, it occupies only a few tens of kilobytes. These characteristics make FlatCityBuf particularly well-suited for datasets containing numerous attributes.
 
-\subsubsection{Geometric complexity}
+The randomly generated attributes in our test datasets followed a consistent pattern, as shown in the example below:
+
+\begin{verbatim}
+{
+  "type": "Building",
+  "geometry": [...],
+  "attributes": {
+    "attr_1": "value_1,
+    "attr_2": "value_2",
+    "attr_3": "value_3",
+    "attr_4": "value_4",
+    "attr_5": "value_5",
+    ...
+    "attr_n": "value_n"
+  }
+}
+\end{verbatim}
+
+For integer attribute tests, all values were randomly generated integers between 0 and 1000. For string attribute tests, values were randomly generated strings of varying lengths between 5 and 15 characters. This approach ensured a realistic representation of typical attribute data while maintaining controlled test conditions.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\textwidth]{figs/result_analysis/cube.png}
+  \caption{Simple cube model used for attribute testing. This basic geometric structure provides a controlled environment for evaluating the impact of attributes on file size.}
+  \label{fig:simple_cube}
+\end{figure}
+
+The results reveal a clear pattern: FlatCityBuf's compression advantage over CityJSONSeq increases substantially with the number of attributes. With only 10 attributes, the compression benefit is minimal at 5.07\%, but rises markedly to 33.65\% with 100 attributes and reaches 44.13\% with 1000 attributes.
+
+This efficiency stems from FlatCityBuf's architectural design, which stores the attribute schema once in the file header. Each feature subsequently references attributes using only a 2-byte (u16) index, while CityJSONSeq must replicate identical attribute keys across all features. Although additional attributes increase the header size, this overhead is distributed across all features in the dataset. The header remains relatively compact—even with 1000 attributes, it occupies only a few tens of kilobytes.
+
+These characteristics render FlatCityBuf particularly advantageous for datasets containing numerous attributes. The same efficiency applies to semantic surface attributes, where the schema-based approach provides similar compression benefits when features contain multiple surfaces with rich semantic information.
+
+\subsubsection{Geometry complexity}
 \label{result:overview:analysis_of_file_size_results:geometric_complexity}
+
+To evaluate how geometric complexity influences file size, we analysed models with varying numbers of vertices. The test utilised two geometrically distinct models from the TU Delft campus dataset—one simple and one complex. To isolate the effect of geometry, attributes and semantic information were removed, leaving only the essential geometric components required by CityJSON. \autoref{tab:geometry_comparison} presents the numerical results of this analysis, while \autoref{fig:geometry_comparison} provides visual comparisons of the models.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of file sizes with varying geometric complexity.}
+  \label{tab:geometry_comparison}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Vertices/Feature} \\
+    \midrule
+    TUD BK & \qty{139.75}{\kilo\byte} & \qty{189.01}{\kilo\byte} & $26.06\%$ & 4549 \\
+    TUD Simple & \qty{13.12}{\kilo\byte} & \qty{15.42}{\kilo\byte} & $14.94\%$ & 340 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Average feature size in bytes in FlatCityBuf: $\frac{\text{Total FlatCityBuf size}}{\text{Number of features}}$
+  \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
+  \end{tablenotes}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/result_analysis/tud_simple.png}
+    \caption{TUD Simple model (340 vertices/feature)}
+    \label{fig:tud_simple}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/result_analysis/tud_bk.png}
+    \caption{TUD BK model (4549 vertices/feature)}
+    \label{fig:tud_bk}
+  \end{subfigure}
+  \caption{Visual comparison of models with different geometric complexity.}
+  \label{fig:geometry_comparison}
+\end{figure}
+
+The results demonstrate that geometric complexity significantly affects compression efficiency, with FlatCityBuf achieving better compression for more intricate models. The TU Delft BK building model, containing 4549 vertices per feature, exhibits a higher compression rate of 26.06\% compared to the simpler model with 340 vertices at 14.94\%.
+
+This differential appears to result from the expanding boundary field as geometry becomes more complex. FlatCityBuf employs a strongly typed representation of boundaries (using u32 integers) that maintains a constant size for encoding each vertex, whereas CityJSONSeq requires additional bytes due to its text-based format. This fundamental difference in geometry encoding becomes increasingly advantageous for FlatCityBuf as geometric complexity rises.
 
 \subsubsection{Vertices and coordinates}
 \label{result:overview:analysis_of_file_size_results:vertices_and_coordinates}
 
+To investigate how coordinate scale affects file size, we conducted tests using identical cube geometries with varying coordinate magnitudes. These models contain the same number of vertices (8 per feature) but differ in their coordinate scale values. \autoref{tab:vertices_comparison} presents the results of this analysis, utilising the same base models as in \autoref{result:overview:analysis_of_file_size_results:attributes}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparison of file sizes with varying coordinate scales.}
+  \label{tab:vertices_comparison}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Scale} \\
+    \midrule
+    Cube (1) & \qty{476}{\byte} & \qty{370}{\byte} & $-28.65\%$ & 1 \\
+    Cube (10) & \qty{476}{\byte} & \qty{459}{\byte} & $-3.70\%$ & 10 \\
+    Cube (1k) & \qty{476}{\byte} & \qty{507}{\byte} & $6.11\%$ & 1,000 \\
+    Cube (1M) & \qty{476}{\byte} & \qty{579}{\byte} & $17.79\%$ & 1,000,000 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Average feature size in bytes in FlatCityBuf: $\frac{\text{Total FlatCityBuf size}}{\text{Number of features}}$
+  \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
+  \end{tablenotes}
+\end{table}
+
+The results reveal an intriguing relationship between coordinate scale and file size in both formats. FlatCityBuf maintains a consistent size of 476 bytes regardless of coordinate magnitude, demonstrating its fixed-size binary encoding for numeric values. In contrast, CityJSONSeq's file size increases proportionally with larger coordinate values, growing from 370 bytes with single-digit coordinates to 579 bytes with million-scale coordinates.
+
+This behaviour occurs because FlatCityBuf stores coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\% compression) to substantially more efficient for large coordinate values (17.79\% compression).
+
+This characteristic explains the pattern observed in \autoref{result:overview:filesize_comparison}. FlatCityBuf demonstrates lower storage efficiency for PLATEAU datasets, likely because these datasets employ geographic coordinate systems with values typically between -180 and 180. Since CityJSON quantises coordinates through the \texttt{Transform} field, latitude and longitude values can be represented as relatively small integers. Conversely, datasets where FlatCityBuf performs better—such as NYC and Helsinki—use local coordinate systems (in metres) with larger internal values, resulting in improved compression efficiency with FlatCityBuf.
+
+\subsubsection{Summary of File Size Analysis}
+\label{result:overview:analysis_of_file_size_results:summary}
+
+The comprehensive analysis of various factors affecting file size reveals distinct patterns in the compression performance of FlatCityBuf compared to CityJSONSeq:
+
+\begin{itemize}
+  \item \textbf{Level of Detail:} The analysis demonstrates that geometric detail levels have minimal impact on compression efficiency. While file sizes naturally increase with higher LODs, the compression advantage of FlatCityBuf remains relatively consistent at approximately 24-25\% across different levels of geometric complexity.
+
+  \item \textbf{Attribute Quantity:} The number of attributes significantly influences compression performance. FlatCityBuf's efficiency increases dramatically with attribute count, from minimal compression (5.07\%) with 10 attributes to substantial compression (44.13\%) with 1000 attributes. This progressive advantage stems from FlatCityBuf's schema-based approach that eliminates redundant attribute key storage.
+
+  \item \textbf{Geometric Complexity:} More intricate geometries benefit from improved compression with FlatCityBuf. As boundary fields expand with geometric complexity, FlatCityBuf's fixed-size numeric representation provides greater efficiency compared to the text-based encoding of CityJSONSeq, increasing compression from 14.94\% for simple geometries to 26.06\% for complex models.
+
+  \item \textbf{Coordinate Scale:} The magnitude of coordinate values has a significant impact on compression efficiency. FlatCityBuf's constant-size integer representation maintains consistent file sizes regardless of coordinate scale, while CityJSONSeq requires more space for larger values. This creates a transition from inferior compression (-28.65\%) with small coordinate values to superior compression (17.79\%) with large coordinate values.
+\end{itemize}
+
+These findings elucidate the observed variations in compression performance across different datasets in \autoref{tab:dataset_comparison}. FlatCityBuf demonstrates optimal performance for datasets with numerous attributes, complex geometries, and large-scale coordinate systems, while CityJSONSeq may retain advantages for simpler datasets with limited attributes and smaller coordinate values.
+
 \section{Benchmark on Local Environment}
 \label{result:benchmark_on_local_environment}
 
-This section details the performance evaluation of the proposed FlatCitybuf format in a controlled local environment, focusing on read operations, memory consumption, and processing efficiency.
+This section presents a comprehensive performance evaluation of the FlatCityBuf format conducted in a controlled local environment. The analysis focuses on critical metrics including read operations, memory utilisation, and processing efficiency to establish a thorough understanding of the format's performance characteristics.
 
 \subsection{Test Environment}
 \label{result:benchmark_on_local_environment:test_environment}
 
-All benchmarks were conducted on a consistent hardware and software configuration to ensure reliable and reproducible results:
+All benchmarks were executed within a consistent hardware and software configuration to ensure reliability and reproducibility:
 
 \begin{itemize}
   \item \textbf{Hardware:} Apple MacBook Pro with M1 Max chip, 32GB unified memory
   \item \textbf{Operating System:} macOS Sequoia 15.4
   \item \textbf{Filesystem:} APFS (Apple File System)
-  \item \textbf{Disk Configuration:} 1TB SSD with approximately 500GB free space
-  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds (-O3 optimisation)
+  \item \textbf{Storage:} 1TB SSD with approximately 500GB available capacity
+  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds (-O3 optimisation level)
 \end{itemize}
 
-To minimise environmental variables affecting the measurements, all tests were performed with:
+To eliminate confounding variables that might influence the measurements, all tests incorporated the following controls:
 \begin{itemize}
-  \item Minimal background processes running
-  \item No active network connections (except where required for web benchmarks)
-  \item Consistent thermal conditions (ambient temperature and system cooling)
-  \item Power connected to eliminate battery state influence
+  \item Minimisation of background processes
+  \item Isolation from network activity (except where specifically required for web-based benchmarks)
+  \item Maintenance of consistent thermal conditions
+  \item Connection to mains power to eliminate variations in CPU frequency that might occur during battery operation
 \end{itemize}
 
 \subsection{Benchmark Methodology}
 \label{result:benchmark_on_local_environment:benchmark_methodology}
 
-The benchmark procedure followed a systematic approach to ensure measurement accuracy:
+The evaluation methodology followed rigorous scientific principles to ensure accuracy and reproducibility:
 
 \begin{itemize}
-  \item \textbf{Warm-up Phase:} Prior to measurement, each format underwent a 5-second warm-up period with repeated operations to ensure CPU caches were properly primed and JIT optimisations were applied
+  \item \textbf{Warm-up Phase:} Each format underwent a preliminary 5-second warm-up period with repeated operations to prime CPU caches and allow Just-In-Time compilation optimisations to stabilise
 
-  \item \textbf{Measurement Iterations:} Each operation was executed 100 times consecutively, with measurements recorded for each iteration
+  \item \textbf{Measurement Protocol:} Each operation was executed through 100 consecutive iterations, with performance metrics recorded for every iteration
 
-  \item \textbf{Statistical Processing:} Measurements were processed to obtain mean values, standard deviations, and confidence intervals (95\%)
+  \item \textbf{Statistical Analysis:} The collected measurements underwent comprehensive statistical processing to derive mean values, standard deviations, and 95\% confidence intervals
 
-  \item \textbf{Process Isolation:} Each format test was run in a separate process to prevent cross-contamination of memory or cache state
+  \item \textbf{Process Isolation:} Format tests were executed in separate processes to prevent cross-contamination of memory state or cache contents
 
-  \item \textbf{File System Cache Control:} Between format tests, file system caches were cleared to ensure fair comparison of I/O performance
+  \item \textbf{Cache Control:} File system caches were systematically cleared between format tests to ensure equivalent I/O conditions across all evaluations
 \end{itemize}
 
 \subsection{Measurement Parameters}
 \label{result:benchmark_on_local_environment:measurement_parameters}
 
-The benchmark captured several key performance indicators:
+The benchmark framework captured multiple performance dimensions through the following key indicators:
 
 \begin{itemize}
-  \item \textbf{Read Time:} The duration required to deserialise the file and access the complete CityJSON structure, measured in milliseconds
+  \item \textbf{Read Performance:} Time required to deserialise the file and construct the complete CityJSON structure in memory, measured in milliseconds with microsecond precision
 
-  \item \textbf{Memory Consumption:} Peak Resident Set Size (RSS) during file processing, indicating the maximum memory footprint of the operation
+  \item \textbf{Memory Efficiency:} Peak Resident Set Size (RSS) during file processing, providing an accurate measurement of maximum memory requirements
 
-  \item \textbf{CPU Utilisation:} Percentage of CPU resources consumed during the operation, measured as an average across the process lifetime
+  \item \textbf{Computational Overhead:} CPU utilisation percentage during operations, calculated as an average across the entire process lifecycle
 
-  \item \textbf{Storage Efficiency:} File size comparison between formats, measured in megabytes and percentage reduction relative to the original CityJSON format
+  \item \textbf{Storage Efficiency:} Comparative file size analysis between formats, quantified in megabytes and as percentage reduction relative to the standard CityJSON format
 
-  \item \textbf{Partial Data Access:} For formats supporting it, the time required to access specific city objects without loading the entire dataset
+  \item \textbf{Partial Access Performance:} For formats supporting selective data retrieval, the time required to access specific city objects without loading the entire dataset
 \end{itemize}
 
-For each dataset, these parameters were measured across all encoding formats (CityJSON, CityJSONSeq, CBOR, BSON, and FlatCitybuf) to enable direct comparison. The following section presents the results of these measurements and analyses their implications for format performance.
+These parameters were systematically measured across all encoding formats—CityJSON, CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
 
 \subsection{Read Performance Results}
 \label{result:benchmark_on_local_environment:read_performance_results}
