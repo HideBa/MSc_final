@@ -61,13 +61,7 @@ Modern cloud-optimised geospatial formats leverage established non-geospatial da
 
 \subsection{FlatBuffers}
 \label{rw:non_geospatial_formats:flatbuffers}
-\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}, optimised for efficient data transfer and storage. Its core characteristics include:
-
-\begin{itemize}
-  \item \textbf{Zero-Copy Access}: Stores hierarchical data within a flat binary buffer, enabling direct data access without intermediate parsing or unpacking
-  \item \textbf{Memory Optimisation}: Minimises memory allocation through buffer-only operations, facilitating memory-mapped file access and selective data loading for performance-critical applications
-  \item \textbf{Schema Validation}: Implements strong typing via schema definitions, allowing for compile-time type checking and runtime data validation
-\end{itemize}
+\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}, optimised for efficient data transfer and storage. The detailed characteristics and technical implementation of FlatBuffers will be explained in \autoref{tb:flatbuffers}.
 
 Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats, such as \citet{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
 

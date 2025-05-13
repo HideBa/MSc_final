@@ -29,7 +29,7 @@ Two major OGC standards provide guidance on common query operators: Filter Encod
     \hline
     \textbf{Comparison Operators} &
     PropertyIsEqualTo, PropertyIsNotEqualTo, PropertyIsLessThan, PropertyIsGreaterThan, PropertyIsLessThanOrEqualTo, PropertyIsGreaterThanOrEqualTo, PropertyIsLike, PropertyIsNull, PropertyIsBetween &
-    =, !=, <, <=, >, >=, LIKE, IS NULL, BETWEEN, IN \\
+    $=$, $!=$, $<$, $<=$, $>$, $>=$, LIKE, IS NULL, BETWEEN, IN \\
     \hline
     \textbf{Spatial Operators} &
     BBOX, Equals, Disjoint, Touches, Within, Overlaps, Crosses, Intersects, Contains, DWithin, Beyond &
@@ -54,13 +54,13 @@ Based on this analysis and the practical constraints of optimizing for cloud-bas
 \begin{enumerate}
   \item \textbf{Primary Comparison Operators}: Operators with direct index support
     \begin{itemize}
-      \item Equality (=)
-      \item Inequality (!=)
-      \item Less than (<)
-      \item Less than or equal (<=)
-      \item Greater than (>)
-      \item Greater than or equal (>=)
-      \item BETWEEN (implemented as combined >= and <=)
+      \item Equality ($=$)
+      \item Inequality ($!=$)
+      \item Less than ($<$)
+      \item Less than or equal ($<=$)
+      \item Greater than ($>$)
+      \item Greater than or equal ($>=$)
+      \item BETWEEN (implemented as combined $\geq$ and $\leq$)
     \end{itemize}
 
   \item \textbf{Logical Combinations}: Supported at the query execution level

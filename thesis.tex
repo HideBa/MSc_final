@@ -1,7 +1,7 @@
 \documentclass[10pt,a4paper,twoside,openright,fleqn,%
-               parskip=half,%
-               BCOR=5mm,DIV=10,footinclude=false%
-               numbers=noenddot,cleardoublepage=empty]{scrbook}
+  parskip=half,%
+  BCOR=5mm,DIV=10,footinclude=false%
+numbers=noenddot,cleardoublepage=empty]{scrbook}
 
 \usepackage[utf8]{inputenc}
 \usepackage[sc]{mathpazo} %-- use Palatino font
@@ -10,9 +10,9 @@
 \usepackage{subcaption}
 \usepackage{xspace}
 \usepackage[breaklinks=true,
-            colorlinks=true,
-            linktocpage=true,
-            allcolors=colorforlinks]{hyperref}
+  colorlinks=true,
+  linktocpage=true,
+allcolors=colorforlinks]{hyperref}
 \usepackage[ruled,vlined,algochapter,linesnumbered]{algorithm2e}
 \usepackage{calc}
 \usepackage{ccicons}
@@ -30,8 +30,7 @@
 \usepackage{multirow}
 \usepackage{threeparttable}
 \usepackage{lmodern}
-
-
+\usepackage{xcolor}
 
 \input{mysettings}
 
@@ -45,7 +44,6 @@
 \publishers{A thesis submitted to the Delft University of Technology in partial fulfillment of the requirements for the degree of Master of Science in Geomatics}
 
 \begin{document}
-
 
 %******************************************************************
 % Frontmatter
@@ -133,12 +131,9 @@
 \bibliographystyle{plainnat}
 \bibliography{myreferences}
 
-
-
 \clearpage
 \include{back/colophon}
 \cleardoublepage
-
 
 \includepdf{cover/cover_back.pdf}
 
