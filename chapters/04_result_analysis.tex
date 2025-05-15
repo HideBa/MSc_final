@@ -285,7 +285,7 @@ To investigate how coordinate scale affects file size, we conducted tests using 
 
 The results reveal an intriguing relationship between coordinate scale and file size in both formats. FlatCityBuf maintains a consistent size of 476 bytes regardless of coordinate magnitude, demonstrating its fixed-size binary encoding for numeric values. In contrast, CityJSONSeq's file size increases proportionally with larger coordinate values, growing from 370 bytes with single-digit coordinates to 579 bytes with million-scale coordinates.
 
-This behaviour occurs because FlatCityBuf stores coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\% compression) to substantially more efficient for large coordinate values (17.79\% compression).
+This behaviour occurs because FlatCityBuf stores coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\%) to substantially more efficient for large coordinate values (17.79\%).
 
 This characteristic explains the pattern observed in \autoref{result:overview:filesize_comparison}. FlatCityBuf demonstrates lower storage efficiency for PLATEAU datasets, likely because these datasets employ geographic coordinate systems with values typically between -180 and 180. Since CityJSON quantises coordinates through the \texttt{Transform} field, latitude and longitude values can be represented as relatively small integers. Conversely, datasets where FlatCityBuf performs better—such as NYC and Helsinki—use local coordinate systems (in metres) with larger internal values, resulting in improved compression efficiency with FlatCityBuf.
 
@@ -320,34 +320,26 @@ All benchmarks were executed within a consistent hardware and software configura
   \item \textbf{Hardware:} Apple MacBook Pro with M1 Max chip, 32GB unified memory
   \item \textbf{Operating System:} macOS Sequoia 15.4
   \item \textbf{Filesystem:} APFS (Apple File System)
-  \item \textbf{Storage:} 1TB SSD with approximately 500GB available capacity
-  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds (-O3 optimisation level)
+  \item \textbf{Storage:} 1TB SSD with approximately 200GB available capacity
+  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds
 \end{itemize}
 
-To eliminate confounding variables that might influence the measurements, all tests incorporated the following controls:
-\begin{itemize}
-  \item Minimisation of background processes
-  \item Isolation from network activity (except where specifically required for web-based benchmarks)
-  \item Maintenance of consistent thermal conditions
-  \item Connection to mains power to eliminate variations in CPU frequency that might occur during battery operation
-\end{itemize}
+% \subsection{Benchmark Methodology}
+% \label{result:benchmark_on_local_environment:benchmark_methodology}
 
-\subsection{Benchmark Methodology}
-\label{result:benchmark_on_local_environment:benchmark_methodology}
+% The evaluation methodology followed rigorous scientific principles to ensure accuracy and reproducibility:
 
-The evaluation methodology followed rigorous scientific principles to ensure accuracy and reproducibility:
+% \begin{itemize}
+%   \item \textbf{Warm-up Phase:} Each format underwent a preliminary 5-second warm-up period with repeated operations to prime CPU caches and allow Just-In-Time compilation optimisations to stabilise
 
-\begin{itemize}
-  \item \textbf{Warm-up Phase:} Each format underwent a preliminary 5-second warm-up period with repeated operations to prime CPU caches and allow Just-In-Time compilation optimisations to stabilise
+%   \item \textbf{Measurement Protocol:} Each operation was executed through 100 consecutive iterations, with performance metrics recorded for every iteration
 
-  \item \textbf{Measurement Protocol:} Each operation was executed through 100 consecutive iterations, with performance metrics recorded for every iteration
+%   \item \textbf{Statistical Analysis:} The collected measurements underwent comprehensive statistical processing to derive mean values, standard deviations, and 95\% confidence intervals
 
-  \item \textbf{Statistical Analysis:} The collected measurements underwent comprehensive statistical processing to derive mean values, standard deviations, and 95\% confidence intervals
+%   \item \textbf{Process Isolation:} Format tests were executed in separate processes to prevent cross-contamination of memory state or cache contents
 
-  \item \textbf{Process Isolation:} Format tests were executed in separate processes to prevent cross-contamination of memory state or cache contents
-
-  \item \textbf{Cache Control:} File system caches were systematically cleared between format tests to ensure equivalent I/O conditions across all evaluations
-\end{itemize}
+%   \item \textbf{Cache Control:} File system caches were systematically cleared between format tests to ensure equivalent I/O conditions across all evaluations
+% \end{itemize}
 
 \subsection{Measurement Parameters}
 \label{result:benchmark_on_local_environment:measurement_parameters}
@@ -361,21 +353,347 @@ The benchmark framework captured multiple performance dimensions through the fol
 
   \item \textbf{Computational Overhead:} CPU utilisation percentage during operations, calculated as an average across the entire process lifecycle
 
-  \item \textbf{Storage Efficiency:} Comparative file size analysis between formats, quantified in megabytes and as percentage reduction relative to the standard CityJSON format
-
-  \item \textbf{Partial Access Performance:} For formats supporting selective data retrieval, the time required to access specific city objects without loading the entire dataset
 \end{itemize}
 
-These parameters were systematically measured across all encoding formats—CityJSON, CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
+These parameters were systematically measured across all encoding formats-CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
 
-\subsection{Read Performance Results}
-\label{result:benchmark_on_local_environment:read_performance_results}
+\subsubsection{Read Performance FlatCityBuf vs CityJSONSeq}
+\label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
+
+The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring CPU utilization, processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
+
+\begin{table}[ht]
+  \centering
+  \begin{threeparttable}
+    \caption{Performance comparison between CityJSONSeq and FlatCityBuf}
+    \label{tab:performance_comparison}
+    \setlength{\tabcolsep}{10pt}
+    \tiny
+    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+      \toprule
+      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{Processing Time}}
+      & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \textbf{Dataset}
+      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      \midrule
+      3DBAG
+      & 19.30\% & 2.10\% & 9.21$\times$
+      & \qty{59.00}{\milli\second} & \qty{7.00}{\milli\second} & 8.48$\times$
+      & \qty{41.67}{\mega\byte} & \qty{10.81}{\mega\byte} & 3.85$\times$ \\
+
+      3DBV
+      & 97.79\% & 41.92\% & 2.33$\times$
+      & \qty{4.03}{\second} & \qty{141.00}{\milli\second} & 28.51$\times$
+      & \qty{287.77}{\mega\byte} & \qty{296.58}{\mega\byte} & 0.97$\times$ \\
+
+      Helsinki
+      & 97.75\% & 44.77\% & 2.18$\times$
+      & \qty{3.71}{\second} & \qty{159.00}{\milli\second} & 23.29$\times$
+      & \qty{1.77}{\giga\byte} & \qty{1.77}{\giga\byte} & 1.00$\times$ \\
+
+      Ingolstadt
+      & 13.82\% & 0.87\% & 15.82$\times$
+      & \qty{39.00}{\milli\second} & \qty{1.00}{\milli\second} & 36.13$\times$
+      & \qty{1.86}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.01$\times$ \\
+
+      Montréal
+      & 23.67\% & 1.12\% & 21.13$\times$
+      & \qty{59.00}{\milli\second} & \qty{1.00}{\milli\second} & 46.62$\times$
+      & \qty{2.05}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.00$\times$ \\
+
+      NYC
+      & 94.91\% & 14.55\% & 6.52$\times$
+      & \qty{924.00}{\milli\second} & \qty{44.00}{\milli\second} & 20.93$\times$
+      & \qty{2.15}{\giga\byte} & \qty{2.15}{\giga\byte} & 1.00$\times$ \\
+
+      Rotterdam
+      & 8.33\% & 0.99\% & 8.41$\times$
+      & \qty{22.00}{\milli\second} & \qty{1.00}{\milli\second} & 14.25$\times$
+      & \qty{942.89}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.00$\times$ \\
+
+      Vienna
+      & 15.55\% & 1.02\% & 15.21$\times$
+      & \qty{48.00}{\milli\second} & \qty{2.00}{\milli\second} & 19.11$\times$
+      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.00$\times$ \\
+
+      Zürich
+      & 97.46\% & 55.11\% & 1.77$\times$
+      & \qty{1.98}{\second} & \qty{162.00}{\milli\second} & 12.12$\times$
+      & \qty{868.83}{\mega\byte} & \qty{1.02}{\giga\byte} & 0.83$\times$ \\
+
+      Tokyo (PLATEAU)
+      & 91.34\% & 32.57\% & 2.80$\times$
+      & \qty{2.19}{\second} & \qty{99.00}{\milli\second} & 21.95$\times$
+      & \qty{47.27}{\mega\byte} & \qty{15.00}{\mega\byte} & 3.15$\times$ \\
+
+      PLATEAU\_brid
+      & 33.61\% & 0.01\% & 2826.56$\times$
+      & \qty{91.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 103.64$\times$
+      & \qty{1.03}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+
+      PLATEAU\_rwy
+      & 14.62\% & -0.25\%\tnote{c} & -58.98$\times$
+      & \qty{44.00}{\milli\second} & \qty{4.00}{\milli\second} & 9.06$\times$
+      & \qty{1.11}{\giga\byte} & \qty{1.12}{\giga\byte} & 1.00$\times$ \\
+
+      PLATEAU\_tran
+      & 86.61\% & 2.70\% & 32.05$\times$
+      & \qty{267.00}{\milli\second} & \qty{14.00}{\milli\second} & 18.11$\times$
+      & \qty{416.45}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.62$\times$ \\
+
+      PLATEAU\_tun
+      & 15.95\% & 0.58\% & 27.40$\times$
+      & \qty{52.00}{\milli\second} & \qty{2.00}{\milli\second} & 22.42$\times$
+      & \qty{287.77}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.60$\times$ \\
+
+      PLATEAU\_veg
+      & 91.11\% & 12.59\% & 7.24$\times$
+      & \qty{938.00}{\milli\second} & \qty{60.00}{\milli\second} & 15.55$\times$
+      & \qty{212.42}{\mega\byte} & \qty{294.53}{\mega\byte} & 0.72$\times$ \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+    \item[a] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
+    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
+    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item Note: cjseq = CityJSONSeq, FCB = FlatCityBuf
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\todo{Check if the memory consumption is correct. Also take benchmark on better environment}
+
+The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. CPU utilization is substantially lower for FlatCityBuf across all datasets, ranging from 1.77× to over ??? improvement. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
+
+\subsubsection{Read performance FlatCityBuf vs CBOR}
+\label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cbor}
+
+The performance comparison between FlatCityBuf and CBOR was conducted using the same datasets and measurement methodology. \autoref{tab:performance_comparison_cbor} presents these results.
+
+\begin{table}[ht]
+  \centering
+  \begin{threeparttable}
+    \caption{Performance comparison between CBOR and FlatCityBuf}
+    \label{tab:performance_comparison_cbor}
+    \setlength{\tabcolsep}{10pt}
+    \tiny
+    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+      \toprule
+      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{Processing Time}}
+      & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \textbf{Dataset}
+      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      \midrule
+      3DBAG
+      & 31.81\% & 2.10\% & 15.18$\times$
+      & \qty{91.00}{\milli\second} & \qty{7.00}{\milli\second} & 12.97$\times$
+      & \qty{155.47}{\mega\byte} & \qty{10.81}{\mega\byte} & 14.38$\times$ \\
+
+      3DBV
+      & 85.57\% & 41.92\% & 2.04$\times$
+      & \qty{6.50}{\second} & \qty{141.00}{\milli\second} & 46.00$\times$
+      & \qty{1.32}{\giga\byte} & \qty{296.58}{\mega\byte} & 4.56$\times$ \\
+
+      Helsinki
+      & 84.68\% & 44.77\% & 1.89$\times$
+      & \qty{8.85}{\second} & \qty{159.00}{\milli\second} & 55.49$\times$
+      & \qty{1.27}{\giga\byte} & \qty{1.77}{\giga\byte} & 0.72$\times$ \\
+
+      Ingolstadt
+      & 15.14\% & 0.87\% & 17.33$\times$
+      & \qty{48.00}{\milli\second} & \qty{1.00}{\milli\second} & 44.85$\times$
+      & \qty{1.92}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.03$\times$ \\
+
+      Montréal
+      & 15.93\% & 1.12\% & 14.22$\times$
+      & \qty{61.00}{\milli\second} & \qty{1.00}{\milli\second} & 48.70$\times$
+      & \qty{2.06}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.01$\times$ \\
+
+      NYC
+      & 96.24\% & 14.55\% & 6.62$\times$
+      & \qty{1.35}{\second} & \qty{44.00}{\milli\second} & 30.47$\times$
+      & \qty{1.04}{\giga\byte} & \qty{2.15}{\giga\byte} & 0.48$\times$ \\
+
+      Rotterdam
+      & 11.93\% & 0.99\% & 12.04$\times$
+      & \qty{30.00}{\milli\second} & \qty{1.00}{\milli\second} & 18.95$\times$
+      & \qty{946.36}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.01$\times$ \\
+
+      Vienna
+      & 18.54\% & 1.02\% & 18.14$\times$
+      & \qty{57.00}{\milli\second} & \qty{2.00}{\milli\second} & 22.45$\times$
+      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+
+      Zürich
+      & 96.21\% & 55.11\% & 1.75$\times$
+      & \qty{3.72}{\second} & \qty{162.00}{\milli\second} & 22.81$\times$
+      & \qty{942.11}{\mega\byte} & \qty{1.02}{\giga\byte} & 0.90$\times$ \\
+
+      Tokyo (PLATEAU)
+      & 86.76\% & 32.57\% & 2.66$\times$
+      & \qty{3.71}{\second} & \qty{99.00}{\milli\second} & 37.14$\times$
+      & \qty{924.42}{\mega\byte} & \qty{15.00}{\mega\byte} & 61.63$\times$ \\
+
+      PLATEAU\_brid
+      & 30.03\% & 0.01\% & 2525.25$\times$
+      & \qty{68.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 78.02$\times$
+      & \qty{1.07}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.06$\times$ \\
+
+      PLATEAU\_rwy
+      & 15.74\% & -0.25\%\tnote{c} & -63.51$\times$
+      & \qty{47.00}{\milli\second} & \qty{4.00}{\milli\second} & 9.63$\times$
+      & \qty{1.10}{\giga\byte} & \qty{1.12}{\giga\byte} & 0.98$\times$ \\
+
+      PLATEAU\_tran
+      & 88.01\% & 2.70\% & 32.57$\times$
+      & \qty{326.00}{\milli\second} & \qty{14.00}{\milli\second} & 22.14$\times$
+      & \qty{307.84}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.46$\times$ \\
+
+      PLATEAU\_tun
+      & 56.14\% & 0.58\% & 96.46$\times$
+      & \qty{222.00}{\milli\second} & \qty{2.00}{\milli\second} & 94.80$\times$
+      & \qty{293.31}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.61$\times$ \\
+
+      PLATEAU\_veg
+      & 92.28\% & 12.59\% & 7.33$\times$
+      & \qty{1.09}{\second} & \qty{60.00}{\milli\second} & 18.00$\times$
+      & \qty{727.64}{\mega\byte} & \qty{294.53}{\mega\byte} & 2.47$\times$ \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+    \item[a] Ratio = CBOR metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
+    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
+    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item Note: FCB = FlatCityBuf
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\todo{write something about the results. Also take benchmark on better environment}
+
+\subsubsection{Read performance FlatCityBuf vs BSON}
+\label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_bson}
+
+The performance comparison between FlatCityBuf and BSON followed the same methodology as the previous comparisons. \autoref{tab:performance_comparison_bson} presents the detailed results.
+
+\begin{table}[ht]
+  \centering
+  \begin{threeparttable}
+    \caption{Performance comparison between BSON and FlatCityBuf}
+    \label{tab:performance_comparison_bson}
+    \setlength{\tabcolsep}{10pt}
+    \tiny
+    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+      \toprule
+      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{Processing Time}}
+      & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \textbf{Dataset}
+      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      \midrule
+      3DBAG
+      & 34.24\% & 2.10\% & 16.34$\times$
+      & \qty{118.00}{\milli\second} & \qty{7.00}{\milli\second} & 16.80$\times$
+      & \qty{276.41}{\mega\byte} & \qty{10.81}{\mega\byte} & 25.56$\times$ \\
+
+      3DBV
+      & 86.56\% & 41.92\% & 2.06$\times$
+      & \qty{11.26}{\second} & \qty{141.00}{\milli\second} & 79.70$\times$
+      & \qty{1.83}{\giga\byte} & \qty{296.58}{\mega\byte} & 6.33$\times$ \\
+
+      Helsinki
+      & 89.31\% & 44.77\% & 1.99$\times$
+      & \qty{11.47}{\second} & \qty{159.00}{\milli\second} & 71.93$\times$
+      & \qty{1.82}{\giga\byte} & \qty{1.77}{\giga\byte} & 1.03$\times$ \\
+
+      Ingolstadt
+      & 31.23\% & 0.87\% & 35.74$\times$
+      & \qty{82.00}{\milli\second} & \qty{1.00}{\milli\second} & 76.56$\times$
+      & \qty{2.04}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.10$\times$ \\
+
+      Montréal
+      & 80.62\% & 1.12\% & 71.96$\times$
+      & \qty{167.00}{\milli\second} & \qty{1.00}{\milli\second} & 132.33$\times$
+      & \qty{2.13}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.04$\times$ \\
+
+      NYC
+      & 97.09\% & 14.55\% & 6.67$\times$
+      & \qty{1.82}{\second} & \qty{44.00}{\milli\second} & 41.19$\times$
+      & \qty{924.05}{\mega\byte} & \qty{2.15}{\giga\byte} & 0.42$\times$ \\
+
+      Rotterdam
+      & 28.64\% & 0.99\% & 28.91$\times$
+      & \qty{67.00}{\milli\second} & \qty{1.00}{\milli\second} & 42.41$\times$
+      & \qty{995.86}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.06$\times$ \\
+
+      Vienna
+      & 30.45\% & 1.02\% & 29.78$\times$
+      & \qty{79.00}{\milli\second} & \qty{2.00}{\milli\second} & 31.17$\times$
+      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+
+      Zürich
+      & 92.20\% & 55.11\% & 1.67$\times$
+      & \qty{6.63}{\second} & \qty{162.00}{\milli\second} & 40.67$\times$
+      & \qty{1.88}{\giga\byte} & \qty{1.02}{\giga\byte} & 1.84$\times$ \\
+
+      Tokyo (PLATEAU)
+      & 85.47\% & 32.57\% & 2.62$\times$
+      & \qty{8.86}{\second} & \qty{99.00}{\milli\second} & 88.79$\times$
+      & \qty{1.26}{\giga\byte} & \qty{15.00}{\mega\byte} & 86.22$\times$ \\
+
+      PLATEAU\_brid
+      & 83.38\% & 0.01\% & 7011.68$\times$
+      & \qty{179.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 202.83$\times$
+      & \qty{1.15}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.13$\times$ \\
+
+      PLATEAU\_rwy
+      & 31.74\% & -0.25\%\tnote{c} & -128.03$\times$
+      & \qty{91.00}{\milli\second} & \qty{4.00}{\milli\second} & 18.58$\times$
+      & \qty{835.27}{\mega\byte} & \qty{1.12}{\giga\byte} & 0.73$\times$ \\
+
+      PLATEAU\_tran
+      & 92.65\% & 2.70\% & 34.29$\times$
+      & \qty{582.00}{\milli\second} & \qty{14.00}{\milli\second} & 39.46$\times$
+      & \qty{492.06}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.74$\times$ \\
+
+      PLATEAU\_tun
+      & 85.56\% & 0.58\% & 147.01$\times$
+      & \qty{253.00}{\milli\second} & \qty{2.00}{\milli\second} & 108.12$\times$
+      & \qty{347.58}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.72$\times$ \\
+
+      PLATEAU\_veg
+      & 91.97\% & 12.59\% & 7.31$\times$
+      & \qty{2.57}{\second} & \qty{60.00}{\milli\second} & 42.58$\times$
+      & \qty{885.19}{\mega\byte} & \qty{294.53}{\mega\byte} & 3.01$\times$ \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+    \item[a] Ratio = BSON metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
+    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
+    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item Note: FCB = FlatCityBuf
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\todo{Write some analysis about the results. Also take benchmark on better environment}
 
 \subsection{Benchmark over the web}
 \label{result:benchmark_on_local_environment:benchmark_over_the_web}
-
-\subsection{System architecture review with proposed method and existing method}
-\label{result:overview:system_architecture_review_with_proposed_method_and_existing_method}
 
 \subsection{Performance evaluation}
 \label{result:overview:performance_evaluation}

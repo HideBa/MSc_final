@@ -49,6 +49,26 @@ FlatCityBuf circumvents these challenges by functioning as a static file that ca
 
 FlatCityBuf contributes significantly to operational cost-effectiveness. Although precise server costs vary according to specific use cases, hosting static files through cloud service providers is generally substantially more economical than maintaining dedicated database and application servers.
 
+\todo{add more description of comparison}
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/discussion/server_architecture.png}
+    \caption{Traditional server architecture with database and application servers}
+    \label{fig:traditional_architecture}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/discussion/server_architecture_fcb.png}
+    \caption{Simplified FlatCityBuf architecture}
+    \label{fig:fcb_architecture}
+  \end{subfigure}
+  \caption{Comparison between traditional and FlatCityBuf server architectures. The proposed method eliminates the need for complex database infrastructure by leveraging static file hosting with built-in spatial and attribute indices.}
+  \label{fig:architecture_comparison}
+\end{figure}
+
 \section{Limitations}
 \label{limitations}
 

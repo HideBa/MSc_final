@@ -33,7 +33,7 @@ This workflow enables efficient partial data retrieval by leveraging indexing st
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figs/methodology/range_request_workflow.png}
+  \includegraphics[width=0.9\textwidth]{figs/methodology/http_range.png}
   \caption{HTTP Range Request workflow in FlatCityBuf showing the sequential process of header retrieval, index navigation, and selective feature retrieval. The client makes targeted requests for specific byte ranges rather than downloading the entire dataset.}
   \label{fig:methodology:http_range_requests:range_request_workflow}
 \end{figure}
@@ -77,9 +77,9 @@ This cross-platform approach enables FlatCityBuf to work with both Rust's native
 
 The HTTP Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
 
-\begin{figure}[htbp]
+\begin{figure}[ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{figs/methodology/server_architecture_fcb.png}
+  \includegraphics[width=0.7\textwidth]{figs/methodology/server_architecture_fcb.png}
   \caption{Server architecture for FlatCityBuf. The client-side filtering approach eliminates the need for dedicated server-side processing.}
   \label{fig:methodology:http_range_requests:server_architecture}
 \end{figure}
