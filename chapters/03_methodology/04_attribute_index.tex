@@ -225,7 +225,7 @@ The index is structured to optimize for HTTP Range Requests, with several techni
   \item \textbf{Payload Prefetching}: Proactively caches parts of the payload section during initial query execution, reducing HTTP requests for duplicate keys.
   \item \textbf{Batch Payload Resolution}: Collects multiple payload references during tree traversal and resolves them with consolidated HTTP requests.
   \item \textbf{Request Batching}: Groups adjacent node requests to minimise network roundtrips.
-  \item \textbf{Block Alignment}: Nodes are aligned to 4KB boundaries to match typical file system and HTTP caching patterns.
+  \item \textbf{Block Alignment}: Nodes are aligned to fixed size boundaries to match typical file system and HTTP caching patterns.
 \end{itemize}
 
 During query execution, the system interprets the provided condition (\eg, \texttt{building\_height > 25}) and traverses the appropriate attribute index to find matching features. The search algorithm adapts based on the condition type, using different traversal strategies for exact matches versus range queries. Results are returned as a set of feature offsets, which can then be used to retrieve the actual feature data from the features section of the file.

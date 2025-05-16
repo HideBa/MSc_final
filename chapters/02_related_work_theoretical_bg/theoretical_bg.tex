@@ -29,7 +29,7 @@ This multi-stage copying introduces significant overhead, particularly for large
 
 \subsection{Zero-copy Techniques}
 \label{tb:zero_copy_techniques}
-\todo{Check if this is correct, atm I briefly glanced over the literature added bullect points}
+\todo{Todo: improve here}
 Zero-copy approaches optimize this data path by eliminating unnecessary copy operations. While "zero-copy" as a term suggests complete elimination of copying, in practice, different techniques achieve varying degrees of copy reduction:
 
 \begin{itemize}
@@ -55,32 +55,32 @@ In computing, endianness becomes significant when multi-byte data types (such as
 
 A useful analogy is date notation: little-endian resembles the European date format (31 December 2050), while big-endian resembles the ISO format (2050-12-31), with the most significant part (year) first \citep{endianness_mdn}.
 
-\todo{I might delete this section}
+% \todo{I might delete this section}
 
-\section{Indexing algorithms}
-\label{tb:indexing_algorithms}
+% \section{Indexing algorithms}
+% \label{tb:indexing_algorithms}
 
-\subsection{Indexing Strategy Evaluation}
+% \subsection{Indexing Strategy Evaluation}
 
-Several indexing strategies were evaluated to determine the most appropriate approach for the FlatCityBuf format:
+% Several indexing strategies were evaluated to determine the most appropriate approach for the FlatCityBuf format:
 
-\begin{table}[ht]
-  \centering
-  \caption{Comparison of Indexing Strategies}
-  \begin{tabular}{l|c|c|c|c}
-    \hline
-    \textbf{Strategy} & \textbf{Exact Match} & \textbf{Range Query} & \textbf{Space Efficiency} & \textbf{HTTP Suitability} \\
-    \hline
-    Hash Tables & $O(1)$ & Poor & Medium & Poor \\
-    Sorted Array & $O(\log n)$ & Good & Excellent & Limited \\
-    Binary Search Tree & $O(\log n)$ & Good & Good & Limited \\
-    B-tree/B+tree & $O(\log_B n)$ & Excellent & Good & Excellent \\
-    \hline
-  \end{tabular}
-  \label{tab:indexing_strategies}
-\end{table}
+% \begin{table}[ht]
+%   \centering
+%   \caption{Comparison of Indexing Strategies}
+%   \begin{tabular}{l|c|c|c|c}
+%     \hline
+%     \textbf{Strategy} & \textbf{Exact Match} & \textbf{Range Query} & \textbf{Space Efficiency} & \textbf{HTTP Suitability} \\
+%     \hline
+%     Hash Tables & $O(1)$ & Poor & Medium & Poor \\
+%     Sorted Array & $O(\log n)$ & Good & Excellent & Limited \\
+%     Binary Search Tree & $O(\log n)$ & Good & Good & Limited \\
+%     B-tree/B+tree & $O(\log_B n)$ & Excellent & Good & Excellent \\
+%     \hline
+%   \end{tabular}
+%   \label{tab:indexing_strategies}
+% \end{table}
 
-Initial implementation used a sorted array with binary search for its simplicity and space efficiency. However, performance testing revealed significant I/O latency issues when accessing this structure over HTTP, as each binary search step potentially required a separate HTTP request. This insight led to a re-evaluation of the indexing approach.
+% Initial implementation used a sorted array with binary search for its simplicity and space efficiency. However, performance testing revealed significant I/O latency issues when accessing this structure over HTTP, as each binary search step potentially required a separate HTTP request. This insight led to a re-evaluation of the indexing approach.
 
 \section{Binary Search}
 \label{tb:binary_search}

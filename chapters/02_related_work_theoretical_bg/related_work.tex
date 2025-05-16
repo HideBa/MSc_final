@@ -15,6 +15,8 @@ Cloud-optimised geospatial formats constitute specialised data structures engine
   \item \textbf{Cost-Effectiveness}: Optimises storage and transfer expenditures through efficient access patterns
 \end{itemize}
 
+\citet{cloud-optimised-formats} provides a comprehensive overview of several cloud-optimised geospatial formats, including Cloud Optimized GeoTIFF, Cloud Optimized Point Cloud, GeoParquet, PMTiles, FlatGeobuf, \etc.
+
 \section{CityJSON and Its Enhancements}
 \label{rw:cityjson_enhancements}
 \subsection{CityJSON}
@@ -53,7 +55,7 @@ This research extends Peters' preliminary work by developing a comprehensive sol
 
 \subsection{Research Gaps}
 \label{rw:research_gaps}
-While existing studies have made significant advances in optimising CityJSON through various encoding techniques, and several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}), there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments. Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats (e.g., FlatGeobuf for Simple Features), their application to 3D city models has not been thoroughly investigated. This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies that enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures, with the proposed approach detailed in \autoref{methodology}.
+While existing studies have made significant advances in optimising CityJSON through various encoding techniques, and several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}), there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments. Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats (e.g., FlatGeobuf for Simple Features \citep{flatgeobuf}), their application to 3D city models has not been thoroughly investigated. This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies that enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures, with the proposed approach detailed in \autoref{methodology}.
 
 \section{Non-Geospatial Formats in Cloud Environments}
 \label{rw:non_geospatial_formats}
@@ -96,7 +98,7 @@ These findings advocate for the selection of FlatBuffers in applications where d
 
 \section{Cloud-Optimised Geospatial Implementations}
 \label{rw:cloud_optimised_implementations}
-Contemporary cloud-optimised geospatial implementations encompass formats such as \citet{mapbox-vector-tiles}, \citet{flatgeobuf}, \citet{pmtiles}, and \citet{geoparquet}.
+Contemporary cloud-optimised geospatial implementations encompass formats such as Mapbox Vector Tiles \citep{mapbox-vector-tiles}, FlatGeobuf \citep{flatgeobuf}, PMTiles \citep{pmtiles}, and GeoParquet \citep{geoparquet}.
 
 \subsection{Mapbox Vector Tiles (MVT)}
 \label{rw:cloud_optimised_implementations:mvt}
@@ -104,15 +106,15 @@ Contemporary cloud-optimised geospatial implementations encompass formats such a
 
 \subsection{PMTiles}
 \label{rw:cloud_optimised_implementations:pmtiles}
-PMTiles offers a standardised format for managing tile data addressed through Z/X/Y coordinates, supporting both vector and raster tile implementations. The format leverages \citet{http_range_requests} to facilitate selective tile retrieval, thereby optimising network resource utilisation.
+PMTiles offers a standardised format for managing tile data addressed through Z/X/Y coordinates, supporting both vector and raster tile implementations. The format leverages HTTP Range Requests \citep{http_range_requests} to facilitate selective tile retrieval, thereby optimising network resource utilisation.
 
 \subsection{FlatGeobuf}
 \label{rw:cloud_optimised_implementations:flatgeobuf}
-FlatGeobuf adheres to the OGC \citet{simple_features} specification by utilising \citet{flatbuffers} for serialisation. The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations. Notably, its partial data access capabilities allow clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset. \citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
+FlatGeobuf adheres to the Simple Features \citet{simple_features} specification by utilising \citet{flatbuffers} for serialisation. The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations. Notably, its partial data access capabilities allow clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset. \citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
 
 \subsection{GeoParquet}
 \label{rw:cloud_optimised_implementations:geoparquet}
-GeoParquet integrates \citet{parquet}'s columnar storage architecture to facilitate optimised geospatial data operations. The format promotes interoperability across cloud data warehouse platforms, including \citet{bigquery}, \citet{snowflake}, and \citet{redshift}. Key technical characteristics of GeoParquet include:
+GeoParquet integrates Parquet's columnar storage architecture to facilitate optimised geospatial data operations \citep{geoparquet}. The format promotes interoperability across cloud data warehouse platforms, including BigQuery \citep{bigquery}, Snowflake \citep{snowflake}, and Redshift \citep{redshift}. Key technical characteristics of GeoParquet include:
 
 \begin{itemize}
   \item \textbf{Compression Efficiency}: Achieves superior compression ratios relative to alternative storage formats through columnar data organisation.
@@ -121,7 +123,7 @@ GeoParquet integrates \citet{parquet}'s columnar storage architecture to facilit
 
 \subsection{3D Tiles}
 \label{rw:cloud_optimised_implementations:3d_tiles}
-\citet{3d_tiles}, an Open Geospatial Consortium (OGC) standard, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements \citet{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
+3D Tiles, an Open Geospatial Consortium (OGC) standard \citep{3d_tiles}, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements GLTF \citep{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
 
 The data structure employs spatial partitioning through bounding volumes, enabling selective rendering based on camera viewpoint requirements. While this architecture demonstrates optimal performance for visual rendering tasks, it presents limitations in two key areas: (1) arbitrary spatial extent retrieval and (2) attribute-based feature querying capabilities.
 
@@ -152,8 +154,6 @@ While acknowledging the inherent limitations of direct format comparisons due to
     \hline
     \textbf{Random Access Support} & 5 & 1 & 4 & 1 & 1 \\
     \hline
-    \textbf{Data Writing Complexity} & 1 & 1 & 1 & 5 & 1 \\
-    \hline
   \end{tabular}
 \end{table}
 
@@ -182,8 +182,6 @@ While acknowledging the inherent limitations of direct format comparisons due to
     Spatial Indexing & 1: Not supported, 3: Basic support, 5: Indexing with arbitrary spatial extent \\
     \hline
     Random Access Support & 1: Not supported, 3: Partial support, 5: Full random access \\
-    \hline
-    Data Writing Complexity & 1: Very complex, 3: Moderate, 5: Simple \\
     \hline
   \end{tabular}
 \end{table}
