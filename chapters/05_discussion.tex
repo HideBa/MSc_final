@@ -1,4 +1,4 @@
-\chapter{Discussion (work in progress)}
+\chapter{Discussion}
 \label{chp:discussion}
 
 This chapter discusses the implications of our experimental results and their broader significance for 3D city modelling applications.
@@ -30,7 +30,7 @@ FlatCityBuf introduces significant opportunities for simplifying server architec
 \subsection{Traditional Server Architecture}
 \label{traditional_server_architecture}
 
-Conventional server architectures for 3D city models typically employ both application and database servers. For example, \citet{3dcitydb} utilises PostgreSQL or Oracle as the database server with PostgREST API providing data access through its toolchain. Similarly, the 3DBAG API uses PostgreSQL as its database server and Flask (Python) as the application server.
+Conventional server architectures for 3D city models typically employ both application and database servers. For example, \citet{3dcitydb} utilises PostgreSQL or Oracle as the database server with PostgREST API \citep{postgrest} providing data access through its toolchain. Similarly, the 3DBAG API uses PostgreSQL as its database server and Flask (Python) as the application server.
 
 In contrast, FlatCityBuf operates as a static file, requiring only a basic HTTP server such as Nginx for data distribution. This approach aligns with modern cloud service offerings, where providers like AWS S3 and Google Cloud Storage offer optimised solutions for serving static content.
 

@@ -1,0 +1,41 @@
+\chapter{Conclusion and Future Work}
+\label{chp:conclusion}
+
+\section{Research Summary}
+\label{conclusion:research_summary}
+
+This research addressed the limitations of existing 3D city model formats in cloud environments by optimizing CityJSONSeq encoding through FlatCityBuf, a binary format leveraging FlatBuffers serialization with spatial and attribute indexing mechanisms.
+
+The main contributions of this research include:
+
+\begin{itemize}
+  \item A hierarchical FlatBuffers schema with five components (magic bytes, header section, spatial index, attribute index, and features section) enabling zero-copy access and 10-20× faster retrieval times while maintaining CityJSON compatibility
+
+  \item Dual indexing mechanisms: Packed Hilbert R-tree for spatial queries with logarithmic-time retrieval, and Static B+Tree (S+Tree) for attribute-based queries supporting exact matches, ranges, and complex filtering
+
+  \item HTTP Range Request optimization through explicit file alignment boundaries, enabling efficient retrieval of specific data subsets without downloading entire datasets
+\end{itemize}
+
+Benchmarks confirmed sub-second performance even with datasets containing hundreds of thousands of features. The approach eliminates complex database infrastructure, reduces operational costs through static file hosting, and maintains fast response times across large datasets.
+
+\section{Limitations}
+\label{conclusion:limitations}
+
+Despite its advantages, FlatCityBuf has several limitations. The query capabilities are more constrained than specialized spatial database applications. While FlatCityBuf implements bounding box queries and attribute filtering, it lacks advanced spatial operations and complex filtering available in systems like 3DCityDB with PostGIS. This limitation restricts its applicability in scenarios requiring sophisticated spatial analysis or complex query patterns.
+
+The format introduces complexity in client-side applications that must implement custom loading and processing logic, unlike standardized OGC API services with consistent interfaces. This presents a potential adoption barrier, particularly for developers unfamiliar with binary formats or HTTP Range Requests. Without standardized libraries across multiple platforms, integration into existing workflows requires additional development effort.
+
+FlatCityBuf's rigid structure presents challenges for data updates, requiring rewriting entire files when modifying data. Fixed-size data types cannot be dynamically converted, and the immutable spatial and attribute indices necessitate regenerating the entire file during updates. This makes the format more suitable for read-intensive applications than dynamic content management systems with frequent updates.
+
+\section{Future Work}
+\label{conclusion:future_work}
+
+Based on the research findings and identified limitations, several promising directions for future work emerge.
+
+Expanding language support beyond Rust would significantly enhance the format's accessibility and ecosystem integration. Languages with garbage collection mechanisms—such as Python, JavaScript, and Java—present particularly interesting implementation targets. These languages manage memory differently than Rust, which could impact performance characteristics of zero-copy operations. Implementation in Python would enable seamless integration with geospatial analysis workflows, while JavaScript support would facilitate web-based visualization without WebAssembly. Testing performance across these languages would provide valuable insights into optimization strategies for different memory management approaches.
+
+Investigating alternative serialization frameworks could reveal different efficiency patterns. Column-oriented formats like Apache Parquet warrant exploration, particularly for analytical workloads involving selective attribute access. Such formats excel at accessing specific fields across many records, potentially offering significant advantages for city-scale analytics where only certain properties (like building heights or energy consumption) are needed. Future research should quantify these trade-offs through comparative benchmarks across various query patterns and datasets sizes.
+
+While a web prototype for FlatCityBuf exists, it currently only displays data as JSON without geometric visualization. Developing specialized web viewers would demonstrate the format's practical benefits in interactive contexts. Progressive loading strategies could enable smooth navigation of massive datasets on bandwidth-constrained devices by initially loading lower-detail geometries and enhancing detail as users zoom, significantly improving user experience while leveraging the format's efficient partial data retrieval mechanisms.
+
+FlatCityBuf demonstrates that FlatBuffers encoding with Packed Hilbert R-tree and Static B+Tree indexing combined with HTTP Range requests effectively optimizes CityJSONSeq encoding. Despite limitations, it represents a significant advancement in cloud-optimized 3D city model storage that bridges the gap between comprehensive 3D city models and cloud-native data access.

@@ -1,58 +1,15 @@
 \chapter{Result}
 \label{chp:result}
-
 \section{Overview}
 \label{result:overview}
 
 This chapter presents the results of comprehensive evaluations conducted to assess the performance and suitability of the proposed FlatCitybuf format against existing CityJSON encoding approaches. The evaluation followed three complementary methodologies to provide a holistic understanding of the format's capabilities.
 
-\subsection{Evaluation Methodology}
-\label{result:overview:evaluation_methodology}
+The assessment framework employed three distinct methodological approaches. First, file size comparison was conducted to evaluate storage efficiency across different datasets and encoding formats.
 
-The assessment framework employed three distinct methodological approaches:
+Second, performance benchmarks were conducted on a laptop environment to evaluate the computational efficiency of the encoding format. These benchmarks measured read operation time for files of varying sizes, memory consumption during processing operations, and storage efficiency through file size comparisons. The benchmark utilised the datasets from \citet{ledoux_2024} and additional datasets from PLATEAU, providing direct comparability with previous studies on CityJSON and CityJSONSeq formats. All operations were conducted multiple times to ensure statistical reliability, with warm-up iterations to eliminate caching effects.
 
-\subsubsection{File Size Comparison}
-\label{result:overview:file_size_comparison}
-
-\subsubsection{Local Benchmark Performance}
-\label{result:overview:local_benchmark_performance}
-
-Performance benchmarks were conducted on a laptop environment to evaluate the computational efficiency of the encoding format. These benchmarks measured:
-\begin{itemize}
-  \item Read operation time for files of varying sizes
-  \item Memory consumption during processing operations
-  \item Storage efficiency through file size comparisons
-\end{itemize}
-
-The benchmark utilised the datasets from \citet{ledoux_2024} and additional datasets from PLATEAU, providing direct comparability with previous studies on CityJSON and CityJSONSeq formats. All operations were conducted multiple times to ensure statistical reliability, with warm-up iterations to eliminate caching effects.
-
-\subsubsection{Web-Based Performance}
-\label{result:overview:web_based_performance}
-
-To assess real-world application performance in cloud environments, web-based benchmarks were implemented using load testing frameworks to measure:
-\begin{itemize}
-  \item HTTP request-response cycle duration
-  \item Effective throughput under various concurrent load scenarios
-  \item Bandwidth utilisation, particularly for partial data retrieval operations
-  \item Client-side rendering performance with progressive data loading
-  \item Performance of HTTP Range requests for spatial and attribute queries
-\end{itemize}
-
-These measurements provide critical insights into the cloud optimisation benefits of the format, particularly regarding selective data retrieval and progressive rendering capabilities.
-
-\subsubsection{System Architecture Analysis}
-\label{result:overview:system_architecture_analysis}
-
-A comparative analysis of system architectures evaluated how the proposed format affects:
-\begin{itemize}
-  \item Architectural complexity reduction potential
-  \item Server-side resource requirements
-  \item Client-side processing overhead
-  \item Interoperability with existing GIS ecosystems
-  \item Scalability characteristics for large datasets
-\end{itemize}
-
-This qualitative and quantitative analysis examines how the encoding format influences the overall system design, particularly focusing on cloud-based deployments and web mapping applications.
+Third, to assess real-world application performance in web environments, browser-based benchmarks were conducted to measure the time required to fetch subsets of data. These tests focused on evaluating how efficiently the format enables selective data retrieval through HTTP Range requests, allowing clients to access only the specific portions of data they need rather than downloading entire datasets. This approach provides insights into the practical benefits of the format for web-based applications where bandwidth optimization and response time are critical factors.
 
 The following sections present detailed results from each evaluation approach, followed by integrated analyses that synthesise findings across methodologies to provide comprehensive insights into the performance characteristics of the FlatCitybuf format.
 
@@ -87,10 +44,10 @@ To evaluate file sizes and conduct both local and web-based benchmarks, we emplo
       \textbf{Helsinki}       & 77267   & 77231  &      & \qty{412.44}{\mega\byte}& \qty{344.96}{\mega\byte}& $16.36\%$  & 3039107  & 39.35    & 27 & 9 \\
       \textbf{Helsinki\_tex}  & 77267   & 77231  & tex  & \qty{643.70}{\mega\byte}& \qty{545.29}{\mega\byte}& $15.29\%$  & 3039107  & 39.35    & 28 & 9 \\
       \textbf{Ingolstadt}     & 379     & 55     &      & \qty{3.84}{\mega\byte}  & \qty{3.11}{\mega\byte}  & $19.09\%$  & 88001    & 1600.02  & 33 & 13 \\
-      \textbf{Montréal}       & 294     & 294    &      & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
+      \textbf{Montréal}       & 294     & 294    & tex  & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
       \textbf{NYC}            & 23777   & 23777  &      & \qty{95.45}{\mega\byte} & \qty{76.20}{\mega\byte} & $20.17\%$  & 1044145  & 43.91    & 3  & 3 \\
-      \textbf{Railway}        & 121     & 38     &      & \qty{4.05}{\mega\byte}  & \qty{3.75}{\mega\byte}  & $7.35\%$   & 73856    & 1943.58  & 3  & 0 \\
-      \textbf{Rotterdam}      & 853     & 853    &      & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
+      \textbf{Railway}        & 121     & 38     & tex+mat  & \qty{4.05}{\mega\byte}  & \qty{3.75}{\mega\byte}  & $7.35\%$   & 73856    & 1943.58  & 3  & 0 \\
+      \textbf{Rotterdam}      & 853     & 853    & tex  & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
       \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
       \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
       \textbf{PLATEAU\_bldg}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
@@ -104,11 +61,11 @@ To evaluate file sizes and conduct both local and web-based benchmarks, we emplo
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
-    \item[a] appearance: `tex' indicates textures are stored
+    \item[a] appearance: `tex' indicates textures are stored; `mat' indicates materials are stored
     \item[b] compression factor is $\frac{\text{CityJSONSeq} - \text{FlatCityBuf}}{\text{CityJSONSeq}}$ (positive values indicate size reduction)
     \item[c] average number of vertices per feature
     \item[d] number of attributes in city objects
-    \item[e] number of semantic surface attributes
+    \item[e] number of semantic surface attributes in city objects
     \end{tablenotes}
   \end{threeparttable}
 \end{table*}
@@ -321,7 +278,7 @@ All benchmarks were executed within a consistent hardware and software configura
   \item \textbf{Operating System:} macOS Sequoia 15.4
   \item \textbf{Filesystem:} APFS (Apple File System)
   \item \textbf{Storage:} 1TB SSD with approximately 200GB available capacity
-  \item \textbf{Runtime Environment:} Rust 1.75.0, with optimised release builds
+  \item \textbf{Runtime Environment:} Rust 1.86.0, with optimised release builds
 \end{itemize}
 
 % \subsection{Benchmark Methodology}
@@ -692,11 +649,18 @@ The performance comparison between FlatCityBuf and BSON followed the same method
 
 \todo{Write some analysis about the results. Also take benchmark on better environment}
 
+\subsubsection{Summary of local environment benchmark}
+\label{result:benchmark_on_local_environment:summary}
+To summarise the results of the local environment benchmark, we especially focus on the comparison between FlatCityBuf and CityJSONSeq since CityJSONSeq is the most standard data format of CityJSON at the moment.
+
+\begin{itemize}
+  \item CPU utilization: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilization while the worst case achieved still 1.77$\times$ improvement. While the Ratio is sometimes important, since CPU utilization limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
+  \item Processing time: Processing time is more considarable as its pirmary objective of the research. The best case achieved 46.62$\times$ improvement (Montréal) while the worst case achieved 8.48$\times$ improvement (3DBAG). The program can save a lot of time for large datasets.
+  \item Memory consumption: Memory consumption is also an important metric. The best case achieved 3.11$\times$ improvement (Tokyo) while the worst case achieved 0.62$\times$ improvement (PLATEAU\_tran).
+\end{itemize}
+\todo{check again}
+
 \subsection{Benchmark over the web}
 \label{result:benchmark_on_local_environment:benchmark_over_the_web}
 
-\subsection{Performance evaluation}
-\label{result:overview:performance_evaluation}
-
-\subsection{Case study}
-\label{result:overview:case_study}
+\todo{write something about the results}
