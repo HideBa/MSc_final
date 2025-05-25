@@ -2,91 +2,211 @@
 
 \chapter{Related Work}
 \label{rw:related_work}
-This section reviews the pertinent literature relevant to the optimisation of CityJSON for cloud-native environments, highlighting advancements and identifying existing gaps that this research aims to address.
+
+This section reviews the pertinent literature relevant to the optimisation of CityJSON for cloud-native environments.
+
+It highlights advancements and identifies existing gaps that this research aims to address.
 
 \section{Cloud-Optimised Geospatial Formats}
 \label{rw:cloud_optimised_formats}
-Cloud-optimised geospatial formats constitute specialised data structures engineered to maximise computational efficiency in distributed cloud environments \citep{cloud-optimised-formats}. These formats exhibit several quantifiable advantages:
+
+Cloud-optimised geospatial formats constitute specialised data structures engineered to maximise computational efficiency in distributed cloud environments \citep{cloud-optimised-formats}.
+These formats exhibit several quantifiable advantages:
 
 \begin{itemize}
-  \item \textbf{Reduced Latency}: Facilitates partial data retrieval and processing without necessitating complete file downloads
-  \item \textbf{Scalability}: Supports parallel operations through metadata-driven access mechanisms within cloud storage systems
-  \item \textbf{Flexibility}: Offers advanced query capabilities for selective data access
-  \item \textbf{Cost-Effectiveness}: Optimises storage and transfer expenditures through efficient access patterns
+  \item \textbf{Reduced Latency}: Facilitates partial data retrieval and processing without necessitating complete file downloads.
+  \item \textbf{Scalability}: Supports parallel operations through metadata-driven access mechanisms within cloud storage systems.
+  \item \textbf{Flexibility}: Offers advanced query capabilities for selective data access.
+  \item \textbf{Cost-Effectiveness}: Optimises storage and transfer expenditures through efficient access patterns.
 \end{itemize}
 
-\citet{cloud-optimised-formats} provides a comprehensive overview of several cloud-optimised geospatial formats, including Cloud Optimized GeoTIFF, Cloud Optimized Point Cloud, GeoParquet, PMTiles, FlatGeobuf, \etc.
+\citet{cloud-optimised-formats} provides a comprehensive overview of several cloud-optimised geospatial formats.
+These include Cloud Optimized GeoTIFF, Cloud Optimized Point Cloud, GeoParquet, PMTiles, FlatGeobuf.
 
-\section{CityJSON and Its Enhancements}
+\section{CityGML, CityJSON and Its Enhancements}
 \label{rw:cityjson_enhancements}
+
+\subsection{CityGML}
+\label{rw:citygml}
+CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialized modeling capabilities applicable across all thematic modules. The encoding standard, on the other hand, uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/related_work_theoretical_bg/citygml3modules.png}
+  \caption[CityGML 3.0 Module Overview]{Overview of CityGML 3.0 modules showing the Core module, thematic extension modules, and additional extension modules. Source: \citep{CityGML}}
+  \label{fig:citygml_modules}
+\end{figure}
+
 \subsection{CityJSON}
-\label{rw:cityjson_enhancements:cityjson}
-\citet{cityjson} is an encoding format derived from the CityGML \citep{CityGML} data model, offering a more compact and developer-friendly alternative for representing 3D city models. Currently at version 2.0.1, it supports CityGML 3.0.0 encoding and is officially recognised as an OGC standard \citep{ogc}. Its JSON-based structure provides several enhancements:
+\label{rw:cityjson}
+
+CityJSON is an JSON-based \citep{json} encoding format as a subset of CityGML conceptual model \citep{CityGML}.
+
+It is an official standards of OGC \citep{ogc} currently at version 2.0.1, it supports the CityGML 3.0.0 encoding.
+
+Although both CityGML and CityJSON encodes CityGML conceptual model, CityJSON has notable differences against CityGML.
 
 \begin{itemize}
-  \item \textbf{Flattened City Objects}: Implements a flattened architecture with unique identifiers, contrasting with CityGML's hierarchical structure
-  \item \textbf{Geometry Handling}: Consolidates geometric data in a shared vertex array with quantised coordinates
-  \item \textbf{Extension Mechanism}: Employs a simplified extension mechanism using JSON Schema instead of XML Schema, similar to CityGML's ADEs
+  \item \textbf{Flattened City Objects}: Implements a flattened architecture with unique identifiers, contrasting with CityGML's hierarchical structure.
+  \item \textbf{Geometry Handling}: Consolidates geometric data in a shared vertex array with quantised coordinates.
+  \item \textbf{Extension Mechanism}: Employs a simplified extension mechanism using JSON Schema instead of XML Schema, similar to CityGML's ADEs.
 \end{itemize}
+
+Its JSON-based structure provides several enhancements:
 
 \subsection{CityJSON Text Sequences (CityJSONSeq)}
 \label{rw:cityjson_enhancements:cityjsonseq}
-\citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences. Each object is stored as a CityJSONFeature, representing one feature (e.g., a Building with its BuildingParts and BuildingInstallations) with its own local vertex list. Following the Newline Delimited JSON specification \citep{jsonnd}, CityJSONSeq requires initialisation with a CityJSON object, followed by line-feed-delimited CityJSONFeature objects, adhering to the JSON Data Interchange Format \citep{json_data_interchange_format}. While CityJSONSeq generally offers improved compression and memory efficiency, larger file sizes may occur with minimal vertex counts or extensive vertex/texture sharing. Its text-based format presents opportunities for further cloud-native optimisation.
+
+\citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences.
+
+Each object is stored as a CityJSONFeature, representing one feature (e.g., a Building with its BuildingParts and BuildingInstallations) with its own local vertex list.
+
+Following the Newline Delimited JSON specification \citep{jsonnd}, CityJSONSeq requires initialisation with a CityJSON object.
+
+It is followed by line-feed-delimited CityJSONFeature objects, adhering to the JSON Data Interchange Format \citep{json_data_interchange_format}.
+
+While CityJSONSeq generally offers improved compression and memory efficiency, larger file sizes may occur with minimal vertex counts or extensive vertex/texture sharing.
+
+Its text-based format presents opportunities for further cloud-native optimisation.
 
 \subsection{Enhancements to CityJSON Performance}
 \label{rw:cityjson_enhancements:performance}
+
 \subsubsection{Binary Encoding of CityJSON}
 \label{rw:cityjson_enhancements:performance:binary_encoding}
-\citet{jordi_van_liempt_2020} conducted a systematic evaluation of binary encoding techniques for CityJSON to address challenges associated with transmitting large-scale 3D city models over the web. The study assessed various compression and encoding methodologies, including CBOR, zlib, Draco and their combinations, evaluating visualisation time, querying time, spatial analysis time, editing time, file size compression and lossiness.
 
-The analysis determined that the combination of CBOR and zlib offers optimal general-purpose efficiency due to its implementation simplicity. Conversely, Draco exhibited superior performance for pre-compressed data scenarios. However, the study identified limitations in Draco's applicability, specifically the increased complexity and computational overhead when handling smaller datasets. While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments.
+\citet{jordi_van_liempt_2020} conducted a systematic evaluation of binary encoding techniques for CityJSON.
+
+This was done to address challenges associated with transmitting large-scale 3D city models over the web.
+
+The study assessed various compression and encoding methodologies, including CBOR, zlib, Draco and their combinations.
+
+It evaluated visualisation time, querying time, spatial analysis time, editing time, file size compression and lossiness.
+
+The analysis determined that the combination of CBOR and zlib offers optimal general-purpose efficiency due to its implementation simplicity.
+
+Conversely, Draco exhibited superior performance for pre-compressed data scenarios.
+
+However, the study identified limitations in Draco's applicability.
+
+Specifically, it noted the increased complexity and computational overhead when handling smaller datasets.
+
+While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments.
 
 \subsubsection{Experimental Implementation Using FlatBuffers}
 \label{rw:cityjson_enhancements:performance:flatbuffers}
-\citet{ravi_peters_2024_citybuf} explored the application of FlatBuffers \citep{flatbuffers} for encoding CityJSONFeature to enhance performance in cloud-native environments. The preliminary implementation revealed potential advantages in several key areas:
+
+\citet{ravi_peters_2024_citybuf} explored the application of FlatBuffers \citep{flatbuffers} for encoding CityJSONFeature.
+
+This was done to enhance performance in cloud-native environments.
+
+The preliminary implementation revealed potential advantages in several key areas:
 
 \begin{itemize}
-  \item Faster feature access time
-  \item Lower memory consumption
-  \item Decreased storage requirements
+  \item Faster feature access time.
+  \item Lower memory consumption.
+  \item Decreased storage requirements.
 \end{itemize}
 
-This research extends Peters' preliminary work by developing a comprehensive solution aimed at optimising performance in cloud-native environments, with specific emphasis on scalability and efficient data processing.
+This research extends Peters' preliminary work by developing a comprehensive solution.
+
+It aims at optimising performance in cloud-native environments, with specific emphasis on scalability and efficient data processing.
 
 \subsection{Research Gaps}
 \label{rw:research_gaps}
-While existing studies have made significant advances in optimising CityJSON through various encoding techniques, and several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}), there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments. Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats (e.g., FlatGeobuf for Simple Features \citep{flatgeobuf}), their application to 3D city models has not been thoroughly investigated. This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies that enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures, with the proposed approach detailed in \autoref{methodology}.
+
+While existing studies have made significant advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
+
+Several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}).
+
+Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats, their application to 3D city models has not been thoroughly investigated.
+
+For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
+
+This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies.
+
+These methodologies enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures.
+
+The proposed approach is detailed in \autoref{methodology}.
 
 \section{Non-Geospatial Formats in Cloud Environments}
 \label{rw:non_geospatial_formats}
-Modern cloud-optimised geospatial formats leverage established non-geospatial data structures to enhance efficiency in data transfer, storage and processing operations. Notable implementations include GeoParquet \citep{geoparquet}, which employs Parquet \citep{parquet} for optimised geospatial data management; \citet{flatgeobuf}, constructed on FlatBuffers \citep{flatbuffers}; and Mapbox Vector Tiles \citep{mapbox-vector-tiles}, which utilise Protocol Buffers (Protobuf) \citep{protobuf}. These underlying formats are meticulously designed to improve performance metrics such as serialisation/deserialisation speed, memory utilisation and data compression.
+
+Modern cloud-optimised geospatial formats leverage established non-geospatial data structures.
+
+These enhance efficiency in data transfer, storage and processing operations.
+
+Notable implementations include GeoParquet \citep{geoparquet}, which employs Parquet \citep{parquet} for optimised geospatial data management.
+
+\citet{flatgeobuf} is constructed on FlatBuffers \citep{flatbuffers}.
+
+Mapbox Vector Tiles \citep{mapbox-vector-tiles} utilise Protocol Buffers (Protobuf) \citep{protobuf}.
+
+These underlying formats are meticulously designed to improve performance metrics.
+
+These include serialisation/deserialisation speed, memory utilisation and data compression.
 
 \subsection{FlatBuffers}
 \label{rw:non_geospatial_formats:flatbuffers}
-\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}, optimised for efficient data transfer and storage. The detailed characteristics and technical implementation of FlatBuffers will be explained in \autoref{tb:flatbuffers}.
 
-Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats, such as \citet{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
+\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}.
+
+It is optimised for efficient data transfer and storage.
+
+The detailed characteristics and technical implementation of FlatBuffers will be explained in \autoref{tb:flatbuffers}.
+
+Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats.
+
+These include \citet{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
 
 \subsection{Protocol Buffers (Protobuf)}
 \label{rw:non_geospatial_formats:protobuf}
-\citet{protobuf}, developed by Google, represents a binary serialisation framework that employs schema-based encoding mechanisms for data serialisation. This framework implements similar fundamental operations to FlatBuffers, including schema definition and binary encoding processes.
+
+\citet{protobuf}, developed by Google, represents a binary serialisation framework.
+
+It employs schema-based encoding mechanisms for data serialisation.
+
+This framework implements similar fundamental operations to FlatBuffers.
+
+These include schema definition and binary encoding processes.
+
 Despite its advantages in simplicity and usability, Protobuf presents several operational constraints:
 
 \begin{itemize}
-  \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks
-  \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data
-  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers
+  \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks.
+  \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data.
+  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers.
 \end{itemize}
 
 \subsection{Apache Parquet}
 \label{rw:non_geospatial_formats:parquet}
-\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes for managing extensive datasets. The Parquet ecosystem includes the \citet{parquet-format}, which serves as the specification for the Parquet format, alongside various libraries for encoding and decoding Parquet files.
 
-Parquet employs the record shredding and assembly algorithm \citep{dremel_2010} to effectively flatten nested data structures. Additionally, it implements efficient compression and encoding schemes tailored to column-level data, thereby enhancing both storage efficiency and query performance.
+\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes.
+
+These are used for managing extensive datasets.
+
+The Parquet ecosystem includes the \citet{parquet-format}, which serves as the specification for the Parquet format.
+
+It also includes various libraries for encoding and decoding Parquet files.
+
+Parquet employs the record shredding and assembly algorithm \citep{dremel_2010} to effectively flatten nested data structures.
+
+Additionally, it implements efficient compression and encoding schemes tailored to column-level data.
+
+This enhances both storage efficiency and query performance.
 
 \subsection{Comparison of Non-Geospatial Formats}
 \label{rw:non_geospatial_formats:comparison}
-Existing research has evaluated the performance characteristics of non-geospatial formats within cloud environments. \citet{daniel_persson_2020} conducted a comparative analysis of FlatBuffers and Protobuf, focusing on metrics such as serialisation/deserialisation efficiency, memory utilisation, and message size optimisation. Their investigation utilised randomised message sizes to assess format performance in vehicle-to-server communication scenarios. The analysis yielded the following observations:
+
+Existing research has evaluated the performance characteristics of non-geospatial formats within cloud environments.
+
+\citet{daniel_persson_2020} conducted a comparative analysis of FlatBuffers and Protobuf.
+
+This focused on metrics such as serialisation/deserialisation efficiency, memory utilisation, and message size optimisation.
+
+Their investigation utilised randomised message sizes to assess format performance in vehicle-to-server communication scenarios.
+
+The analysis yielded the following observations:
 
 \begin{itemize}
   \item \textbf{Processing Efficiency}: Protobuf demonstrated superior serialisation performance but exhibited reduced deserialisation efficiency relative to FlatBuffers.
