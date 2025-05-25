@@ -28,7 +28,7 @@ These include Cloud Optimized GeoTIFF, Cloud Optimized Point Cloud, GeoParquet, 
 
 \subsection{CityGML}
 \label{rw:citygml}
-CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialized modeling capabilities applicable across all thematic modules. The encoding standard, on the other hand, uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
+CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialized modeling capabilities applicable across all thematic modules. The encoding standard uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
 
 \begin{figure}[htbp]
   \centering
@@ -40,19 +40,46 @@ CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data mod
 \subsection{CityJSON}
 \label{rw:cityjson}
 
-CityJSON is an JSON-based \citep{json} encoding format as a subset of CityGML conceptual model \citep{CityGML}.
+CityJSON is a JSON-based \citep{json} encoding format that implements a subset of the CityGML conceptual model \citep{CityGML}. It is an official OGC standard \citep{ogc} currently at version 2.0.1, supporting CityGML 3.0.0 encoding. While both CityGML and CityJSON implement the CityGML conceptual model, CityJSON exhibits several notable differences.
 
-It is an official standards of OGC \citep{ogc} currently at version 2.0.1, it supports the CityGML 3.0.0 encoding.
+The following properties of CityJSON are derived from \citet{ledoux_2019}:
 
-Although both CityGML and CityJSON encodes CityGML conceptual model, CityJSON has notable differences against CityGML.
 
-\begin{itemize}
-  \item \textbf{Flattened City Objects}: Implements a flattened architecture with unique identifiers, contrasting with CityGML's hierarchical structure.
-  \item \textbf{Geometry Handling}: Consolidates geometric data in a shared vertex array with quantised coordinates.
-  \item \textbf{Extension Mechanism}: Employs a simplified extension mechanism using JSON Schema instead of XML Schema, similar to CityGML's ADEs.
-\end{itemize}
+\subsubsection{Flattened City Objects Architecture}
+\label{rw:cityjson:flattened_architecture}
 
-Its JSON-based structure provides several enhancements:
+CityJSON implements a flattened architecture where each city object receives a unique identifier, contrasting with CityGML's hierarchical structure. While CityGML maintains a hierarchical organization, CityJSON stores all objects at the same level (e.g., first and second-level city objects are stored in the same dictionary). To preserve hierarchical relationships, CityJSON uses a \texttt{parents} field to reference each object's parent.
+
+\subsubsection{Geometry}
+\label{rw:cityjson:geometry}
+
+CityJSON supports the same 3D geometric primitives as CityGML. However, instead of storing vertex coordinates directly within geometric primitives, CityJSON maintains a separate \texttt{vertices} array containing all coordinates. Geometric primitives then reference vertex positions within this array.
+
+\subsubsection{Semantic Surfaces}
+\label{rw:cityjson:semantic_surfaces}
+
+CityJSON stores semantic surfaces as separate objects, recognizing that city objects often share common semantics. This is implemented through \texttt{semanticSurfaces} fields and a \texttt{values} array that maps surfaces to their corresponding semantic surface objects.
+
+\subsubsection{Geometry Templates}
+\label{rw:cityjson:geometry_templates}
+
+CityJSON implements CityGML's Implicit Geometry concept through "geometry templates." The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilizing these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
+
+\subsubsection{Coordinate Quantization}
+\label{rw:cityjson:coordinate_quantisation}
+
+CityJSON employs coordinate quantization to reduce geometry size. The \texttt{transform} field contains \texttt{scale} and \texttt{translate} values for coordinate quantization. The original coordinates are recovered using the following formula (e.g., for the x component of vertex $v$):
+\begin{equation}
+  \label{eq:cityjson:coordinate_quantisation}
+  x = v_x \cdot \text{transform.scale}_x + \text{transform.translate}_x
+\end{equation}
+
+\subsubsection{Extension Mechanism}
+\label{rw:cityjson:extension_mechanism}
+
+CityJSON implements a simplified extension mechanism using JSON Schema, similar to CityGML's Application Domain Extensions (ADEs). This approach provides a more accessible and developer-friendly way to extend the data model compared to CityGML's XML Schema-based extensions. The JSON Schema-based extensions maintain compatibility with the core CityGML conceptual model while offering greater flexibility in implementation and validation.
+
+The proposed data format, FlatGeobuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantization, and the extension mechanism. The strategy for encoding city objects in CityJSON will be explained in \autoref{methodology}.
 
 \subsection{CityJSON Text Sequences (CityJSONSeq)}
 \label{rw:cityjson_enhancements:cityjsonseq}
