@@ -44,7 +44,6 @@ CityJSON is a JSON-based \citep{json} encoding format that implements a subset o
 
 The following properties of CityJSON are derived from \citet{ledoux_2019}:
 
-
 \subsubsection{Flattened City Objects Architecture}
 \label{rw:cityjson:flattened_architecture}
 
@@ -60,10 +59,75 @@ CityJSON supports the same 3D geometric primitives as CityGML. However, instead 
 
 CityJSON stores semantic surfaces as separate objects, recognizing that city objects often share common semantics. This is implemented through \texttt{semanticSurfaces} fields and a \texttt{values} array that maps surfaces to their corresponding semantic surface objects.
 
+This is an example of how the semantic surfaces look like (derived from \citet{ledoux_2019}):
+
+\begin{lstlisting}
+  {
+    "type": "Solid",
+    "lod": 2,
+    "boundaries": [
+      [ [[0,3,2,1,22]], [[4,5,6,7]], [[0,1,5,4]],
+        [[1,2,6,5]] ]
+      ],
+      "semantics": {
+        "surfaces" : [
+          { "type": "RoofSurface" },
+          {
+            "type": "WallSurface",
+            "paint": "blue"
+          },
+          { "type": "GroundSurface" }
+        ],
+        "values": [ [0, 1, 1, 2] ]
+      }
+    }
+  }
+\end{lstlisting}
+
 \subsubsection{Geometry Templates}
 \label{rw:cityjson:geometry_templates}
 
 CityJSON implements CityGML's Implicit Geometry concept through "geometry templates." The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilizing these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
+
+This code shows an example of a geometry template derived from \citet{ledoux_2019}:
+
+\begin{lstlisting}
+  {
+    "geometry-templates": {
+      "templates": [{
+        "type": "MultiSurface",
+        "lod": 2,
+        "boundaries": [
+          [[0, 3, 2, 1]],
+          [[4, 5, 6, 7]],
+          [[0, 1, 5, 4]]
+        ]
+      }],
+      "vertices-templates": [...]
+    }
+  }
+\end{lstlisting}
+
+And this is how a city object references this template:
+
+\begin{lstlisting}
+  {
+    "type": "SolitaryVegetationObject",
+    "geometry": [
+      {
+        "type": "GeometryInstance",
+        "template": 0,
+        "boundaries": [372],
+        "transformationMatrix": [
+          2.0, 0.0, 0.0, 0.0,
+          0.0, 2.0, 0.0, 0.0,
+          0.0, 0.0, 2.0, 0.0,
+          0.0, 0.0, 0.0, 1.0
+        ]
+      }
+    ]
+  }
+\end{lstlisting}
 
 \subsubsection{Coordinate Quantization}
 \label{rw:cityjson:coordinate_quantisation}
@@ -74,10 +138,46 @@ CityJSON employs coordinate quantization to reduce geometry size. The \texttt{tr
   x = v_x \cdot \text{transform.scale}_x + \text{transform.translate}_x
 \end{equation}
 
+This is an example of how the transform object looks like (derived from \citet{ledoux_2019}):
+\begin{lstlisting}
+{
+  "transform": {
+    "scale": [0.01, 0.01, 0.01],
+    "translate": [4424648.79, 5482614.69, 310.19]
+  }
+}
+\end{lstlisting}
+
 \subsubsection{Extension Mechanism}
 \label{rw:cityjson:extension_mechanism}
 
-CityJSON implements a simplified extension mechanism using JSON Schema, similar to CityGML's Application Domain Extensions (ADEs). This approach provides a more accessible and developer-friendly way to extend the data model compared to CityGML's XML Schema-based extensions. The JSON Schema-based extensions maintain compatibility with the core CityGML conceptual model while offering greater flexibility in implementation and validation.
+CityJSON implements an extension mechanism using JSON Schema, similar to CityGML's Application Domain Extensions (ADEs).
+\citet{fillip_2018} provides an overview of the developments of ADEs in CityGML. While CityJSON's extension mechanism maintains compatibility with the core CityGML conceptual model, it has some limitations compared to CityGML's ADEs, particularly in terms of inheritance and namespace support.
+The JSON Schema defines the data structure of extensions and can be used to validate extended objects.
+
+CityJSON supports four distinct ways to extend the data model:
+
+\begin{itemize}
+  \item Adding new properties at the root level of a CityJSON object (property names must start with \texttt{"+"}, e.g., \texttt{"+census"})
+  \item Defining additional attributes for existing city objects (attribute names must start with \texttt{"+"}, e.g., \texttt{"+colour"})
+  \item Creating new semantic objects (object names must start with \texttt{"+"}, e.g., \texttt{"+ThermalSurface"})
+  \item Creating or extending new city object types (city object names must start with \texttt{"+"}, e.g., \texttt{"+NoiseBuilding"})
+\end{itemize}
+
+Each extension must be documented and validated using a JSON Schema file. This schema file must contain specific properties that define the structure and constraints of the extension. For example, an extension schema might look like this (derived from \citet{ledoux_2019}):
+
+\begin{lstlisting}
+   {
+     "type": "CityJSON_Extension",
+     "name": "Noise",
+     "uri": "https://someurl.org/noise.json",
+     "version": "0.1",
+     "description": "Extension to model the noise"
+     "extraRootProperties": {},
+     "extraAttributes": {},
+     "extraCityObjects": {}
+  }
+\end{lstlisting}
 
 The proposed data format, FlatGeobuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantization, and the extension mechanism. The strategy for encoding city objects in CityJSON will be explained in \autoref{methodology}.
 
@@ -86,15 +186,38 @@ The proposed data format, FlatGeobuf, inherits key concepts from CityJSON includ
 
 \citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences.
 
-Each object is stored as a CityJSONFeature, representing one feature (e.g., a Building with its BuildingParts and BuildingInstallations) with its own local vertex list.
+The fundamental unit of CityJSONSeq is the \texttt{CityJSONFeature}, which represents a single feature encompassing a complete city object and its hierarchical children. For instance, a \texttt{CityJSONFeature} representing a \texttt{"Building"} includes its associated \texttt{"BuildingPart"} and \texttt{"BuildingInstallation"} objects. Unlike standard CityJSON objects that share vertices and appearances across multiple features, each \texttt{CityJSONFeature} maintains local vertex lists and appearance data, ensuring complete self-containment of geometric and visual information. Throughout this research, \texttt{CityJSONFeature} objects are referred to simply as \texttt{"features"}.
 
-Following the Newline Delimited JSON specification \citep{jsonnd}, CityJSONSeq requires initialisation with a CityJSON object.
+CityJSONSeq adheres to the Newline Delimited JSON specification \citep{jsonnd}, implementing a structured file format with specific requirements. The first line of a CityJSONSeq file must contain a CityJSON object that stores commonly used data shared across all features, including coordinate transformation parameters (\texttt{transform}), format version information (\texttt{version}), metadata (\texttt{metadata}), reusable geometry templates (\texttt{geometry-templates}), and extension definitions (\texttt{extensions}). This initialisation object establishes the global context for subsequent features.
+The example below shows how a \texttt{CityJSONFeature} is represented (derived from \citet{ledoux_2024}):
 
-It is followed by line-feed-delimited CityJSONFeature objects, adhering to the JSON Data Interchange Format \citep{json_data_interchange_format}.
+\begin{lstlisting}
+  {
+    "type": "CityJSONFeature",
+    "id": "id-1",
+    "CityObjects": {
+      "id-1": {
+        "type": "Building",
+        "attributes": {
+          "roofType": "gabled roof",
+          "children": ["my balcony"]
+        },
+        "geometry": [ ... ]
+      },
+      "my balcony": {
+        "type": "BuildingInstallation",
+        "parents": ["id-1"],
+        "geometry": [ ... ]
+      }
+    },
+    "vertices": [ ... ],
+    "appearance": { ... }
+  }
+\end{lstlisting}
 
-While CityJSONSeq generally offers improved compression and memory efficiency, larger file sizes may occur with minimal vertex counts or extensive vertex/texture sharing.
+While CityJSONSeq generally offers improved compression and memory efficiency relative to standard CityJSON, larger file sizes may occur in scenarios with minimal vertex counts or extensive vertex and texture sharing across features, due to the localisation of previously shared resources.
 
-Its text-based format presents opportunities for further cloud-native optimisation.
+While CityJSONSeq improves upon standard CityJSON for streaming applications, its text-based JSON format presents several limitations that hinder optimal cloud-native performance. The format lacks explicit data typing, storing all values as strings regardless of their semantic type (numbers, booleans, etc.), which tends to increase storage overhead and requires additional parsing. Furthermore, the JSON structure necessitates complete parsing and copying of data during processing, limiting memory efficiency. Additionally, the absence of built-in indexing mechanisms restricts efficient spatial and attribute-based querying capabilities. These limitations present opportunities for further cloud-native optimisation through binary encoding schemes that preserve data types and enable zero-copy access, combined with indexing mechanisms for efficient data retrieval.
 
 \subsection{Enhancements to CityJSON Performance}
 \label{rw:cityjson_enhancements:performance}
@@ -103,21 +226,13 @@ Its text-based format presents opportunities for further cloud-native optimisati
 \label{rw:cityjson_enhancements:performance:binary_encoding}
 
 \citet{jordi_van_liempt_2020} conducted a systematic evaluation of binary encoding techniques for CityJSON.
-
 This was done to address challenges associated with transmitting large-scale 3D city models over the web.
-
 The study assessed various compression and encoding methodologies, including CBOR, zlib, Draco and their combinations.
-
 It evaluated visualisation time, querying time, spatial analysis time, editing time, file size compression and lossiness.
-
 The analysis determined that the combination of CBOR and zlib offers optimal general-purpose efficiency due to its implementation simplicity.
-
 Conversely, Draco exhibited superior performance for pre-compressed data scenarios.
-
 However, the study identified limitations in Draco's applicability.
-
 Specifically, it noted the increased complexity and computational overhead when handling smaller datasets.
-
 While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments.
 
 \subsubsection{Experimental Implementation Using FlatBuffers}
@@ -135,9 +250,7 @@ The preliminary implementation revealed potential advantages in several key area
   \item Decreased storage requirements.
 \end{itemize}
 
-This research extends Peters' preliminary work by developing a comprehensive solution.
-
-It aims at optimising performance in cloud-native environments, with specific emphasis on scalability and efficient data processing.
+Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritizing both scalability and efficient data processing to address the limitations of the preliminary approach.
 
 \subsection{Research Gaps}
 \label{rw:research_gaps}
@@ -151,8 +264,7 @@ Specifically, while advanced serialisation frameworks like FlatBuffers (detailed
 For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
 
 This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies.
-
-These methodologies enhance size reduction, decoding efficiency and query flexibility within cloud infrastructures.
+These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimized binary encoding.
 
 The proposed approach is detailed in \autoref{methodology}.
 
@@ -178,13 +290,13 @@ These include serialisation/deserialisation speed, memory utilisation and data c
 
 \citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}.
 
-It is optimised for efficient data transfer and storage.
+It is optimised for efficient data access and transfer.
 
 The detailed characteristics and technical implementation of FlatBuffers will be explained in \autoref{tb:flatbuffers}.
 
 Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats.
 
-These include \citet{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
+These include Protobuf \citep{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
 
 \subsection{Protocol Buffers (Protobuf)}
 \label{rw:non_geospatial_formats:protobuf}
@@ -198,7 +310,7 @@ This framework implements similar fundamental operations to FlatBuffers.
 These include schema definition and binary encoding processes.
 
 Despite its advantages in simplicity and usability, Protobuf presents several operational constraints:
-
+\todo{improve this."Does flatbuffers offer compression? ie. why do you mention compression here but not in 2.3.1?"}
 \begin{itemize}
   \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks.
   \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data.
