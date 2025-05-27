@@ -7,7 +7,7 @@
 
 \section{Cache line}
 \label{tb:cache_line}
-\todo{add here}
+\todo{add here, I write about CPU cache and cache miss}
 
 \section{Serialisation and Deserialisation}
 \label{tb:serialisation_deserialisation}
@@ -23,7 +23,7 @@ Deserialisation is the reverse process of serialisation, where the bit-string is
 
 \section{Zero-copy}
 \label{tb:zero_copy}
-Zero-copy is a technique used to avoid copying data from one memory location to another. While, the term "Zoro-copy" is used in many contexts of computer science, \citet{song2012performance}  and \citet{brose_2008_zerocopy} provide a more detailed explanation of the concept.
+Zero-copy is a technique used to avoid copying data from one memory location to another. The term "Zero-copy" is used in many contexts of computer science, \citet{song2012performance}  and \citet{brose_2008_zerocopy} provide a detailed explanation of the concept.
 
 \subsection{Typical Data Transfer with read/write}
 In conventional I/O operations, data typically traverses multiple memory regions, each requiring a separate copy operation:
@@ -48,6 +48,7 @@ Zero-copy approaches optimize this data path by eliminating unnecessary copy ope
   \item \textbf{Shared memory}: Provides common address space for inter-process communication
   \item \textbf{In-place parsing}: Processes data structures without creating intermediate copies
 \end{itemize}
+\todo{ravi's comment "so this is in-place parsing, which also enables memory mapping? Are some other of the above terms also relevant? Clarify exactly how Flatbuffers relates to what you explain above."}
 
 Modern serialization formats like FlatBuffers implement zero-copy through carefully designed memory layouts that allow direct access to serialized data without requiring a separate deserialization step. This approach is particularly valuable for geospatial applications that routinely handle large datasets.
 \section{Endianness}
@@ -115,7 +116,7 @@ Binary search is a fundamental algorithm for finding elements in a sorted array.
   \caption{Classic Binary Search}%
   \label{alg:binary_search}
 \end{algorithm}
-
+\todo{explain about cache miss}
 The time complexity of binary search is logarithmic—the height of the implicit binary search tree is $\log_2(n)$ for an array of size $n$. While this is theoretically efficient, the actual performance suffers when implemented on modern hardware due to memory access patterns. Each comparison requires the processor to fetch a new element, potentially causing a cache miss. In the worst case, the number of memory read operations will be proportional to the height of the tree, with each read potentially requiring access to a different cache line or disk block \citep{binary_search}.
 
 This inefficiency is particularly problematic when binary search is implemented on external memory or over HTTP, where each access incurs significant latency. The sorted array representation with binary search does not take advantage of CPU cache locality, as consecutive comparisons frequently access distant memory locations.
@@ -125,7 +126,7 @@ This inefficiency is particularly problematic when binary search is implemented 
 
 While preserving the same algorithmic idea as binary search, the Eytzinger layout (also known as a complete binary tree layout or level-order layout) rearranges the array elements to match the access pattern of a binary search \citep{binary_search}. Instead of storing elements in sorted order, it places them in the order they would be visited during a level-order traversal of a complete binary tree.
 
-This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. This spatial locality enables effective hardware prefetching, allowing the CPU to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
+This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. \todo{ravi's comment "relate this also to network (range) requests, and how it would eg. help reduce latency"} This spatial locality enables effective hardware prefetching, allowing the CPU to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
 
 The \autoref{fig:eytzinger_layout} shows how the layout looks when applied to binary search. The \autoref{fig:eytzinger_layout2} shows that the algorithm starts from the first element and then jumps to either $2k$ or $2k+1$ depending on the comparison result.
 
@@ -142,6 +143,8 @@ The \autoref{fig:eytzinger_layout} shows how the layout looks when applied to bi
   \label{fig:eytzinger_layout2}
 \end{figure}
 
+\todo{ravi's comment "ideally make this the same example data set as fig 3.1, and also show what the access pattern would look like if the array was sorted"}
+
 \section{\texorpdfstring{\ac{s+tree}}{S+tree}}
 \label{tb:static_btree}
 
@@ -153,6 +156,8 @@ While the Eytzinger layout improves cache utilization for binary search, the num
 B-Trees and their variants address this limitation by storing multiple keys in each node, effectively reducing the height of the tree. In a B-Tree of order $k$ (where each node can contain up to $k-1$ keys), the height of the tree is reduced from $\log_2(n)$ to $\log_k(n)$. This represents a reduction factor of $\log_k/\log_2 = \log_2(k)$ times compared to a binary search tree.
 
 The key insight is that fetching a single node still takes roughly the same time regardless of whether it contains one key or multiple keys, as long as the entire node fits into a single memory block or disk page. By packing multiple keys into each node, B-Trees significantly reduce the number of disk or memory accesses required to locate an element.
+
+\todo{ravi's comment "draw a figure that illustrates the difference between B and B+ trees"}
 
 B+Trees are a variant of B-Trees specifically optimized for range queries and sequential access patterns. In a B+Tree:
 \begin{itemize}
@@ -166,7 +171,7 @@ This linked structure of leaf nodes enables B+Trees to efficiently support range
 \label{tb:stree}
 
 The \ac{s+tree} approach, introduced by Algorithmica \citep{static_b_trees}, builds upon the B+Tree concept but is specifically designed for static datasets where the tree structure never changes after construction. Unlike traditional B+Trees that use explicit pointers between nodes, the Static B+Tree uses an implicit structure where child positions are calculated mathematically.
-
+\todo{Ravi's comment "this is the same as S+Tree?"}
 This is possible because:
 \begin{itemize}
   \item The tree is constructed once and never modified (static)

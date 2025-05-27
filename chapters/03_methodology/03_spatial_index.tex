@@ -8,7 +8,7 @@ Efficient spatial querying is a critical requirement for 3D city model formats, 
 \subsection{Design Attribution}
 \label{methodology:spatial_index:attribution}
 
-The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{horance_2022_detail}. The design combines several key innovations:
+The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{horance_2022_detail}. The design combines several key features:
 
 \begin{itemize}
   \item A Hilbert curve-based spatial ordering strategy, inspired by Vladimir Agafonkin's flatbush library, which optimizes data locality for spatially proximate features
@@ -23,7 +23,7 @@ The spatial indexing system is designed to support cloud-native access patterns,
 
 It is important to explicitly acknowledge that the spatial indexing code in FlatCityBuf is a direct adaptation of FlatGeoBuf's implementation, with modifications primarily focused on integration with the 3D city model data structure rather than fundamental algorithmic changes. The original implementation by Björn Harrtell and other FlatGeoBuf contributors \citep{flatgeobuf} provided an excellent foundation that has been proven effective for cloud-optimized geospatial data.
 
-While the original FlatGeoBuf implementation targets 2D vector geometries, FlatCityBuf extends this approach to work with 3D city models by applying the indexing to 2D projections (centroids) of the 3D features. The decision to reuse this proven approach rather than developing a novel indexing mechanism was based on FlatGeoBuf's demonstrated effectiveness for cloud-optimized geospatial data formats.
+While the original FlatGeoBuf implementation targets 2D vector geometries, FlatCityBuf extends this approach to work with 3D city models by using two distinct spatial representations: the 2D bounding box centroid for Hilbert curve ordering, and the full 2D bounding box for spatial intersection tests. This dual representation allows efficient spatial indexing while maintaining accurate spatial query results. The decision to reuse this proven approach rather than developing a novel indexing mechanism was based on FlatGeoBuf's demonstrated effectiveness for cloud-optimized geospatial data formats.
 
 \subsection{Feature sorting}
 \label{methodology:spatial_index:feature_sorting}
@@ -33,7 +33,7 @@ A key optimization in FlatCityBuf's indexing strategy is the spatial ordering of
 The Hilbert curve encoding process for FlatCityBuf follows these steps:
 
 \begin{enumerate}
-  \item For each \ac{cityfeature}, determine its 2D footprint by calculating the minimum and maximum X,Y coordinates from all vertices across all contained CityObjects
+  \item For each \ac{cityfeature}, determine its 2D footprint by calculating the axis-aligned bounding box (minimum and maximum X,Y coordinates) from all vertices across all contained CityObjects
   \item Calculate the geometric centroid of this 2D footprint
   \item Apply a 32-bit Hilbert encoding algorithm to this centroid, converting the 2D spatial position into a 1D ordering value
   \item Sort all features according to their computed Hilbert values in ascending order
@@ -52,11 +52,11 @@ The spatial index in FlatCityBuf is implemented as a packed Hilbert R-tree, with
 Each index node in the spatial index is represented by a fixed-size binary structure containing:
 
 \begin{itemize}
-    \item \textbf{Bounding box coordinates}: 4 little-endian double values (4 bytes each) defining the minimum and maximum X,Y coordinates of the node's bounding box
-    \item \textbf{Byte offset}: A 64-byte unsigned integer pointing to either:
+  \item \textbf{Bounding box coordinates}: 4 little-endian double values (4 bytes each) defining the minimum and maximum X,Y coordinates of the node's bounding box
+  \item \textbf{Byte offset}: A 64-byte unsigned integer pointing to either:
     \begin{itemize}
-        \item For leaf nodes: The position of the corresponding feature in the features section
-        \item For interior nodes: The position of the node's first child in the index section
+      \item For leaf nodes: The position of the corresponding feature in the features section
+      \item For interior nodes: The position of the node's first child in the index section
     \end{itemize}
 \end{itemize}
 
@@ -65,11 +65,11 @@ This results in a fixed node size, allowing for predictable memory layouts and e
 The tree is built using the following process:
 
 \begin{enumerate}
-    \item Create the bottom layer (leaf nodes) using the bounding boxes and byte offsets recorded during feature serialization
-    \item Group these leaf nodes according to their Hilbert-sorted order into parent nodes, with each parent node containing up to \texttt{index\_node\_size} children (configurable)
-    \item Compute the bounding box of each parent node as the union of its children's bounding boxes
-    \item Continue building upward, level by level, until a single root node is reached
-    \item Serialize the entire tree in level order, starting with the root, then its children, and so on
+  \item Create the bottom layer (leaf nodes) using the bounding boxes and byte offsets recorded during feature serialization
+  \item Group these leaf nodes according to their Hilbert-sorted order into parent nodes, with each parent node containing up to \texttt{index\_node\_size} children (configurable)
+  \item Compute the bounding box of each parent node as the union of its children's bounding boxes
+  \item Continue building upward, level by level, until a single root node is reached
+  \item Serialize the entire tree in level order, starting with the root, then its children, and so on, following the Eytzinger layout pattern (described in \autoref{tb:eytzinger_layout}) to optimise cache line utilization during tree traversal
 \end{enumerate}
 
 This "packed" structure ensures that the R-tree is maximally filled (except potentially for the rightmost nodes at each level), which is possible because the tree is built in bulk from a known static dataset. The total size of the index is deterministic and based solely on the number of features and the chosen node size.
@@ -77,10 +77,10 @@ This "packed" structure ensures that the R-tree is maximally filled (except pote
 Unlike traditional R-trees which support dynamic updates, the packed R-tree in FlatCityBuf is immutable after creation. This trade-off prioritizes read performance and structural efficiency over the ability to modify the dataset, aligning with the file format's primary use case as a cloud-optimized geospatial data delivery mechanism \citep{horance_2022_overview}.
 
 \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.9\textwidth]{./figs/methodology/packed_rtree.png}
-    \caption{Example of a packed R-tree structure. Image sourced from \cite{horance_2022_overview}.}
-    \label{fig:packed_rtree}
+  \centering
+  \includegraphics[width=0.9\textwidth]{./figs/methodology/packed_rtree.png}
+  \caption{Example of a packed R-tree structure. Image sourced from \cite{horance_2022_overview}.}
+  \label{fig:packed_rtree}
 \end{figure}
 
 \subsection{2D vs 3D Indexing Considerations}
@@ -89,8 +89,8 @@ Unlike traditional R-trees which support dynamic updates, the packed R-tree in F
 Although FlatCityBuf is designed for 3D city models, the spatial indexing mechanism deliberately uses a 2D approach rather than a full 3D implementation. This design decision was based on several key observations:
 
 \begin{itemize}
-    \item \textbf{Horizontal Distribution}: Most 3D city models are primarily distributed horizontally in global scale, with limited vertical extent relative to their horizontal footprint
-    \item \textbf{Query Patterns}: Typical spatial queries for city models focus on horizontal regions (e.g., retrieving buildings within a district), rather than volumetric queries
-    \item \textbf{Standards Compatibility}: OGC API - Features - Part 1: Core \citep{ogc_api_2019} and similar standards primarily support 2D spatial querying
-    \item \textbf{Implementation Efficiency}: 2D indexing is computationally simpler and more storage-efficient than 3D alternatives
+  \item \textbf{Horizontal Distribution}: Most 3D city models are primarily distributed horizontally in global scale, with limited vertical extent relative to their horizontal footprint
+  \item \textbf{Query Patterns}: Typical spatial queries for city models focus on horizontal regions (e.g., retrieving buildings within a district), rather than volumetric queries
+  \item \textbf{Standards Compatibility}: OGC API - Features - Part 1: Core \citep{ogc_api_2019} and similar standards primarily support 2D spatial querying
+  \item \textbf{Implementation Efficiency}: 2D indexing is computationally simpler and more storage-efficient than 3D alternatives
 \end{itemize}

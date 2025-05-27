@@ -3,7 +3,8 @@
 \section{FlatBuffers Framework}
 \label{tb:flatbuffers}
 
-FlatBuffers, developed by \citet{flatbuffers}, is a cross-platform serialisation framework designed specifically for performance-critical applications with a focus on memory efficiency and processing speed. Unlike traditional serialisation approaches, FlatBuffers implements a zero-copy deserialisation mechanism that enables direct access to serialised data without an intermediate parsing step \citep{flatbuffers_benchmark}, as discussed in \autoref{tb:zero_copy}. This characteristic is particularly advantageous for large geospatial datasets where parsing overhead can significantly impact performance.
+FlatBuffers, developed by \citet{flatbuffers}, is a cross-platform serialisation framework designed specifically for performance-critical applications with a focus on memory efficiency and processing speed. Unlike traditional serialisation approaches, FlatBuffers implements a zero-copy deserialisation mechanism that enables direct access to serialised data without an intermediate parsing step \citep{flatbuffers_benchmark}, as discussed in \autoref{tb:zero_copy}.
+This characteristic is particularly advantageous for large geospatial datasets, where parsing overhead can significantly impact performance (\eg, JSON parsing).
 
 \subsection{Schema-Based Serialisation}
 \label{tb:flatbuffers:schema_based_serialisation}
@@ -12,8 +13,7 @@ FlatBuffers employs a strongly typed, schema-based approach to data serialisatio
 
 \begin{enumerate}
   \item Definition of data structures in schema files with the \texttt{.fbs} extension
-  \item Compilation of schema files using the FlatBuffers compiler (\texttt{flatc})
-  \item Generation of language-specific code for data access
+  \item Compilation of schema files using the FlatBuffers compiler (\texttt{flatc}) to generate language-specific code for data access
   \item Implementation of application logic using the generated code
 \end{enumerate}
 
@@ -39,7 +39,7 @@ FlatBuffers provides a comprehensive type system that balances efficiency and ex
     \begin{itemize}
       \item Require all fields to be present (no optionality)
       \item Are stored directly within their containing object
-      \item Provide faster access at the cost of schema flexibility
+      \item Are less flexible than tables but provide faster access
       \item Optimise memory layout for primitive types
     \end{itemize}
 
@@ -79,6 +79,7 @@ These features were essential for FlatCityBuf's implementation, enabling modular
 
 \subsection{Binary Structure and Memory Layout}
 \label{tb:flatbuffers:binary_structure}
+\todo{Ravi's comment "add a figure to illustrate a typical flatbuffer memory layout"}
 
 FlatBuffers organises serialised data in a flat binary buffer with the following characteristics:
 

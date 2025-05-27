@@ -17,7 +17,8 @@ Providing users with the ability to download specific data of interest represent
 
 \subsection{Data Analysis}
 \label{data_analysis}
-
+\todo{this is not too convincing to me yet. Why mention CFD specifically here? most resources in CFD will not be affected by using FCB, maybe only a bit in the data preprocessing? (converting from FCB to CFD specific geometry enciding)
+Mayber a more interesting use case is the 3DBAG generation pipeline, where we have different stages that need to read/write cjseq files, and I/O is actually one of the bottlenecks (eg in conversion from fcb to 3d tiles)}
 As demonstrated by the performance benchmarks, FlatCityBuf excels in read operations compared to alternative data formats, making it particularly suitable for analysing large-scale datasets. Computational Fluid Dynamics in urban environments, for instance, requires processing substantial volumes of detailed geometric data. Such analyses typically demand significant memory and computational resources. FlatCityBuf can process these data more efficiently by leveraging its zero-copy capability.
 
 The format also simplifies analytical workflows. Conventional approaches to large-scale data processing often require chunking data across multiple files, necessitating additional programming to manage file aggregation. In contrast, FlatCityBuf encapsulates data in a single file that can be efficiently loaded and accessed, even in web-based environments, streamlining analytical processes.

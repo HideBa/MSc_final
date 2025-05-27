@@ -45,12 +45,11 @@ Network latency often dominates performance when accessing data over HTTP, with 
 
 \begin{itemize}
   \item \textbf{Request Batching}: Multiple feature requests are grouped into larger, consolidated HTTP requests rather than making individual requests for each feature. This approach significantly reduces the number of HTTP round trips, improving overall performance while minimizing network overhead.
-
-  \item \textbf{Payload Prefetching}: When an attribute index is about to be used, the implementation proactively downloads a portion of its payload section. This anticipatory approach reduces latency for subsequent operations by having relevant data already available in memory when needed.
+  \item \textbf{Payload Prefetching}: As explained in \autoref{methodology:attribute_index:streaming_s_tree}, when an attribute index is about to be used, the implementation proactively downloads a portion of its payload section. This anticipatory approach reduces latency for subsequent operations by having relevant data already available in memory when needed.
 
   \item \textbf{Streaming Process of Indices}: Both spatial and attribute indices implement a streaming approach where only the necessary node items in the tree structure are loaded when needed. Rather than loading entire index structures upfront, the system traverses the tree on demand, requesting only the relevant portions required for the current query.
 
-  \item \textbf{Buffered HTTP Client}: The implementation uses a buffered HTTP client that caches previously fetched data ranges, avoiding redundant requests when overlapping ranges are accessed.
+  \item \textbf{Buffered HTTP Client}: The implementation leverages a buffered HTTP client library developed by \citet{buffered_http_range_client} that efficiently caches previously fetched data ranges, avoiding redundant requests when overlapping ranges are accessed.
 
 \end{itemize}
 

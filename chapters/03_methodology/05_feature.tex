@@ -34,7 +34,7 @@ FlatCityBuf implements the core structure of \ac{cjseq} using the following Flat
     \end{itemize}
 \end{itemize}
 
-This structure maintains CityJSON's hierarchical organization while taking advantage of FlatBuffers' binary encoding and zero-copy access capabilities.
+This structure maintains CityJSON's hierarchical organization while taking advantage of FlatBuffers' binary encoding and zero-copy access capabilities, with the exception of attributes which are self-encoded as binary blobs.
 
 \subsection{Geometry Encoding}
 \label{methodology:feature_encoding:geometry_encoding}
@@ -130,7 +130,7 @@ Through this flattened array approach, FlatCityBuf preserves the rich hierarchic
 \subsubsection{Geometry Template Encoding}
 \label{methodology:feature_encoding:geometry_encoding:templates}
 
-FlatCityBuf implements CityJSON's template mechanism for efficient representation of repeated geometry patterns, a common requirement in urban environments where many buildings, street furniture items, or other objects share identical geometric structures. The template approach separates the geometry definition from its instantiation:
+FlatCityBuf implements CityJSON's template mechanism for efficient representation of repeated geometry patterns, a common requirement in urban environments where many buildings, street furniture items, vegetation, or other objects share identical geometric structures. The template approach separates the geometry definition from its instantiation:
 
 \begin{itemize}
   \item \textbf{Template Definition}: Templates are defined once in the header section as full Geometry objects:

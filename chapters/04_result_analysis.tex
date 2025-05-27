@@ -81,7 +81,7 @@ To examine how level of detail (LOD) affects file size, we conducted a series of
 
 Since each test dataset contains only a single city feature, we compare feature sizes rather than total file sizes. This approach is necessary because FlatCityBuf incorporates a larger header structure, which would disproportionately affect comparisons involving minimal features.
 
-The results indicate that while file sizes naturally increase with higher levels of detail, there is no significant correlation between LOD and compression efficiency. Both formats exhibit proportional growth as geometric complexity increases. FlatCityBuf's compression advantage over CityJSONSeq remains consistent across most LOD levels, typically maintaining a 24-25\% reduction in size.
+The results demonstrate that while file sizes increase with higher levels of detail, the compression factor remains largely independent of LOD. Both formats show similar proportional growth in size as geometric complexity increases, with FlatCityBuf consistently achieving approximately 24-25\% size reduction compared to CityJSONSeq regardless of the LOD level. This suggests that the compression efficiency is determined by the underlying format design rather than the geometric complexity of the data.
 
 \begin{table}[htbp]
   \centering
@@ -302,9 +302,10 @@ All benchmarks were executed within a consistent hardware and software configura
 \label{result:benchmark_on_local_environment:measurement_parameters}
 
 The benchmark framework captured multiple performance dimensions through the following key indicators:
+\todo{Ravi's comment "you could also look at write performance here"}
 
 \begin{itemize}
-  \item \textbf{Read Performance:} Time required to deserialise the file and construct the complete CityJSON structure in memory, measured in milliseconds with microsecond precision
+  \item \textbf{Read Performance:} Time required to deserialise the file and map the data into memory using zero-copy techniques, measured in milliseconds with microsecond precision
 
   \item \textbf{Memory Efficiency:} Peak Resident Set Size (RSS) during file processing, providing an accurate measurement of maximum memory requirements
 
@@ -312,12 +313,14 @@ The benchmark framework captured multiple performance dimensions through the fol
 
 \end{itemize}
 
-These parameters were systematically measured across all encoding formats-CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
+These parameters were systematically measured across all encoding formats-CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. \todo{Ravi's comment "why these and not others?"} The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
 
 \subsubsection{Read Performance FlatCityBuf vs CityJSONSeq}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
 
 The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring CPU utilization, processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
+
+\todo{take benchmark well again}
 
 \begin{table}[ht]
   \centering
@@ -654,7 +657,7 @@ The performance comparison between FlatCityBuf and BSON followed the same method
 To summarise the results of the local environment benchmark, we especially focus on the comparison between FlatCityBuf and CityJSONSeq since CityJSONSeq is the most standard data format of CityJSON at the moment.
 
 \begin{itemize}
-  \item CPU utilization: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilization while the worst case achieved still 1.77$\times$ improvement. While the Ratio is sometimes important, since CPU utilization limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
+  \item CPU utilization: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilization while the worst case achieved still 1.77$\times$ improvement. \todo{think how to explain this, there is not 100\% CPU utilization} While the Ratio is sometimes important, since CPU utilization limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
   \item Processing time: Processing time is more considarable as its pirmary objective of the research. The best case achieved 46.62$\times$ improvement (Montréal) while the worst case achieved 8.48$\times$ improvement (3DBAG). The program can save a lot of time for large datasets.
   \item Memory consumption: Memory consumption is also an important metric. The best case achieved 3.11$\times$ improvement (Tokyo) while the worst case achieved 0.62$\times$ improvement (PLATEAU\_tran).
 \end{itemize}

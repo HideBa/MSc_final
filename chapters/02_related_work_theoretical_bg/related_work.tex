@@ -369,7 +369,11 @@ PMTiles offers a standardised format for managing tile data addressed through Z/
 
 \subsection{FlatGeobuf}
 \label{rw:cloud_optimised_implementations:flatgeobuf}
-FlatGeobuf adheres to the Simple Features \citet{simple_features} specification by utilising \citet{flatbuffers} for serialisation. The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations. Notably, its partial data access capabilities allow clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset. \citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
+FlatGeobuf adheres to the Simple Features \citet{simple_features} specification by utilising FlatBuffers \citep{flatbuffers} for serialisation.
+The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations through its packed Hilbert R-tree spatial index.
+This indexing mechanism, combined with stream search capabilities, allows clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset.
+Users and applications can effectively choose subsets of data based on spatial queries, optimizing both storage and retrieval operations.
+\citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
 
 \subsection{GeoParquet}
 \label{rw:cloud_optimised_implementations:geoparquet}
@@ -380,6 +384,7 @@ GeoParquet integrates Parquet's columnar storage architecture to facilitate opti
   \item \textbf{Optimised Read Operations}: The columnar architecture enables selective column access and efficient data filtering via predicate pushdown mechanisms, thereby enhancing performance in read-intensive workflows.
 \end{itemize}
 
+\todo{check ravi's comment}
 \subsection{3D Tiles}
 \label{rw:cloud_optimised_implementations:3d_tiles}
 3D Tiles, an Open Geospatial Consortium (OGC) standard \citep{3d_tiles}, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements GLTF \citep{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
@@ -390,6 +395,7 @@ The data structure employs spatial partitioning through bounding volumes, enabli
 \label{rw:cloud_optimised_implementations:comparison}
 While acknowledging the inherent limitations of direct format comparisons due to their distinct design objectives and application domains, \autoref{tab:format-comparison} presents a systematic analysis of key operational characteristics across various cloud-optimised geospatial formats. The evaluation criteria and their corresponding scales are detailed in \autoref{tab:criteria-scale}. This analysis facilitates the understanding of format-specific capabilities within their respective operational contexts.
 
+\todo{consider if this table is the best way to compare the formats. It is a bit subjective}
 \begin{table}[htbp]
   \centering
   \caption{Comparative Analysis of Cloud-Optimised Geospatial Formats (Scale: 1-5)}
