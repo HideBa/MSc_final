@@ -8,7 +8,7 @@ A critical component of cloud-optimised geospatial formats is their ability to s
 \subsection{Principles of Partial Data Retrieval}
 \label{methodology:http_range_requests:partial_retrieval_principles}
 
-HTTP Range Requests, defined in RFC 7233 \citep{rfc_7233}, allow clients to request specific byte ranges from server resources instead of entire files. This capability is fundamental to FlatCityBuf's cloud-optimised design. Since each feature in FlatCityBuf is length-prefixed, once the client knows the byte offset to a specific feature, it can request precisely the bytes needed. While data access patterns vary—from sequential access to spatially or attribute-indexed retrieval—the core principle remains consistent: fetch only the necessary data.
+HTTP Range Requests, defined in RFC 7233 \citep{rfc_7233}, allow clients to request specific byte ranges from server resources instead of entire files. This capability is fundamental to FlatCityBuf's cloud-optimised design. Since each feature in FlatCityBuf is length-prefixed, once the client knows the byte offset to a specific feature, can request precisely the bytes needed. While data access patterns vary—from sequential access to spatially or attribute-indexed retrieval—the core principle remains consistent: fetch only the necessary data.
 
 \subsection{Range Request Workflow}
 \label{methodology:http_range_requests:range_request_workflow}
@@ -54,54 +54,3 @@ Network latency often dominates performance when accessing data over HTTP, with 
 \end{itemize}
 
 These optimisations work in concert to minimise the number of HTTP requests, resulting in significantly improved performance for cloud-based 3D city model applications.
-
-\subsection{Cross-Platform Implementation}
-\label{methodology:http_range_requests:cross_platform_implementation}
-
-FlatCityBuf provides range request capabilities across multiple platforms to maximise accessibility and integration options:
-\subsubsection{Cross-Platform Support}
-\label{methodology:http_range_requests:cross_platform_implementation:cross_platform}
-
-FlatCityBuf is implemented primarily as a Rust library that can be used in both native environments and web browsers. The same codebase is compiled to:
-
-\begin{itemize}
-  \item Native Rust library for server-side applications and desktop GIS tools
-  \item WebAssembly (WASM) module for browser-based applications with JavaScript interoperability
-\end{itemize}
-
-This cross-platform approach enables FlatCityBuf to work with both Rust's native HTTP clients and browser-based Fetch API implementations. The WASM implementation has one notable limitation: current browser WebAssembly implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming WebAssembly Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
-\subsubsection{Web prototype}
-\label{methodology:http_range_requests:cross_platform_implementation:web_prototype}
-
-To demonstrate FlatCityBuf's capabilities in web environments and illustrate practical user interactions with the data, a functional web prototype was developed. The prototype is publicly accessible at \url{https://fcb-web-prototype.netlify.app/}. It leverages the WebAssembly module of FlatCityBuf combined with TypeScript and React for the frontend implementation, with Cesium serving as the 3D map rendering engine.
-
-The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilizing the HTTP range request capabilities described earlier. Users can interact with the data through several query mechanisms:
-
-\begin{itemize}
-  \item \textbf{Spatial queries}: Users can filter features either by defining a spatial bounding box or by placing a point on the map to retrieve features based on intersection or nearest-neighbor relationships.
-
-  \item \textbf{Attribute queries}: The interface supports filtering features through attribute conditions (\eg, \texttt{building id = 1, height > 10m}), demonstrating the attribute index capabilities.
-
-  \item \textbf{Data export}: Users can download the filtered subset of features in CityJSONSeq format, showcasing the format conversion capabilities.
-\end{itemize}
-
-This prototype effectively demonstrates how FlatCityBuf enables browser-based applications to work with large 3D city models without downloading the entire dataset, providing responsive performance even on consumer-grade hardware and network connections.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1.0\textwidth]{figs/methodology/web_prototype.png}
-  \caption{Web prototype of FlatCityBuf demonstrating spatial and attribute query capabilities on a 3.4GB dataset of South Holland.}
-  \label{fig:methodology:http_range_requests:web_prototype}
-\end{figure}
-
-\subsection{Integration with Cloud Infrastructure}
-\label{methodology:http_range_requests:cloud_integration}
-
-The HTTP Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.7\textwidth]{figs/methodology/server_architecture_fcb.png}
-  \caption{Server architecture for FlatCityBuf. The client-side filtering approach eliminates the need for dedicated server-side processing.}
-  \label{fig:methodology:http_range_requests:server_architecture}
-\end{figure}

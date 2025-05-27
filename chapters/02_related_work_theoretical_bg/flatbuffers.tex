@@ -19,7 +19,7 @@ FlatBuffers employs a strongly typed, schema-based approach to data serialisatio
 
 This schema-first approach enforces data consistency and type safety, which is essential to be processed in various programming languages and environments. The generated code provides memory-efficient access patterns to the underlying binary data without requiring full deserialisation. FlatCityBuf utilises this capability to achieve a balance between parsing speed and storage efficiency.
 
-The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C\#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability \citep{flatbuffers_support}. This extensive language support enables developers to work with FlatBuffers data in their preferred environment. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics and memory safety guarantees.
+The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C\#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability \citep{flatbuffers_support}. This extensive language support enables developers to work with FlatBuffers data in their preferred environment. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics, memory safety guarantees, and excellent support for WebAssembly (WASM) compilation, which is beneficial for web-based deployment scenarios.
 
 \subsection{Data Type System}
 \label{tb:flatbuffers:data_type_system}
@@ -42,21 +42,52 @@ FlatBuffers provides a comprehensive type system that balances efficiency and ex
       \item Are less flexible than tables but provide faster access
       \item Optimise memory layout for primitive types
     \end{itemize}
+  \item \textbf{Scalar Types}: FlatBuffers supports a comprehensive range of primitive data types as shown in \autoref{tab:flatbuffers-scalar-types}.
 
-  \item \textbf{Scalar Types}:
-    \begin{itemize}
-      \item 8-bit integers: \texttt{byte} (int8), \texttt{ubyte} (uint8), \texttt{bool}
-      \item 16-bit integers: \texttt{short} (int16), \texttt{ushort} (uint16)
-      \item 32-bit values: \texttt{int} (int32), \texttt{uint} (uint32), \texttt{float}
-      \item 64-bit values: \texttt{long} (int64), \texttt{ulong} (uint64), \texttt{double}
-    \end{itemize}
+    \begin{table}[htbp]
+      \centering
+      \caption{FlatBuffers Scalar Data Types}
+      \label{tab:flatbuffers-scalar-types}
+      \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Category} & \textbf{Type} & \textbf{Description} \\
+        \hline
+        8-bit integers & \texttt{byte} & Signed 8-bit integer (int8) \\
+        & \texttt{ubyte} & Unsigned 8-bit integer (uint8) \\
+        & \texttt{bool} & Boolean value \\
+        \hline
+        16-bit integers & \texttt{short} & Signed 16-bit integer (int16) \\
+        & \texttt{ushort} & Unsigned 16-bit integer (uint16) \\
+        \hline
+        32-bit values & \texttt{int} & Signed 32-bit integer (int32) \\
+        & \texttt{uint} & Unsigned 32-bit integer (uint32) \\
+        & \texttt{float} & 32-bit floating-point number \\
+        \hline
+        64-bit values & \texttt{long} & Signed 64-bit integer (int64) \\
+        & \texttt{ulong} & Unsigned 64-bit integer (uint64) \\
+        & \texttt{double} & 64-bit floating-point number \\
+        \hline
+      \end{tabular}
+    \end{table}
 
-  \item \textbf{Complex Types}:
-    \begin{itemize}
-      \item \texttt{[T]}: Vectors (single-dimension arrays) of any supported type
-      \item \texttt{string}: UTF-8 or 7-bit ASCII encoded text with length prefix
-      \item References to other tables, structs, or unions
-    \end{itemize}
+  \item \textbf{Complex Types}: FlatBuffers provides advanced data structures as outlined in \autoref{tab:flatbuffers-complex-types}.
+
+    \begin{table}[htbp]
+      \centering
+      \caption{FlatBuffers Complex Data Types}
+      \label{tab:flatbuffers-complex-types}
+      \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Type} & \textbf{Description} \\
+        \hline
+        \texttt{[T]} & Vectors (single-dimension arrays) of any supported type \\
+        \hline
+        \texttt{string} & UTF-8 or 7-bit ASCII encoded text with length prefix \\
+        \hline
+        References & References to other tables, structs, or unions \\
+        \hline
+      \end{tabular}
+    \end{table}
 
   \item \textbf{Enums}: Type-safe constants mapped to underlying integer types
   \item \textbf{Unions}: Tagged unions supporting variant types
@@ -89,5 +120,7 @@ FlatBuffers organises serialised data in a flat binary buffer with the following
   \item \textbf{Little-endian encoding} for all scalar values, with automatic conversion on big-endian platforms
   \item \textbf{Offset-based references} for all non-inline data (tables, strings, vectors), allowing efficient navigation within the buffer
 \end{itemize}
+
+\todo{add more detail for binary region refering to https://flatbuffers.dev/annotation/}
 
 For complex data structures like 3D city models, FlatBuffers allows for modular schema composition through file inclusion. This capability enabled the separation of FlatCityBuf's schema into logical components (\texttt{header.fbs}, \texttt{feature.fbs}, \texttt{geometry.fbs}, etc.) while maintaining efficient serialisation. In our implementation, the \texttt{Header} and \texttt{CityFeature} tables serve as root types that anchor the overall data structure.

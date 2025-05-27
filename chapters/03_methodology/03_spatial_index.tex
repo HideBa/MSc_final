@@ -17,7 +17,7 @@ The spatial indexing mechanism implemented in FlatCityBuf directly adapts the pa
   \item A flattened tree storage format that enables efficient streaming and remote access
 \end{itemize}
 
-The implementation details, including the Hilbert curve encoding algorithm and tree construction process, were sourced from FlatGeoBuf's reference implementation \citep{flatgeobuf_github}. Also, FlatGeoBuf's implementation is also inspired by Vladimir Agafonkin's flatbush library \citep{vladimir_2018}. The Hilbert curve encoding algorithm, which converts 2D coordinates into a 1D space-filling curve, is based on a non-recursive algorithm described in \citet{hacker_delight_2012}. This approach, known as "2D-C" in spatial indexing literature \citep{hacker_delight_2012}, ensures that features with high spatial locality also have high storage locality, optimizing I/O operations for both local and remote access patterns.
+The implementation details, including the Hilbert curve encoding algorithm and tree construction process, were sourced from FlatGeoBuf's reference implementation \citep{flatgeobuf_github}. Also, FlatGeoBuf's implementation is also inspired by Vladimir Agafonkin's flatbush library written in JavaScript \citep{vladimir_2018}. The Hilbert curve encoding algorithm, which converts 2D coordinates into a 1D space-filling curve, is based on a non-recursive algorithm described in \citet{hacker_delight_2012}. This approach, known as "2D-C" in spatial indexing literature \citep{hacker_delight_2012}, ensures that features with high spatial locality also have high storage locality, optimizing I/O operations for both local and remote access patterns.
 
 The spatial indexing system is designed to support cloud-native access patterns, allowing efficient retrieval of data directly from cloud storage without requiring a persistent server process. This is achieved through a combination of the Hilbert-sorted feature ordering and the packed R-tree structure, which enables piecemeal access to both the index and feature data over HTTP requests.
 
@@ -27,13 +27,13 @@ While the original FlatGeoBuf implementation targets 2D vector geometries, FlatC
 
 \subsection{Feature sorting}
 \label{methodology:spatial_index:feature_sorting}
-
-A key optimization in FlatCityBuf's indexing strategy is the spatial ordering of features using a Hilbert space-filling curve. This technique enhances data locality by ensuring that features which are spatially proximate in 3D space are also stored close together in the file, thereby optimizing both disk access patterns and HTTP range requests \citep{horance_2022_detail}.
+\todo{add figure here}
+A key optimization in FlatCityBuf's indexing strategy is the spatial ordering of features using a Hilbert space-filling curve. This technique enhances data locality by ensuring that features which are spatially proximate in 2D (and 3D) space are also stored close together in the file, thereby optimizing both disk access patterns and HTTP range requests \citep{horance_2022_detail}.
 
 The Hilbert curve encoding process for FlatCityBuf follows these steps:
 
 \begin{enumerate}
-  \item For each \ac{cityfeature}, determine its 2D footprint by calculating the axis-aligned bounding box (minimum and maximum X,Y coordinates) from all vertices across all contained CityObjects
+  \item For each feature, determine its 2D footprint by calculating the axis-aligned bounding box (minimum and maximum X,Y coordinates) from all vertices across all contained CityObjects
   \item Calculate the geometric centroid of this 2D footprint
   \item Apply a 32-bit Hilbert encoding algorithm to this centroid, converting the 2D spatial position into a 1D ordering value
   \item Sort all features according to their computed Hilbert values in ascending order
@@ -82,7 +82,6 @@ Unlike traditional R-trees which support dynamic updates, the packed R-tree in F
   \caption{Example of a packed R-tree structure. Image sourced from \cite{horance_2022_overview}.}
   \label{fig:packed_rtree}
 \end{figure}
-
 \subsection{2D vs 3D Indexing Considerations}
 \label{methodology:spatial_index:2d_vs_3d_indexing}
 
@@ -94,3 +93,5 @@ Although FlatCityBuf is designed for 3D city models, the spatial indexing mechan
   \item \textbf{Standards Compatibility}: OGC API - Features - Part 1: Core \citep{ogc_api_2019} and similar standards primarily support 2D spatial querying
   \item \textbf{Implementation Efficiency}: 2D indexing is computationally simpler and more storage-efficient than 3D alternatives
 \end{itemize}
+
+Conceptually, the generalization to 3D indexing is possible and would be beneficial for vertically dense metropolitan areas such as Tokyo or New York, where high-rise buildings create vertical distribution of features. In such environments, 3D spatial indexing could improve query performance for volumetric queries that consider height constraints or multi-level urban analysis. However, for the majority of urban environments and current use cases, the 2D approach seems to be sufficient and provides an optimal balance between implementation complexity and query performance.

@@ -5,6 +5,21 @@
 \label{tb:cloud_native}
 \todo{add here}
 
+\section{Binary Encoding}
+\label{tb:binary_encoding}
+Binary encoding is a technique used to convert data into a binary format. It is a fundamental concept in computer science and is used in various applications, including data storage, transmission, and processing.
+\todo{add here}
+
+% NOTE: add raster, 2D Vector, etc?
+
+\section{WebAssembly}
+\label{tb:webassembly}
+\todo{add here}
+
+\section{Row based and column based data storage}
+\label{tb:row_based_column_based_data_storage}
+\todo{add here}
+
 \section{Cache line}
 \label{tb:cache_line}
 \todo{add here, I write about CPU cache and cache miss}
@@ -13,19 +28,18 @@
 \label{tb:serialisation_deserialisation}
 Before discussing the specific techniques used in the FlatCityBuf format, it is important to understand the general principles of serialisation and deserialisation.
 
-The terminology for data conversion processes varies across different programming ecosystems. Terms such as serialisation, pickling, marshalling, and flattening are often used interchangeably, though with subtle differences depending on the context. \citet{cpp_serialization} describes it from an object-oriented perspective as converting objects to a storable or transmittable format and later reconstructing them. \citet{py_serialization} refers to this process as "pickling" in the Python ecosystem. For clarity in this thesis, we adopt the definition provided by \citet{viotti_2022}:
+The terminology for data conversion processes varies across different programming ecosystems. Terms such as serialisation, pickling, marshalling, and flattening are often used interchangeably, though with subtle differences depending on the context. \citet{cpp_serialization} describes it from an object-oriented perspective as converting objects in memory (in a data structure) to a storable or transmittable format on disk. \citet{py_serialization} refers to this process as "pickling" in the Python ecosystem. For clarity in this thesis, we adopt the definition provided by \citet{viotti_2022}:
 
 \begin{quote}
   "Serialization is the process of translating a data structure into a bit-string (a sequence of bits) for storage or transmission purposes."
 \end{quote}
 
-Deserialisation is the reverse process of serialisation, where the bit-string is converted back into the original data structure.
+Deserialisation is the reverse process of serialisation, where the bit-string is converted back into the original data structure (in memory).
 
 \section{Zero-copy}
 \label{tb:zero_copy}
 Zero-copy is a technique used to avoid copying data from one memory location to another. The term "Zero-copy" is used in many contexts of computer science, \citet{song2012performance}  and \citet{brose_2008_zerocopy} provide a detailed explanation of the concept.
 
-\subsection{Typical Data Transfer with read/write}
 In conventional I/O operations, data typically traverses multiple memory regions, each requiring a separate copy operation:
 
 \begin{itemize}
@@ -36,8 +50,6 @@ In conventional I/O operations, data typically traverses multiple memory regions
 
 This multi-stage copying introduces significant overhead, particularly for large datasets or high-throughput applications. Each copy operation consumes CPU cycles, memory bandwidth, and increases latency \citep{song2012performance}. For applications working with large 3D city models, this overhead can substantially degrade performance.
 
-\subsection{Zero-copy Techniques}
-\label{tb:zero_copy_techniques}
 \todo{Todo: improve here}
 Zero-copy approaches optimize this data path by eliminating unnecessary copy operations. While "zero-copy" as a term suggests complete elimination of copying, in practice, different techniques achieve varying degrees of copy reduction:
 
@@ -58,64 +70,18 @@ Endianness (or "byte-order") refers to the order in which bytes are stored in me
 In computing, endianness becomes significant when multi-byte data types (such as 16-bit integers or 32-bit floats) must be stored in memory or transmitted across networks. There are two primary byte ordering systems:
 
 \begin{itemize}
-  \item \textbf{Little-endian}: Stores the least significant byte at the lowest memory address, followed by increasingly significant bytes. This is the ordering used by Intel processors that dominate desktop and server computing. For example, the 32-bit integer \texttt{0x12345678} would be stored in memory as \texttt{0x78}, \texttt{0x56}, \texttt{0x34}, \texttt{0x12}.
+  \item \textbf{Little-endian}: Stores the least significant byte at the lowest memory address, followed by increasingly significant bytes. This is the ordering used by Intel processors that dominate desktop and server computing. For example, the 32-bit integer \texttt{0x12345678} would be stored in memory as 4 bytes: \texttt{0x78}, \texttt{0x56}, \texttt{0x34}, \texttt{0x12}.
 
   \item \textbf{Big-endian}: Stores the most significant byte at the lowest memory address. This approach is often called ``network byte order'' because Internet protocols typically require data to be transmitted in big-endian format. For example, the same 32-bit integer \texttt{0x12345678} would be stored as \texttt{0x12}, \texttt{0x34}, \texttt{0x56}, \texttt{0x78}.
 \end{itemize}
 
 A useful analogy is date notation: little-endian resembles the European date format (31 December 2050), while big-endian resembles the ISO format (2050-12-31), with the most significant part (year) first \citep{endianness_mdn}.
 
-% \todo{I might delete this section}
-
-% \section{Indexing algorithms}
-% \label{tb:indexing_algorithms}
-
-% \subsection{Indexing Strategy Evaluation}
-
-% Several indexing strategies were evaluated to determine the most appropriate approach for the FlatCityBuf format:
-
-% \begin{table}[ht]
-%   \centering
-%   \caption{Comparison of Indexing Strategies}
-%   \begin{tabular}{l|c|c|c|c}
-%     \hline
-%     \textbf{Strategy} & \textbf{Exact Match} & \textbf{Range Query} & \textbf{Space Efficiency} & \textbf{HTTP Suitability} \\
-%     \hline
-%     Hash Tables & $O(1)$ & Poor & Medium & Poor \\
-%     Sorted Array & $O(\log n)$ & Good & Excellent & Limited \\
-%     Binary Search Tree & $O(\log n)$ & Good & Good & Limited \\
-%     B-tree/B+tree & $O(\log_B n)$ & Excellent & Good & Excellent \\
-%     \hline
-%   \end{tabular}
-%   \label{tab:indexing_strategies}
-% \end{table}
-
-% Initial implementation used a sorted array with binary search for its simplicity and space efficiency. However, performance testing revealed significant I/O latency issues when accessing this structure over HTTP, as each binary search step potentially required a separate HTTP request. This insight led to a re-evaluation of the indexing approach.
-
 \section{Binary Search}
 \label{tb:binary_search}
 
 Binary search is a fundamental algorithm for finding elements in a sorted array. The classic implementation follows a simple approach: compare the search key with the middle element of the array, then recursively search the left or right half depending on the comparison result \citep{binary_search}.
-\begin{algorithm}
-  \KwIn{A sorted array, a target value, left and right bounds}
-  \KwOut{The index where the target value should be inserted}
-  \BlankLine
-  \While{left $<$ right}
-  {
-    mid $\leftarrow$ (left + right) / 2\;
-    \If{array[mid] $\geq$ target}
-    {
-      right $\leftarrow$ mid\;
-    }
-    \Else
-    {
-      left $\leftarrow$ mid + 1\;
-    }
-  }
-  \Return{left}
-  \caption{Classic Binary Search}%
-  \label{alg:binary_search}
-\end{algorithm}
+
 \todo{explain about cache miss}
 The time complexity of binary search is logarithmic—the height of the implicit binary search tree is $\log_2(n)$ for an array of size $n$. While this is theoretically efficient, the actual performance suffers when implemented on modern hardware due to memory access patterns. Each comparison requires the processor to fetch a new element, potentially causing a cache miss. In the worst case, the number of memory read operations will be proportional to the height of the tree, with each read potentially requiring access to a different cache line or disk block \citep{binary_search}.
 

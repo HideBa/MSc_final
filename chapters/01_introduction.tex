@@ -8,19 +8,23 @@
 Three-dimensional (3D) city models have evolved beyond mere visualisation tools to become fundamental components in diverse application domains.
 As demonstrated by \citet{biljecki_2015}, these models now serve essential functions in urban planning, environmental simulation, emergency response, and numerous other fields, highlighting their critical role in urban environment representation and analysis.
 The widespread adoption of these models is evidenced by significant national initiatives, such as the Netherlands' comprehensive 3D building database \citep{3dbag}, Japan's urban digital twin project \citep{plateau}, US's Open City Model \citep{us_buildings3d}, and Switzerland's SwissBUILDINGS3D \citep{swiss_buildings3d}.
-To support this adoption, the CityGML Conceptual Model \citep{CityGML} provides a standardised framework for comprehensive urban environment representation, with implementations including CityGML, CityJSON, and 3DCityDB achieving substantial adoption in both research and practical applications.
+To support this adoption, the CityGML Conceptual Model \citep{CityGML} provides a standardised framework for comprehensive urban environment representation, with implementations including CityGML \citep{CityGML}, CityJSON \citep{cityjson}, and 3DCityDB \citep{3dcitydb} achieving substantial adoption in both research and practical applications.
 
-The transition towards cloud-native geographic information systems (GIS) introduces specific technical requirements for 3D city model implementations.
+\todo{refer what is cloud-native, what is cloud-optimised}
+
+The transition towards cloud-native geographic information systems (GIS), which will be detailed in \autoref{tb:cloud_native}, introduces specific technical requirements for 3D city model implementations.
 These requirements encompass scalable processing capabilities, efficient data transfer mechanisms, optimised query performance, and distributed access protocols \citep{cloud-optimised-formats}.
-While CityGML and CityJSON provide comprehensive data models, their text-based implementations often result in slower processing times and increased memory consumption. \ac{cjseq} was developed as a variant of CityJSON to enable streaming processing of 3D city model data, but it still inherits the performance limitations of text-based formats.
+While CityGML and CityJSON provide comprehensive data models, their text-based implementations often result in slower processing times and increased memory consumption \citep{jordi_van_liempt_2020}. \todo{check proper citation} \ac{cjseq} was developed as a variant of CityJSON to enable streaming processing of 3D city model data, but it still inherits the performance limitations of text-based formats.
 Furthermore, although cloud-optimised geospatial formats have emerged to address these challenges, they primarily focus on two-dimensional data, leaving a gap in efficient cloud-native solutions for 3D city models.
 This gap necessitates the development of specialised data formats that can effectively operate within cloud computing environments while maintaining the semantic richness of 3D city models.
 
+\todo{mention what is cloud native and cloud optimised in intro section}
+
 \section{Research Objectives}
 \label{introduction:research_objectives}
-This research investigates the application of efficient data serialisation formats for 3D city models, specifically examining the potential of FlatBuffers \citep{flatbuffers} as an encoding mechanism for CityJSONSeq.
+This research investigates the application of efficient data serialisation formats for 3D city models, specifically examining the potential of FlatBuffers \citep{flatbuffers} as an encoding mechanism for \ac{cjseq}.
 
-While CityJSONSeq was designed to enable streaming processing of 3D city models, its text-based format results in suboptimal read performance and lacks efficient indexing strategies for feature querying.
+While CityJSONSeq (which will be explained in detail in \autoref{rw:cityjson_enhancements:cityjsonseq}) was designed to enable streaming processing of 3D city models, its text-based format results in suboptimal read performance and lacks efficient indexing strategies for feature querying.
 
 The main research question is:
 ``How can the \ac{cjseq} encoding be optimised for faster access to features, lower memory consumption, and flexible feature querying in web environments?''
@@ -44,7 +48,7 @@ The proposed methodology combines FlatBuffers' efficient binary serialisation wi
 
 The investigation aims to address the aforementioned cloud-native requirements while maintaining the semantic richness of CityJSON's data model.
 
-Notably, the research prioritises read performance over update capabilities, as read operations predominate in typical use cases.
+Notably, the research prioritises read performance over update capabilities, as read operations predominate in typical use cases (see \autoref{methodology}).
 
 Furthermore, while file size optimisation remains relevant, it is considered secondary to query efficiency and partial data accessibility.
 
@@ -57,7 +61,7 @@ Since the primary focus of the research is to explore the potential of FlatBuffe
 
 \begin{itemize}
   \item Define the data specification of the proposed new encoding format, FlatCityBuf.
-  \item Implement a Rust library for encoding and decoding operations for FlatCityBuf.
+  \item Implement a Rust library for encoding and decoding operations for FlatCityBuf, with WASM bindings for web-based decoding.
   \item Support spatial querying and attribute-based querying to achieve log-time complexity for feature retrieval.
   \item Demonstrate how the proposed encoding format can be used over the web with HTTP Range Requests.
   \item Evaluate the performance of the proposed encoding format compared to the other encoding formats.
@@ -66,7 +70,7 @@ Since the primary focus of the research is to explore the potential of FlatBuffe
 On the other hand, the following aspects are considered secondary and are not within the scope of the research:
 \begin{itemize}
   \item Implementing the library with other programming languages than Rust such as Python or JavaScript.
-  \item Exploring other read efficient serialisation formats than FlatBuffers.
+  \item Implementing the library to encode with other serialisation frameworks such as Parquet \citep{parquet} or Protocol Buffers \citep{protobuf}.
   \item Optimising the encoding format for write operations.
 \end{itemize}
 

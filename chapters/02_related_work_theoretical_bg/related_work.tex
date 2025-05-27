@@ -40,7 +40,7 @@ CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data mod
 \subsection{CityJSON}
 \label{rw:cityjson}
 
-CityJSON is a JSON-based \citep{json} encoding format that implements a subset of the CityGML conceptual model \citep{CityGML}. It is an official OGC standard \citep{ogc} currently at version 2.0.1, supporting CityGML 3.0.0 encoding. While both CityGML and CityJSON implement the CityGML conceptual model, CityJSON exhibits several notable differences.
+CityJSON is a JSON-based \citep{json} encoding format that implements a subset of the CityGML conceptual model \citep{CityGML}. It is an official OGC community standard \citep{ogc} currently at version 2.0.1, supporting CityGML 3.0.0. While both CityGML and CityJSON implement the CityGML conceptual model, CityJSON exhibits several notable differences.
 
 The following properties of CityJSON are derived from \citet{ledoux_2019}:
 
@@ -151,8 +151,8 @@ This is an example of how the transform object looks like (derived from \citet{l
 \subsubsection{Extension Mechanism}
 \label{rw:cityjson:extension_mechanism}
 
-CityJSON implements an extension mechanism using JSON Schema, similar to CityGML's Application Domain Extensions (ADEs).
-\citet{fillip_2018} provides an overview of the developments of ADEs in CityGML. While CityJSON's extension mechanism maintains compatibility with the core CityGML conceptual model, it has some limitations compared to CityGML's ADEs, particularly in terms of inheritance and namespace support.
+CityJSON implements an extension mechanism using JSON Schema, similar to CityGML's \ac{ade}.
+\citet{fillip_2018} provides an overview of the developments of \ac{ade} in CityGML. While CityJSON's extension mechanism maintains compatibility with the core CityGML conceptual model, it has some limitations compared to CityGML's \ac{ade}, particularly in terms of inheritance and namespace support.
 The JSON Schema defines the data structure of extensions and can be used to validate extended objects.
 
 CityJSON supports four distinct ways to extend the data model:
@@ -179,14 +179,23 @@ Each extension must be documented and validated using a JSON Schema file. This s
   }
 \end{lstlisting}
 
-The proposed data format, FlatGeobuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantization, and the extension mechanism. The strategy for encoding city objects in CityJSON will be explained in \autoref{methodology}.
+These characteristics, particularly JSON's absence of repetitive closing element tags and the implementation of coordinate quantization, result in significantly smaller file sizes compared to CityGML, achieving compression factors of up to 7× \citep{ledoux_2019}.
+
+The proposed data format, FlatCityBuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantization, and the extension mechanism. The strategy for encoding city objects in FlatCityBuf will be explained in \autoref{methodology}.
 
 \subsection{CityJSON Text Sequences (CityJSONSeq)}
 \label{rw:cityjson_enhancements:cityjsonseq}
 
 \citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences.
 
-The fundamental unit of CityJSONSeq is the \texttt{CityJSONFeature}, which represents a single feature encompassing a complete city object and its hierarchical children. For instance, a \texttt{CityJSONFeature} representing a \texttt{"Building"} includes its associated \texttt{"BuildingPart"} and \texttt{"BuildingInstallation"} objects. Unlike standard CityJSON objects that share vertices and appearances across multiple features, each \texttt{CityJSONFeature} maintains local vertex lists and appearance data, ensuring complete self-containment of geometric and visual information. Throughout this research, \texttt{CityJSONFeature} objects are referred to simply as \texttt{"features"}.
+The fundamental unit of CityJSONSeq is the \texttt{CityJSONFeature}, which represents a single feature encompassing a complete city object and its hierarchical children. For instance, a \texttt{CityJSONFeature} representing a \texttt{"Building"} includes its associated \texttt{"BuildingPart"} and \texttt{"BuildingInstallation"} objects. Unlike standard CityJSON objects that share vertices and appearances across multiple features, each \texttt{CityJSONFeature} maintains local vertex lists and appearance data, ensuring complete self-containment of geometric and visual information. Throughout this research, \texttt{CityJSONFeature} objects are referred to simply as \texttt{"features"}. Figure \autoref{fig:cityjsonseq_idea} (sourced from \citet{ledoux_2024}) demonstrates how CityJSONSeq's vertices are stored as local vertices arrays per each feature, contrasting with the shared vertex approach of standard CityJSON.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/related_work_theoretical_bg/cj_idea.pdf}
+  \caption[CityJSONSeq Local Vertices]{Comparison of CityJSON and CityJSONSeq showing how vertices are stored. Source: \citep{ledoux_2024}}
+  \label{fig:cityjsonseq_idea}
+\end{figure}
 
 CityJSONSeq adheres to the Newline Delimited JSON specification \citep{jsonnd}, implementing a structured file format with specific requirements. The first line of a CityJSONSeq file must contain a CityJSON object that stores commonly used data shared across all features, including coordinate transformation parameters (\texttt{transform}), format version information (\texttt{version}), metadata (\texttt{metadata}), reusable geometry templates (\texttt{geometry-templates}), and extension definitions (\texttt{extensions}). This initialisation object establishes the global context for subsequent features.
 The example below shows how a \texttt{CityJSONFeature} is represented (derived from \citet{ledoux_2024}):
@@ -214,10 +223,14 @@ The example below shows how a \texttt{CityJSONFeature} is represented (derived f
     "appearance": { ... }
   }
 \end{lstlisting}
+While CityJSONSeq generally provides improved compression and memory efficiency compared to standard CityJSON, it may produce larger file sizes in scenarios where features share minimal vertex counts or extensively share vertices and textures, due to the necessity of localising previously shared resources.
 
-While CityJSONSeq generally offers improved compression and memory efficiency relative to standard CityJSON, larger file sizes may occur in scenarios with minimal vertex counts or extensive vertex and texture sharing across features, due to the localisation of previously shared resources.
+Despite CityJSONSeq's improvements for streaming applications, its text-based JSON format exhibits several limitations that impede optimal cloud-native performance. The format lacks explicit data typing, storing all values as text strings irrespective of their semantic type (integers, floating-point numbers, booleans), resulting in increased storage overhead and requiring additional parsing operations. Moreover, the JSON structure demands complete data parsing and copying during processing operations, thereby constraining memory efficiency. The absence of built-in indexing mechanisms further restricts efficient spatial and attribute-based querying capabilities. These limitations create opportunities for enhanced cloud-native optimisation through binary encoding schemes that preserve native data types and enable zero-copy access patterns, complemented by integrated indexing mechanisms for efficient data retrieval operations.
 
-While CityJSONSeq improves upon standard CityJSON for streaming applications, its text-based JSON format presents several limitations that hinder optimal cloud-native performance. The format lacks explicit data typing, storing all values as strings regardless of their semantic type (numbers, booleans, etc.), which tends to increase storage overhead and requires additional parsing. Furthermore, the JSON structure necessitates complete parsing and copying of data during processing, limiting memory efficiency. Additionally, the absence of built-in indexing mechanisms restricts efficient spatial and attribute-based querying capabilities. These limitations present opportunities for further cloud-native optimisation through binary encoding schemes that preserve data types and enable zero-copy access, combined with indexing mechanisms for efficient data retrieval.
+\subsection{3DBAG API}
+\label{rw:cityjson_enhancements:3dbag_api}
+\todo{include 3dbag api here}
+% TODO: include 3dbag api here
 
 \subsection{Enhancements to CityJSON Performance}
 \label{rw:cityjson_enhancements:performance}
@@ -233,7 +246,7 @@ The analysis determined that the combination of CBOR and zlib offers optimal gen
 Conversely, Draco exhibited superior performance for pre-compressed data scenarios.
 However, the study identified limitations in Draco's applicability.
 Specifically, it noted the increased complexity and computational overhead when handling smaller datasets.
-While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments.
+While these findings provide valuable insights for binary encoding implementations, they do not address optimisations tailored to cloud-native environments, particularly partial data retrieval over the web without requiring complete file downloads.
 
 \subsubsection{Experimental Implementation Using FlatBuffers}
 \label{rw:cityjson_enhancements:performance:flatbuffers}
@@ -250,12 +263,12 @@ The preliminary implementation revealed potential advantages in several key area
   \item Decreased storage requirements.
 \end{itemize}
 
-Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritizing both scalability and efficient data processing to address the limitations of the preliminary approach.
+Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, attribute indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritizing both scalability and efficient data processing to address the limitations of the preliminary approach.
 
 \subsection{Research Gaps}
 \label{rw:research_gaps}
 
-While existing studies have made significant advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
+While existing studies have made advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
 
 Several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}).
 
@@ -301,7 +314,7 @@ These include Protobuf \citep{protobuf} and JSON, in terms of deserialisation ef
 \subsection{Protocol Buffers (Protobuf)}
 \label{rw:non_geospatial_formats:protobuf}
 
-\citet{protobuf}, developed by Google, represents a binary serialisation framework.
+Protobuf, developed by \citet{protobuf}, represents a binary serialisation framework.
 
 It employs schema-based encoding mechanisms for data serialisation.
 
@@ -314,12 +327,12 @@ Despite its advantages in simplicity and usability, Protobuf presents several op
 \begin{itemize}
   \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks.
   \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data.
-  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers.
+  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers, making it unsuitable for 3D geometries.
 \end{itemize}
 
 \subsection{Apache Parquet}
 \label{rw:non_geospatial_formats:parquet}
-
+\todo{add here, at least about paging system}
 \citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes.
 
 These are used for managing extensive datasets.

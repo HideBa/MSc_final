@@ -2,23 +2,82 @@
 \label{chp:result}
 \section{Overview}
 \label{result:overview}
+This chapter presents comprehensive evaluations of the FlatCityBuf format, demonstrating its performance characteristics and practical applicability through multiple assessment approaches. The evaluation encompasses both technical performance metrics and real-world implementation scenarios to provide a holistic understanding of the format's capabilities.
 
-This chapter presents the results of comprehensive evaluations conducted to assess the performance and suitability of the proposed FlatCitybuf format against existing CityJSON encoding approaches. The evaluation followed three complementary methodologies to provide a holistic understanding of the format's capabilities.
+The chapter is structured around several key evaluation components. First, a web prototype implementation is presented to demonstrate FlatCityBuf's practical capabilities in browser environments, showcasing how the format enables partial data access for large 3D city models through HTTP Range Requests.
 
-The assessment framework employed three distinct methodological approaches. First, file size comparison was conducted to evaluate storage efficiency across different datasets and encoding formats.
+Second, the datasets used throughout the evaluation are described, including both the established benchmark datasets from \citet{ledoux_2024} and additional PLATEAU datasets, providing context for the performance comparisons and ensuring reproducibility of results.
 
-Second, performance benchmarks were conducted on a laptop environment to evaluate the computational efficiency of the encoding format. These benchmarks measured read operation time for files of varying sizes, memory consumption during processing operations, and storage efficiency through file size comparisons. The benchmark utilised the datasets from \citet{ledoux_2024} and additional datasets from PLATEAU, providing direct comparability with previous studies on CityJSON and CityJSONSeq formats. All operations were conducted multiple times to ensure statistical reliability, with warm-up iterations to eliminate caching effects.
+Third, file size comparisons are conducted across different encoding formats to evaluate storage efficiency and compression characteristics of FlatCityBuf relative to existing CityJSON variants.
 
-Third, to assess real-world application performance in web environments, browser-based benchmarks were conducted to measure the time required to fetch subsets of data. These tests focused on evaluating how efficiently the format enables selective data retrieval through HTTP Range requests, allowing clients to access only the specific portions of data they need rather than downloading entire datasets. This approach provides insights into the practical benefits of the format for web-based applications where bandwidth optimization and response time are critical factors.
+Fourth, comprehensive local environment benchmarks assess computational performance, measuring read operation times, memory consumption, and CPU utilization across various dataset sizes. These benchmarks utilize controlled conditions to provide precise performance metrics and direct comparability with existing formats.
 
-The following sections present detailed results from each evaluation approach, followed by integrated analyses that synthesise findings across methodologies to provide comprehensive insights into the performance characteristics of the FlatCitybuf format.
+Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of HTTP Range Requests for selective data access, providing insights into bandwidth optimization and response times critical for web-based 3D city model applications.
+
+The following sections present detailed results from each evaluation component, culminating in integrated analyses that synthesize findings to provide comprehensive insights into FlatCityBuf's performance characteristics and practical benefits for 3D city model applications.
+
+\subsection{Web Prototype}
+\label{result:web_prototype}
+
+\subsection{Cross-Platform Implementation}
+\label{result:cross_platform_implementation}
+
+FlatCityBuf provides range request capabilities across multiple platforms to maximise accessibility and integration options:
+\subsubsection{Cross-Platform Support}
+\label{result:cross_platform_implementation:cross_platform}
+
+FlatCityBuf is implemented primarily as a Rust library that can be used in both native environments and web browsers. The same codebase is compiled to:
+
+\begin{itemize}
+  \item Native Rust library for server-side applications and desktop GIS tools
+  \item WebAssembly (WASM) module for browser-based applications with JavaScript interoperability
+\end{itemize}
+
+This cross-platform approach enables FlatCityBuf to work with both Rust's native HTTP clients and browser-based Fetch API implementations. The WASM implementation has one notable limitation: current browser WebAssembly implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming WebAssembly Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
+\subsubsection{Web prototype}
+\label{result:cross_platform_implementation:web_prototype}
+
+To demonstrate FlatCityBuf's capabilities in web environments and illustrate practical user interactions with the data, a functional web prototype was developed. The prototype is publicly accessible at \url{https://fcb-web-prototype.netlify.app/}. It leverages the WebAssembly module of FlatCityBuf combined with TypeScript and React for the frontend implementation, with Cesium serving as the 3D map rendering engine.
+
+The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilizing the HTTP range request capabilities described in \autoref{methodology:http_range_requests}. Users can interact with the data through several query mechanisms:
+
+\begin{itemize}
+  \item \textbf{Spatial queries}: Users can filter features either by defining a spatial bounding box or by placing a point on the map to retrieve features based on intersection or nearest-neighbor relationships.
+
+  \item \textbf{Attribute queries}: The interface supports filtering features through attribute conditions (\eg, \texttt{building id = 1, height > 10m}), demonstrating the attribute index capabilities.
+
+  \item \textbf{Data export}: Users can download the filtered subset of features in CityJSONSeq format, showcasing the format conversion capabilities.
+\end{itemize}
+
+This prototype effectively demonstrates how FlatCityBuf enables browser-based applications to work with large 3D city models without downloading the entire dataset, providing responsive performance even on consumer-grade hardware and network connections.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/result_analysis/web_prototype.png}
+  \caption{Web prototype of FlatCityBuf demonstrating spatial and attribute query capabilities on a 3.4GB dataset of South Holland.}
+  \label{fig:result:cross_platform_implementation:web_prototype}
+\end{figure}
+
+\subsection{Integration with Cloud Infrastructure}
+\label{methodology:http_range_requests:cloud_integration}
+
+The HTTP Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/result_analysis/server_architecture_fcb.png}
+  \caption{Server architecture for FlatCityBuf. The client-side filtering approach eliminates the need for dedicated server-side processing.}
+  \label{fig:result:cross_platform_implementation:server_architecture}
+\end{figure}
+\section{Datasets}
+\label{result:dataset}
+
+To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU \citep{plateau}. PLATEAU employs its own data specification combining CityGML 2.0 \citep{CityGML} with a custom \ac{ade}. The CityGML-encoded 3D city models were converted to CityJSON using citygml-tools, a command-line utility developed by \citet{citygml_tools}. Note that PLATEAU's \ac{ade} components are not included in the converted datasets since they are not compatible with the current CityJSON implementation.
+
+To comprehensively evaluate FlatCityBuf, we utilized diverse PLATEAU models including buildings, bridges, railways, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
 
 \section{File Size Comparison}
 \label{result:file_size_comparison}
-
-\subsubsection{Datasets}
-\label{result:overview:dataset}
-To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
 
 \subsection{File size results}
 \label{result:overview:filesize_comparison}
@@ -77,7 +136,7 @@ Although \autoref{result:overview:filesize_comparison} provides a summary of fil
 \subsubsection{Level of detail}
 \label{result:overview:analysis_of_file_size_results:level_of_detail}
 
-To examine how level of detail (LOD) affects file size, we conducted a series of tests using the TU Delft BK building model at various LOD levels. Each LOD variant was systematically extracted from the original model, with attributes and semantic information deliberately removed to isolate the effect of geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
+To examine how level of detail (LOD) affects file size, I conducted a series of tests using the TU Delft BK building model at various LOD levels. Each LOD variant was systematically extracted from the original model, with attributes and semantic information deliberately removed to isolate the effect of geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
 
 Since each test dataset contains only a single city feature, we compare feature sizes rather than total file sizes. This approach is necessary because FlatCityBuf incorporates a larger header structure, which would disproportionately affect comparisons involving minimal features.
 
@@ -117,14 +176,14 @@ To assess the impact of attributes on file size, we tested simple cube models fr
   \label{tab:attribute_comparison}
   \begin{tabular}{@{}lrrrr@{}}
     \toprule
-    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Attributes} \\
+    \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression}  \\
     \midrule
-    10 attributes (int) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ & 10 \\
-    100 attributes (int) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ & 100 \\
-    1000 attributes (int) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ & 1000 \\
-    10 attributes (string) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ & 10 \\
-    100 attributes (string) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ & 100 \\
-    1000 attributes (string) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ & 1000 \\
+    10 attributes (int) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ \\
+    100 attributes (int) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ \\
+    1000 attributes (int) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ \\
+    10 attributes (string) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ \\
+    100 attributes (string) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ \\
+    1000 attributes (string) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -217,7 +276,7 @@ This differential appears to result from the expanding boundary field as geometr
 \subsubsection{Vertices and coordinates}
 \label{result:overview:analysis_of_file_size_results:vertices_and_coordinates}
 
-To investigate how coordinate scale affects file size, we conducted tests using identical cube geometries with varying coordinate magnitudes. These models contain the same number of vertices (8 per feature) but differ in their coordinate scale values. \autoref{tab:vertices_comparison} presents the results of this analysis, utilising the same base models as in \autoref{result:overview:analysis_of_file_size_results:attributes}.
+To investigate how coordinate scale affects file size, I conducted tests using identical cube geometries with different coordinate magnitudes. All test models represent the same simple cube shape with identical geometric complexity (8 vertices per feature), but the coordinate values are scaled to different magnitudes—ranging from single digits to millions—while maintaining the same spatial relationships. \autoref{tab:vertices_comparison} presents the results of this analysis, utilising the same base cube geometry as in \autoref{result:overview:analysis_of_file_size_results:attributes}.
 
 \begin{table}[htbp]
   \centering
@@ -242,7 +301,7 @@ To investigate how coordinate scale affects file size, we conducted tests using 
 
 The results reveal an intriguing relationship between coordinate scale and file size in both formats. FlatCityBuf maintains a consistent size of 476 bytes regardless of coordinate magnitude, demonstrating its fixed-size binary encoding for numeric values. In contrast, CityJSONSeq's file size increases proportionally with larger coordinate values, growing from 370 bytes with single-digit coordinates to 579 bytes with million-scale coordinates.
 
-This behaviour occurs because FlatCityBuf stores coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\%) to substantially more efficient for large coordinate values (17.79\%).
+This behaviour occurs because both FlatCityBuf and CityJSONSeq use integer values as coordinates, which are quantised by the \texttt{Transform} field as explained in \autoref{rw:cityjson:coordinate_quantisation}. However, FlatCityBuf stores these coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\%) to substantially more efficient for large coordinate values (17.79\%).
 
 This characteristic explains the pattern observed in \autoref{result:overview:filesize_comparison}. FlatCityBuf demonstrates lower storage efficiency for PLATEAU datasets, likely because these datasets employ geographic coordinate systems with values typically between -180 and 180. Since CityJSON quantises coordinates through the \texttt{Transform} field, latitude and longitude values can be represented as relatively small integers. Conversely, datasets where FlatCityBuf performs better—such as NYC and Helsinki—use local coordinate systems (in metres) with larger internal values, resulting in improved compression efficiency with FlatCityBuf.
 

@@ -4,8 +4,8 @@
 The magic bytes section comprises the first eight bytes of the file:
 \todo{check detail again}
 \begin{itemize}
-  \item The first three bytes contain the ASCII sequence 'FCB' (0x46 0x43 0x42) serving as an immediate identifier
-  \item The remaining five bytes represent the version number of the file format, comprised with Semantic Versioning (SemVer) \citep{semver}. As the current version is 0.1.0, the magic bytes are 'FCB010' (0x46 0x43 0x42 0x30 0x31 0x30). The last two bytes are reserved for future use and must be set to zero.
+  \item The first three bytes contain the ASCII sequence 'FCB' for FlatCityBuf (0x46 0x43 0x42), serving as an immediate identifier
+  \item The remaining five bytes represent the version number of the file format, compliant with Semantic Versioning (SemVer) \citep{semver}. As the current version is 0.1.0, the magic bytes are 'FCB01000' (0x46 0x43 0x42 0x30 0x31 0x30 0x30 0x30). The last two bytes are reserved for future use and must be set to zero.
 \end{itemize}
 
 This signature design enables applications to validate file type and version compatibility without parsing the entire header content. The approach was directly inspired by FlatGeoBuf's methodology, which uses 'FGB' (F, G, B characters) in its magic bytes to indicate 'FlatGeoBuf' \citep{horance_2022_detail}.
@@ -23,7 +23,7 @@ In a \ac{cjseq} file, the first line contains a valid CityJSON object with empty
 Here are the core header fields with their data types and significance:
 
 \begin{itemize}
-  \item \textbf{version} - \textit{string (required)} - CityJSON version identifier (\eg, "2.1"), required field from CityJSON specification \citep{cityjson_spec}
+  \item \textbf{version} - \textit{string (required)} - CityJSON version identifier (\eg, "2.0"), required field from CityJSON specification \citep{cityjson_spec}
 
   \item \textbf{transform} - \textit{Transform struct} - Contains scale and translation vectors enabling efficient storage of vertex coordinates through quantization, derived from CityJSON's transform object \citep{cityjson_spec}
 
@@ -62,26 +62,46 @@ Fields storing global appearance definitions:
 \begin{itemize}
   \item \textbf{appearance} - \textit{Appearance table} - Container for visual representation properties, following CityJSON's appearance model \citep{cityjson_spec}, containing:
     \begin{itemize}
-      \item \textbf{materials} - \textit{Array of Material tables} with the following properties:
-        \begin{itemize}
-          \item \textbf{name} - \textit{string} - Required string identifier for the material
-          \item \textbf{ambient\_intensity} - \textit{double} - Double precision value from 0.0 to 1.0
-          \item \textbf{diffuse\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textbf{emissive\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textbf{specular\_color} - \textit{Array of double} - Array of double values (RGB) from 0.0 to 1.0
-          \item \textbf{shininess} - \textit{double} - Double precision value from 0.0 to 1.0
-          \item \textbf{transparency} - \textit{double} - Double precision value from 0.0 to 1.0
-          \item \textbf{is\_smooth} - \textit{boolean} - Boolean flag for smooth shading
-        \end{itemize}
+      \item \textbf{materials} - \textit{Array of Material tables} with properties defined in \autoref{tab:material_properties}
 
-      \item \textbf{textures} - \textit{Array of Texture tables} with the following properties:
-        \begin{itemize}
-          \item \textbf{type} - \textit{TextureFormat enum} - TextureFormat enum (PNG, JPG)
-          \item \textbf{image} - \textit{string} - Required string containing image file name or URL
-          \item \textbf{wrap\_mode} - \textit{WrapMode enum} - WrapMode enum (None, Wrap, Mirror, Clamp, Border)
-          \item \textbf{texture\_type} - \textit{TextureType enum} - TextureType enum (Unknown, Specific, Typical)
-          \item \textbf{border\_color} - \textit{Array of double} - Array of double values (RGBA) from 0.0 to 1.0
-        \end{itemize}
+        \begin{table}[h]
+          \centering
+          \caption{Material properties in the FlatCityBuf appearance model}
+          \label{tab:material_properties}
+          \begin{tabular}{@{}lll@{}}
+            \toprule
+            \textbf{Property} & \textbf{Data Type} & \textbf{Description} \\
+            \midrule
+            name & string & Required string identifier for the material \\
+            ambient\_intensity & double & Double precision value from 0.0 to 1.0 \\
+            diffuse\_color & Array of double & Array of double values (RGB) from 0.0 to 1.0 \\
+            emissive\_color & Array of double & Array of double values (RGB) from 0.0 to 1.0 \\
+            specular\_color & Array of double & Array of double values (RGB) from 0.0 to 1.0 \\
+            shininess & double & Double precision value from 0.0 to 1.0 \\
+            transparency & double & Double precision value from 0.0 to 1.0 \\
+            is\_smooth & boolean & Boolean flag for smooth shading \\
+            \bottomrule
+          \end{tabular}
+        \end{table}
+
+      \item \textbf{textures} - \textit{Array of Texture tables} with properties defined in \autoref{tab:texture_properties}
+
+        \begin{table}[h]
+          \centering
+          \caption{Texture properties in the FlatCityBuf appearance model}
+          \label{tab:texture_properties}
+          \begin{tabular}{@{}lll@{}}
+            \toprule
+            \textbf{Property} & \textbf{Data Type} & \textbf{Description} \\
+            \midrule
+            type & TextureFormat enum & TextureFormat enum (PNG, JPG) \\
+            image & string & Required string containing image file name or URL \\
+            wrap\_mode & WrapMode enum & WrapMode enum (None, Wrap, Mirror, Clamp, Border) \\
+            texture\_type & TextureType enum & TextureType enum (Unknown, Specific, Typical) \\
+            border\_color & Array of double & Array of double values (RGBA) from 0.0 to 1.0 \\
+            \bottomrule
+          \end{tabular}
+        \end{table}
 
       \item \textbf{vertices\_texture} - \textit{Array of Vec2 structs} - Array containing UV coordinates (u,v), each coordinate value must be between 0.0 and 1.0 for proper texture mapping
 

@@ -3,7 +3,7 @@
 \chapter{Methodology}
 \label{methodology}
 
-This chapter presents the design and implementation of FlatCityBuf, a cloud-optimised binary format for 3D city models based on CityJSON. The proposed approach addresses the limitations of existing formats through efficient binary encoding, spatial indexing, attribute indexing, and support for partial data retrieval.
+This chapter presents the design and implementation of FlatCityBuf, a cloud-optimised binary format for 3D city models based on CityJSONSeq. The proposed approach addresses the limitations of existing formats through efficient binary encoding, spatial indexing, attribute indexing, and support for partial data retrieval.
 
 \section{Overview}
 \label{methodology:overview}
@@ -11,9 +11,9 @@ This chapter presents the design and implementation of FlatCityBuf, a cloud-opti
 \subsection{Methodology Approach}
 \label{methodology:overview:approach}
 
-Current 3D city model formats like CityGML, CityJSON, and CityJSONSeq (also \ac{cjseq}) exhibit limitations in cloud environments with large-scale datasets, including retrieval latency, inefficient spatial querying without additional software support, and insufficient support for partial data access.
+Current 3D city model formats like CityGML, CityJSON, and \ac{cjseq} exhibit limitations in cloud environments with large-scale datasets, including retrieval latency, inefficient spatial querying without additional software support, and insufficient support for partial data access.
 
-This research methodology addresses these limitations through three interconnected objectives:
+This chapter addresses these limitations through three interconnected objectives:
 
 \begin{enumerate}
   \item Development of a binary encoding strategy using FlatBuffers that preserves semantic richness while achieving faster read performance
@@ -46,9 +46,9 @@ The FlatCityBuf format implements a structured binary encoding with five sequent
 \begin{itemize}
   \item \textbf{Magic bytes}: Eight-byte identifier ('F', 'C', 'B', '0', '1', '0', '0', '0') for format validation
   \item \textbf{Header section}: Contains metadata, attributes schema definitions, and CityJSON properties
-  \item \textbf{Spatial index}: Implements a Packed Hilbert R-tree for efficient geospatial queries
+  \item \textbf{Spatial index}: Implements a Packed Hilbert R-tree \citep{Kamel_Faloutsos_1993} for efficient geospatial queries
   \item \textbf{Attribute index}: Utilises a \ac{s+tree} for accelerated attribute-based filtering
-  \item \textbf{Features section}: Stores \ac{cityfeature} encoded as FlatBuffers tables
+  \item \textbf{Features section}: Stores features encoded as FlatBuffers tables
 \end{itemize}
 
 \begin{figure}[h]
@@ -58,7 +58,7 @@ The FlatCityBuf format implements a structured binary encoding with five sequent
   \label{fig:methodology:file-structure}
 \end{figure}
 
-This sequence-based structure enables incremental file access through HTTP Range Requests—critical for cloud-based applications where minimising data transfer is essential. Each section is designed with explicit consideration for alignment boundaries to optimise I/O operations.
+This sequence-based structure enables incremental file access through HTTP Range Requests—critical for cloud-based applications where minimising data transfer is essential.
 
 \subsection{Note on Binary Encoding}
 \label{methodology:overview:note_on_binary_encoding}
