@@ -31,7 +31,7 @@ Before discussing the specific techniques used in the FlatCityBuf format, it is 
 The terminology for data conversion processes varies across different programming ecosystems. Terms such as serialisation, pickling, marshalling, and flattening are often used interchangeably, though with subtle differences depending on the context. \citet{cpp_serialization} describes it from an object-oriented perspective as converting objects in memory (in a data structure) to a storable or transmittable format on disk. \citet{py_serialization} refers to this process as "pickling" in the Python ecosystem. For clarity in this thesis, we adopt the definition provided by \citet{viotti_2022}:
 
 \begin{quote}
-  "Serialization is the process of translating a data structure into a bit-string (a sequence of bits) for storage or transmission purposes."
+  "Serialisation is the process of translating a data structure into a bit-string (a sequence of bits) for storage or transmission purposes."
 \end{quote}
 
 Deserialisation is the reverse process of serialisation, where the bit-string is converted back into the original data structure (in memory).
@@ -51,7 +51,7 @@ In conventional I/O operations, data typically traverses multiple memory regions
 This multi-stage copying introduces significant overhead, particularly for large datasets or high-throughput applications. Each copy operation consumes CPU cycles, memory bandwidth, and increases latency \citep{song2012performance}. For applications working with large 3D city models, this overhead can substantially degrade performance.
 
 \todo{Todo: improve here}
-Zero-copy approaches optimize this data path by eliminating unnecessary copy operations. While "zero-copy" as a term suggests complete elimination of copying, in practice, different techniques achieve varying degrees of copy reduction:
+Zero-copy approaches optimise this data path by eliminating unnecessary copy operations. While "zero-copy" as a term suggests complete elimination of copying, in practice, different techniques achieve varying degrees of copy reduction:
 
 \begin{itemize}
   \item \textbf{Memory-mapped \ac{io}}: Maps files directly into process address space, allowing direct access without explicit read/write operations
@@ -62,7 +62,7 @@ Zero-copy approaches optimize this data path by eliminating unnecessary copy ope
 \end{itemize}
 \todo{ravi's comment "so this is in-place parsing, which also enables memory mapping? Are some other of the above terms also relevant? Clarify exactly how Flatbuffers relates to what you explain above."}
 
-Modern serialization formats like FlatBuffers implement zero-copy through carefully designed memory layouts that allow direct access to serialized data without requiring a separate deserialization step. This approach is particularly valuable for geospatial applications that routinely handle large datasets.
+Modern serialisation formats like FlatBuffers implement zero-copy through carefully designed memory layouts that allow direct access to serialised data without requiring a separate deserialisation step. This approach is particularly valuable for geospatial applications that routinely handle large datasets.
 \section{Endianness}
 \label{tb:endianness}
 Endianness (or "byte-order") refers to the order in which bytes are stored in memory when representing multi-byte values. The terminology was introduced by \citet{danny_cohen_1981}.
@@ -117,7 +117,7 @@ The \autoref{fig:eytzinger_layout} shows how the layout looks when applied to bi
 \subsection{B-Tree/B+Tree Layout}
 \label{tb:btree_layout}
 
-While the Eytzinger layout improves cache utilization for binary search, the number of memory read operations remains proportional to the height of the tree—$\log_2(n)$ for $n$ elements. This is still suboptimal for large datasets, especially when the access pattern involves disk \ac{io} or remote data access \citep{static_b_trees}.
+While the Eytzinger layout improves cache utilisation for binary search, the number of memory read operations remains proportional to the height of the tree—$\log_2(n)$ for $n$ elements. This is still suboptimal for large datasets, especially when the access pattern involves disk \ac{io} or remote data access \citep{static_b_trees}.
 
 B-Trees and their variants address this limitation by storing multiple keys in each node, effectively reducing the height of the tree. In a B-Tree of order $k$ (where each node can contain up to $k-1$ keys), the height of the tree is reduced from $\log_2(n)$ to $\log_k(n)$. This represents a reduction factor of $\log_k/\log_2 = \log_2(k)$ times compared to a binary search tree.
 
@@ -125,7 +125,7 @@ The key insight is that fetching a single node still takes roughly the same time
 
 \todo{ravi's comment "draw a figure that illustrates the difference between B and B+ trees"}
 
-B+Trees are a variant of B-Trees specifically optimized for range queries and sequential access patterns. In a B+Tree:
+B+Trees are a variant of B-Trees specifically optimised for range queries and sequential access patterns. In a B+Tree:
 \begin{itemize}
   \item Internal nodes contain up to $B$ keys that serve as routing information, with each key associated with one of the $(B+1)$ pointers to child nodes. Each key at position $i$ represents the smallest key in the subtree pointed to by the $(i+1)$-th child pointer.
   \item Leaf nodes store the actual data with up to $B$ key-value pairs and include a pointer to the next leaf node, enabling efficient sequential traversal for range queries.

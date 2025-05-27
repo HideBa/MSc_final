@@ -49,7 +49,7 @@ Two major OGC standards provide guidance on common query operators: Filter Encod
 \subsubsection{Priority Operators for FlatCityBuf}
 \label{methodology:attribute_index:query_requirements:priorities}
 
-Based on this analysis and the practical constraints of optimizing for cloud-based access, FlatCityBuf prioritizes support for the following operators:
+Based on this analysis and the practical constraints of optimising for cloud-based access, FlatCityBuf prioritises support for the following operators:
 
 \begin{enumerate}
   \item \textbf{Primary Comparison Operators}: Operators with direct index support
@@ -90,7 +90,7 @@ After evaluating alternatives, a \ac{s+tree} with significant modifications was 
 \begin{itemize}
 \item \textbf{\ac{io} Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common CPU cache sizes, offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of \ac{io} operations and network roundtrips compared to binary search, making it ideal for HTTP Range Requests where each roundtrip incurs substantial latency.
 
-\item \textbf{Query Versatility}: Unlike specialized data structures such as hash tables (optimized for exact matches) or sorted arrays (better for range queries), the B+tree structure provides a balanced performance across both exact match and range queries. While not achieving the optimal performance of specialized structures for specific query types, this balanced approach makes it well-suited for the diverse query patterns common in 3D city model applications.
+\item \textbf{Query Versatility}: Unlike specialised data structures such as hash tables (optimised for exact matches) or sorted arrays (better for range queries), the B+tree structure provides a balanced performance across both exact match and range queries. While not achieving the optimal performance of specialised structures for specific query types, this balanced approach makes it well-suited for the diverse query patterns common in 3D city model applications.
 \end{itemize}
 
 \subsubsection{\ac{s+tree} Characteristics}
@@ -101,7 +101,7 @@ A \ac{s+tree} differs from a traditional B+tree in several important aspects:
 \begin{itemize}
 \item \textbf{Immutability}: Once constructed, the tree structure remains fixed, eliminating the need for complex rebalancing operations.
 
-\item \textbf{Perfect Node Fill}: All nodes except possibly the rightmost nodes at each level are filled to capacity, maximizing space efficiency.
+\item \textbf{Perfect Node Fill}: All nodes except possibly the rightmost nodes at each level are filled to capacity, maximising space efficiency.
 
 \item \textbf{Predictable Structure}: The tree shape is determined solely by the number of elements and the node size, making navigation more efficient.
 
@@ -119,11 +119,11 @@ For handling duplicate keys in indexing structures, \citet{ramez_2015} outlines 
 
 \item \textbf{Explicit Node Offsets}: While the original S+tree uses mathematical calculations to determine node positions, FlatCityBuf's implementation stores explicit byte offsets to child nodes. \todo{Ravi's comment "I’m curious, why did this get complicated? the formula in chap 3 looked simple also: what is the overall storage space tradeoff?"} This modification simplifies the implementation without compromising performance. The parent node item has a 64-bit offset to the first child item of left child node.
 
-\item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimizes both the storage overhead and redundant HTTP requests for unique keys while enabling support for duplicate keys.
+\item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimises both the storage overhead and redundant HTTP requests for unique keys while enabling support for duplicate keys.
 
 \end{itemize}
 
-These modifications ensure that the S+tree implementation is optimized for the specific characteristics of 3D city model data while preserving the performance advantages of the original algorithm.
+These modifications ensure that the S+tree implementation is optimised for the specific characteristics of 3D city model data while preserving the performance advantages of the original algorithm.
 
 \subsection{Attribute Index Implementation}
 \label{methodology:attribute_index:implementation}
@@ -161,29 +161,29 @@ The construction of the attribute index follows these processes:
 \item Structure the tree from bottom to top and write it to the file in the order from top to bottom.
 \end{enumerate}
 
-\subsection{Serialization of Keys in the Tree}
-\label{methodology:attribute_index:key_serialization}
+\subsection{Serialisation of Keys in the Tree}
+\label{methodology:attribute_index:key_serialisation}
 
-Key serialization in the attribute index is a critical aspect of the implementation, directly affecting both storage efficiency and query performance. FlatCityBuf implements type-specific serialization strategies that balance storage requirements, comparison efficiency, and implementation complexity.
+Key serialisation in the attribute index is a critical aspect of the implementation, directly affecting both storage efficiency and query performance. FlatCityBuf implements type-specific serialisation strategies that balance storage requirements, comparison efficiency, and implementation complexity.
 
-\subsubsection{Fixed-Length Value Serialization}
-\label{methodology:attribute_index:fixed_length_serialization}
+\subsubsection{Fixed-Length Value Serialisation}
+\label{methodology:attribute_index:fixed_length_serialisation}
 
-Fixed-length values offer significant advantages for tree structures, enabling predictable node sizes and efficient binary search within nodes. FlatCityBuf serializes fixed-length values using the following strategies:
+Fixed-length values offer significant advantages for tree structures, enabling predictable node sizes and efficient binary search within nodes. FlatCityBuf serialises fixed-length values using the following strategies:
 
 \begin{itemize}
-\item \textbf{Integer Types}: Primitive integer types (i8, i16, i32, i64, u8, u16, u32, u64) are serialized directly in their native binary format using little-endian byte order. For example, a u64 value occupies exactly 8 bytes in the index structure.
+\item \textbf{Integer Types}: Primitive integer types (i8, i16, i32, i64, u8, u16, u32, u64) are serialised directly in their native binary format using little-endian byte order. For example, a u64 value occupies exactly 8 bytes in the index structure.
 
 \item \textbf{Floating-Point Types}: IEEE 754 floating-point values \citep{ieee_754_2023} use their native binary representation, with special handling for NaN values to ensure consistent ordering semantics. Since Rust's native floating-point types do not implement ordering traits, the implementation uses the \texttt{OrderedFloat} wrapper type from the Rust ecosystem to provide total ordering for floating-point values while preserving their binary efficiency.
 
-\item \textbf{Temporal Types}: Date and timestamp values are serialized using a normalized representation that preserves chronological ordering. Timestamps are encoded as a composite of two components: an i64 representing seconds since the epoch, followed by a u32 representing nanosecond precision, both in little-endian order. This 12-byte representation supports the full range of ISO 8601 datetime values with timezone information \citep{iso_8601_2023}.
+\item \textbf{Temporal Types}: Date and timestamp values are serialised using a normalised representation that preserves chronological ordering. Timestamps are encoded as a composite of two components: an i64 representing seconds since the epoch, followed by a u32 representing nanosecond precision, both in little-endian order. This 12-byte representation supports the full range of ISO 8601 datetime values with timezone information \citep{iso_8601_2023}.
 \item \textbf{Boolean Values}: Boolean values are encoded as a single byte (0 for false, 1 for true), aligning with common binary encodings while ensuring consistent sort order. Since boolean attributes can only have two possible values (true or false), this results in a degenerate tree structure with just a single root node containing both values. While this implementation maintains consistency with the general indexing approach, boolean attributes are rarely used as index keys in real-world 3D city model applications due to their limited discriminative power.
 \end{itemize}
 
-This direct serialization approach for fixed-length types minimizes both computational overhead during tree traversal and storage requirements in the index structure.
+This direct serialisation approach for fixed-length types minimises both computational overhead during tree traversal and storage requirements in the index structure.
 
-\subsubsection{Variable-Length Value Serialization}
-\label{methodology:attribute_index:variable_length_serialization}
+\subsubsection{Variable-Length Value Serialisation}
+\label{methodology:attribute_index:variable_length_serialisation}
 
 Supporting variable-length keys in B+tree structures presents significant implementation challenges. As \citet{ramez_2015} notes, variable-length keys can lead to unpredictable node sizes and uneven fan-out, complicating both the tree construction and traversal algorithms. This issue is particularly relevant for string attributes in 3D city models, where key lengths can vary substantially.
 

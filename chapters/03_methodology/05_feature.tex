@@ -57,7 +57,7 @@ FlatCityBuf implements the core structure of \ac{cjseq} using the following Flat
     \end{table}
 \end{itemize}
 
-This structure maintains CityJSON's hierarchical organization while taking advantage of FlatBuffers' binary encoding and zero-copy access capabilities, with the exception of attributes which are self-encoded as binary blobs.
+This structure maintains CityJSON's hierarchical organisation while taking advantage of FlatBuffers' binary encoding and zero-copy access capabilities, with the exception of attributes which are self-encoded as binary blobs.
 
 \subsection{Geometry Encoding}
 \label{methodology:feature_encoding:geometry_encoding}
@@ -194,7 +194,7 @@ Semantic surface information is encoded using a similar approach:
 
 This parallel structure allows each geometric component to have associated semantic information without requiring deeply nested structures. For example, in a building model where each face has a semantic classification (wall, roof, etc.), the \textit{semantics\_boundaries} array would have the same structure as the \textit{boundaries} array, with each surface having a corresponding semantic value.
 
-Through this flattened array approach, FlatCityBuf preserves the rich hierarchical structure of CityJSON geometries while conforming to FlatBuffers' efficiency-oriented constraints on data organization.
+Through this flattened array approach, FlatCityBuf preserves the rich hierarchical structure of CityJSON geometries while conforming to FlatBuffers' efficiency-oriented constraints on data organisation.
 
 \subsubsection{Geometry Template Encoding}
 \label{methodology:feature_encoding:geometry_encoding:templates}
@@ -376,7 +376,7 @@ This approach follows established patterns in formats like glTF, OBJ, and I3S, p
 Attributes in FlatCityBuf are encoded as binary data with a schema defined through \textit{Column} tables, which were detailed previously in \autoref{methodology:header:schema_indexing}. Rather than repeating column structure information, this section focuses on the binary encoding strategy:
 
 \begin{itemize}
-  \item \textbf{Attribute Binary Encoding} - Efficient type-specific serialization:
+  \item \textbf{Attribute Binary Encoding} - Efficient type-specific serialisation:
     \begin{itemize}
       \item \textit{Numeric types} - Native binary representation (little-endian)
       \item \textit{String} - Length-prefixed UTF-8 encoding
@@ -426,7 +426,7 @@ Similarly, extended semantic surface types follow the same pattern:
 \subsubsection{Extension Attribute Encoding}
 \label{methodology:feature_encoding:extension_mechanism:attributes}
 
-Extension-specific attributes are encoded using the same binary serialization mechanism as core attributes:
+Extension-specific attributes are encoded using the same binary serialisation mechanism as core attributes:
 
 \begin{itemize}
   \item Extension attributes are included in the same binary representation as standard attributes
@@ -446,4 +446,4 @@ Adding new properties at the root level follows the same principle as adding ext
 
 However, since each City Object can already have extended attributes, this approach is rarely needed in practice. Consequently, we have not yet implemented this functionality.
 
-Unlike CityJSON, which references external schema files for extensions, FlatCityBuf's self-contained approach ensures that all extension information is available within a single file. This approach maintains the cloud-optimized philosophy of minimizing external dependencies while preserving full compatibility with the rich extension capabilities of CityJSON.
+Unlike CityJSON, which references external schema files for extensions, FlatCityBuf's self-contained approach ensures that all extension information is available within a single file. This approach maintains the cloud-optimised philosophy of minimising external dependencies while preserving full compatibility with the rich extension capabilities of CityJSON.

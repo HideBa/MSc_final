@@ -21,14 +21,14 @@ These formats exhibit several quantifiable advantages:
 \end{itemize}
 
 \citet{cloud-optimised-formats} provides a comprehensive overview of several cloud-optimised geospatial formats.
-These include Cloud Optimized GeoTIFF, Cloud Optimized Point Cloud, GeoParquet, PMTiles, FlatGeobuf.
+These include Cloud Optimised GeoTIFF, Cloud Optimised Point Cloud, GeoParquet, PMTiles, FlatGeobuf.
 
 \section{CityGML, CityJSON and Its Enhancements}
 \label{rw:cityjson_enhancements}
 
 \subsection{CityGML}
 \label{rw:citygml}
-CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialized modeling capabilities applicable across all thematic modules. The encoding standard uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
+CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialised modelling capabilities applicable across all thematic modules. The encoding standard uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
 
 \begin{figure}[htbp]
   \centering
@@ -47,7 +47,7 @@ The following properties of CityJSON are derived from \citet{ledoux_2019}:
 \subsubsection{Flattened City Objects Architecture}
 \label{rw:cityjson:flattened_architecture}
 
-CityJSON implements a flattened architecture where each city object receives a unique identifier, contrasting with CityGML's hierarchical structure. While CityGML maintains a hierarchical organization, CityJSON stores all objects at the same level (e.g., first and second-level city objects are stored in the same dictionary). To preserve hierarchical relationships, CityJSON uses a \texttt{parents} field to reference each object's parent.
+CityJSON implements a flattened architecture where each city object receives a unique identifier, contrasting with CityGML's hierarchical structure. While CityGML maintains a hierarchical organisation, CityJSON stores all objects at the same level (e.g., first and second-level city objects are stored in the same dictionary). To preserve hierarchical relationships, CityJSON uses a \texttt{parents} field to reference each object's parent.
 
 \subsubsection{Geometry}
 \label{rw:cityjson:geometry}
@@ -57,7 +57,7 @@ CityJSON supports the same 3D geometric primitives as CityGML. However, instead 
 \subsubsection{Semantic Surfaces}
 \label{rw:cityjson:semantic_surfaces}
 
-CityJSON stores semantic surfaces as separate objects, recognizing that city objects often share common semantics. This is implemented through \texttt{semanticSurfaces} fields and a \texttt{values} array that maps surfaces to their corresponding semantic surface objects.
+CityJSON stores semantic surfaces as separate objects, recognising that city objects often share common semantics. This is implemented through \texttt{semanticSurfaces} fields and a \texttt{values} array that maps surfaces to their corresponding semantic surface objects.
 
 This is an example of how the semantic surfaces look like (derived from \citet{ledoux_2019}):
 
@@ -87,7 +87,7 @@ This is an example of how the semantic surfaces look like (derived from \citet{l
 \subsubsection{Geometry Templates}
 \label{rw:cityjson:geometry_templates}
 
-CityJSON implements CityGML's Implicit Geometry concept through "geometry templates." The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilizing these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
+CityJSON implements CityGML's Implicit Geometry concept through "geometry templates." The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilising these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
 
 This code shows an example of a geometry template derived from \citet{ledoux_2019}:
 
@@ -129,10 +129,10 @@ And this is how a city object references this template:
   }
 \end{lstlisting}
 
-\subsubsection{Coordinate Quantization}
+\subsubsection{Coordinate Quantisation}
 \label{rw:cityjson:coordinate_quantisation}
 
-CityJSON employs coordinate quantization to reduce geometry size. The \texttt{transform} field contains \texttt{scale} and \texttt{translate} values for coordinate quantization. The original coordinates are recovered using the following formula (e.g., for the x component of vertex $v$):
+CityJSON employs coordinate quantisation to reduce geometry size. The \texttt{transform} field contains \texttt{scale} and \texttt{translate} values for coordinate quantisation. The original coordinates are recovered using the following formula (e.g., for the x component of vertex $v$):
 \begin{equation}
   \label{eq:cityjson:coordinate_quantisation}
   x = v_x \cdot \text{transform.scale}_x + \text{transform.translate}_x
@@ -179,9 +179,9 @@ Each extension must be documented and validated using a JSON Schema file. This s
   }
 \end{lstlisting}
 
-These characteristics, particularly JSON's absence of repetitive closing element tags and the implementation of coordinate quantization, result in significantly smaller file sizes compared to CityGML, achieving compression factors of up to 7× \citep{ledoux_2019}.
+These characteristics, particularly JSON's absence of repetitive closing element tags and the implementation of coordinate quantisation, result in significantly smaller file sizes compared to CityGML, achieving compression factors of up to 7× \citep{ledoux_2019}.
 
-The proposed data format, FlatCityBuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantization, and the extension mechanism. The strategy for encoding city objects in FlatCityBuf will be explained in \autoref{methodology}.
+The proposed data format, FlatCityBuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantisation, and the extension mechanism. The strategy for encoding city objects in FlatCityBuf will be explained in \autoref{methodology}.
 
 \subsection{CityJSON Text Sequences (CityJSONSeq)}
 \label{rw:cityjson_enhancements:cityjsonseq}
@@ -263,7 +263,7 @@ The preliminary implementation revealed potential advantages in several key area
   \item Decreased storage requirements.
 \end{itemize}
 
-Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, attribute indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritizing both scalability and efficient data processing to address the limitations of the preliminary approach.
+Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, attribute indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritising both scalability and efficient data processing to address the limitations of the preliminary approach.
 
 \subsection{Research Gaps}
 \label{rw:research_gaps}
@@ -277,7 +277,7 @@ Specifically, while advanced serialisation frameworks like FlatBuffers (detailed
 For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
 
 This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies.
-These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimized binary encoding.
+These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimised binary encoding.
 
 The proposed approach is detailed in \autoref{methodology}.
 
@@ -385,7 +385,7 @@ PMTiles offers a standardised format for managing tile data addressed through Z/
 FlatGeobuf adheres to the Simple Features \citet{simple_features} specification by utilising FlatBuffers \citep{flatbuffers} for serialisation.
 The architecture of FlatGeobuf enables efficient serialisation, deserialisation, and data processing operations through its packed Hilbert R-tree spatial index.
 This indexing mechanism, combined with stream search capabilities, allows clients to selectively retrieve and process specific geographic regions without necessitating the loading of the entire dataset.
-Users and applications can effectively choose subsets of data based on spatial queries, optimizing both storage and retrieval operations.
+Users and applications can effectively choose subsets of data based on spatial queries, optimising both storage and retrieval operations.
 \citet{horance_2022_detail} provides a comprehensive guide for implementers of FlatGeobuf.
 
 \subsection{GeoParquet}

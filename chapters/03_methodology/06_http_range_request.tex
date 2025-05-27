@@ -44,7 +44,7 @@ This workflow enables efficient partial data retrieval by leveraging indexing st
 Network latency often dominates performance when accessing data over HTTP, with each request incurring significant overhead regardless of payload size. FlatCityBuf implements several techniques to minimise this overhead:
 
 \begin{itemize}
-  \item \textbf{Request Batching}: Multiple feature requests are grouped into larger, consolidated HTTP requests rather than making individual requests for each feature. This approach significantly reduces the number of HTTP round trips, improving overall performance while minimizing network overhead.
+  \item \textbf{Request Batching}: Multiple feature requests are grouped into larger, consolidated HTTP requests rather than making individual requests for each feature. This approach significantly reduces the number of HTTP round trips, improving overall performance while minimising network overhead.
   \item \textbf{Payload Prefetching}: As explained in \autoref{methodology:attribute_index:streaming_s_tree}, when an attribute index is about to be used, the implementation proactively downloads a portion of its payload section. This anticipatory approach reduces latency for subsequent operations by having relevant data already available in memory when needed.
 
   \item \textbf{Streaming Process of Indices}: Both spatial and attribute indices implement a streaming approach where only the necessary node items in the tree structure are loaded when needed. Rather than loading entire index structures upfront, the system traverses the tree on demand, requesting only the relevant portions required for the current query.

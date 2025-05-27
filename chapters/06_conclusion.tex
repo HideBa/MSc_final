@@ -4,7 +4,7 @@
 \section{Research Summary and Limitations}
 \label{conclusion:research_summary}
 
-This research addressed the limitations of existing 3D city model formats in cloud environments by optimizing CityJSONSeq encoding through FlatCityBuf, a binary format leveraging FlatBuffers serialization with spatial and attribute indexing mechanisms.
+This research addressed the limitations of existing 3D city model formats in cloud environments by optimising CityJSONSeq encoding through FlatCityBuf, a binary format leveraging FlatBuffers serialization with spatial and attribute indexing mechanisms.
 
 The main contributions of this research include:
 
@@ -13,12 +13,12 @@ The main contributions of this research include:
 
   \item Dual indexing mechanisms: Packed Hilbert R-tree for spatial queries with logarithmic-time retrieval, and Static B+Tree (S+Tree) for attribute-based queries supporting exact matches, ranges, and complex filtering
 
-  \item HTTP Range Request optimization through explicit file alignment boundaries, enabling efficient retrieval of specific data subsets without downloading entire datasets
+  \item HTTP Range Request optimisation through explicit file alignment boundaries, enabling efficient retrieval of specific data subsets without downloading entire datasets
 \end{itemize}
 
 Benchmarks confirmed sub-second performance even with datasets containing hundreds of thousands of features. The approach eliminates complex database infrastructure, reduces operational costs through static file hosting, and maintains fast response times across large datasets.
 
-Despite its advantages, FlatCityBuf has several limitations. The query capabilities are more constrained than specialized spatial database applications, lacking advanced spatial operations available in systems like 3DCityDB \citep{3dcitydb} with PostGIS \citep{postgis}. The format introduces complexity in client-side applications requiring custom loading logic, presenting potential adoption barriers. Additionally, FlatCityBuf's rigid structure presents challenges for data updates, requiring rewriting entire files when modifying data, making it more suitable for read-intensive applications than dynamic content management systems.
+Despite its advantages, FlatCityBuf has several limitations. The query capabilities are more constrained than specialised spatial database applications, lacking advanced spatial operations available in systems like 3DCityDB \citep{3dcitydb} with PostGIS \citep{postgis}. The format introduces complexity in client-side applications requiring custom loading logic, presenting potential adoption barriers. Additionally, FlatCityBuf's rigid structure presents challenges for data updates, requiring rewriting entire files when modifying data, making it more suitable for read-intensive applications than dynamic content management systems.
 
 \section{Future Work}
 \label{conclusion:future_work}
@@ -26,9 +26,9 @@ Despite its advantages, FlatCityBuf has several limitations. The query capabilit
 Based on the research findings and identified limitations, several promising directions for future work emerge.
 
 Expanding language support beyond Rust would enhance the format's accessibility and ecosystem integration. For some languages, implementing binding libraries to the existing Rust implementation could provide an efficient path to broader adoption.
-Languages with garbage collection mechanisms—such as Python, JavaScript, and Java—present particularly interesting implementation targets. These languages manage memory differently than Rust, which could impact performance characteristics of zero-copy operations. Implementation in Python would enable seamless integration with geospatial analysis workflows, while JavaScript support would facilitate web-based visualization without WebAssembly.
-Testing performance across these languages would provide valuable insights into optimization strategies for different memory management approaches.
+Languages with garbage collection mechanisms—such as Python, JavaScript, and Java—present particularly interesting implementation targets. These languages manage memory differently than Rust, which could impact performance characteristics of zero-copy operations. Implementation in Python would enable seamless integration with geospatial analysis workflows, while JavaScript support would facilitate web-based visualisation without WebAssembly.
+Testing performance across these languages would provide valuable insights into optimisation strategies for different memory management approaches.
 
 Investigating alternative serialization frameworks could reveal different efficiency patterns. Column-oriented formats like Apache Parquet warrant exploration, particularly for analytical workloads involving selective attribute access. Such formats excel at accessing specific fields across many records, potentially offering significant advantages for city-scale analytics where only certain properties (like building heights or energy consumption) are needed. Future research should quantify these trade-offs through comparative benchmarks across various query patterns and datasets sizes.
 
-While a web prototype for FlatCityBuf exists, it currently only displays data as JSON without geometric visualization. Developing specialized web viewers would demonstrate the format's practical benefits in interactive contexts. Progressive loading strategies could enable smooth navigation of massive datasets on bandwidth-constrained devices by initially loading lower-detail geometries and enhancing detail as users zoom, significantly improving user experience while leveraging the format's efficient partial data retrieval mechanisms.
+While a web prototype for FlatCityBuf exists, it currently only displays data as JSON without geometric visualisation. Developing specialised web viewers would demonstrate the format's practical benefits in interactive contexts. Progressive loading strategies could enable smooth navigation of massive datasets on bandwidth-constrained devices by initially loading lower-detail geometries and enhancing detail as users zoom, significantly improving user experience while leveraging the format's efficient partial data retrieval mechanisms.

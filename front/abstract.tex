@@ -1,14 +1,14 @@
 
 \chapter*{Abstract}
-Standardizing data formats for 3D city models is crucial for semantically storing real-world information as permanent records.
+Standardising data formats for 3D city models is crucial for semantically storing real-world information as permanent records.
 CityJSON is a widely adopted OGC standard format for this purpose, and its variant, CityJSON Text Sequences, decomposes large city objects into line-separated objects to enable streaming processing of 3D city model data.
 However, the shift towards cloud-native environments and the increasing demand for handling massive datasets necessitate more efficient data processing methods across different platforms and on the web.
-While cloud-optimized data formats such as PMTiles, FlatBuffers, Mapbox Vector Tiles have been proposed for vector and raster data, options for 3D city models remain limited.
-This research aims to explore optimized data formats for CityJSON tailored for cloud-native processing and evaluate their performance and use cases.
+While cloud-optimised data formats such as PMTiles, FlatBuffers, Mapbox Vector Tiles have been proposed for vector and raster data, options for 3D city models remain limited.
+This research aims to explore optimised data formats for CityJSON tailored for cloud-native processing and evaluate their performance and use cases.
 Specifically, the study implements FlatBuffers for CityJSON, incorporating features like spatial indexing, spatial sorting, indexing with attribute values, and partial fetching via HTTP Range requests.
-The methodology includes designing a complete binary representation of the CityJSON standard using FlatBuffers, conducting a comprehensive review of existing performance-optimized formats, and benchmarking their performance.
+The methodology includes designing a complete binary representation of the CityJSON standard using FlatBuffers, conducting a comprehensive review of existing performance-optimised formats, and benchmarking their performance.
 Successful implementation of this research will enable end-users to download arbitrary extents of 3D city models efficiently.
 The research demonstrates that FlatCityBuf achieves superior read performance compared to CityJSONSeq while generally producing smaller file sizes.
 The approach successfully encoded the entire Netherlands dataset into a single 70GB file containing both spatial and attribute indices, demonstrating scalability for national-scale applications.
-For developers, the optimized format enables single-file containment of entire areas of interest, simplification of serverless cloud architecture, and accelerated processing by software applications.
+For developers, the optimised format enables single-file containment of entire areas of interest, simplification of serverless cloud architecture, and accelerated processing by software applications.
 Ultimately, this work improves the scalability and usability of 3D city models in cloud environments, supporting advanced urban planning and smart city initiatives.

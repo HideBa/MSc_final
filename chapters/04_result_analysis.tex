@@ -10,11 +10,11 @@ Second, the datasets used throughout the evaluation are described, including bot
 
 Third, file size comparisons are conducted across different encoding formats to evaluate storage efficiency and compression characteristics of FlatCityBuf relative to existing CityJSON variants.
 
-Fourth, comprehensive local environment benchmarks assess computational performance, measuring read operation times, memory consumption, and CPU utilization across various dataset sizes. These benchmarks utilize controlled conditions to provide precise performance metrics and direct comparability with existing formats.
+Fourth, comprehensive local environment benchmarks assess computational performance, measuring read operation times, memory consumption, and CPU utilisation across various dataset sizes. These benchmarks utilise controlled conditions to provide precise performance metrics and direct comparability with existing formats.
 
-Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of HTTP Range Requests for selective data access, providing insights into bandwidth optimization and response times critical for web-based 3D city model applications.
+Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of HTTP Range Requests for selective data access, providing insights into bandwidth optimisation and response times critical for web-based 3D city model applications.
 
-The following sections present detailed results from each evaluation component, culminating in integrated analyses that synthesize findings to provide comprehensive insights into FlatCityBuf's performance characteristics and practical benefits for 3D city model applications.
+The following sections present detailed results from each evaluation component, culminating in integrated analyses that synthesise findings to provide comprehensive insights into FlatCityBuf's performance characteristics and practical benefits for 3D city model applications.
 
 \subsection{Web Prototype}
 \label{result:web_prototype}
@@ -39,7 +39,7 @@ This cross-platform approach enables FlatCityBuf to work with both Rust's native
 
 To demonstrate FlatCityBuf's capabilities in web environments and illustrate practical user interactions with the data, a functional web prototype was developed. The prototype is publicly accessible at \url{https://fcb-web-prototype.netlify.app/}. It leverages the WebAssembly module of FlatCityBuf combined with TypeScript and React for the frontend implementation, with Cesium serving as the 3D map rendering engine.
 
-The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilizing the HTTP range request capabilities described in \autoref{methodology:http_range_requests}. Users can interact with the data through several query mechanisms:
+The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilising the HTTP range request capabilities described in \autoref{methodology:http_range_requests}. Users can interact with the data through several query mechanisms:
 
 \begin{itemize}
   \item \textbf{Spatial queries}: Users can filter features either by defining a spatial bounding box or by placing a point on the map to retrieve features based on intersection or nearest-neighbor relationships.
@@ -74,7 +74,7 @@ The HTTP Range Request mechanism integrates seamlessly with modern cloud infrast
 
 To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU \citep{plateau}. PLATEAU employs its own data specification combining CityGML 2.0 \citep{CityGML} with a custom \ac{ade}. The CityGML-encoded 3D city models were converted to CityJSON using citygml-tools, a command-line utility developed by \citet{citygml_tools}. Note that PLATEAU's \ac{ade} components are not included in the converted datasets since they are not compatible with the current CityJSON implementation.
 
-To comprehensively evaluate FlatCityBuf, we utilized diverse PLATEAU models including buildings, bridges, railways, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
+To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models including buildings, bridges, railways, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
 
 \section{File Size Comparison}
 \label{result:file_size_comparison}
@@ -377,7 +377,7 @@ These parameters were systematically measured across all encoding formats-CityJS
 \subsubsection{Read Performance FlatCityBuf vs CityJSONSeq}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
 
-The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring CPU utilization, processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
+The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring CPU utilisation, processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
 
 \todo{take benchmark well again}
 
@@ -390,7 +390,7 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
     \tiny
     \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
@@ -479,7 +479,7 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
       \footnotesize
     \item[a] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
     \item Note: cjseq = CityJSONSeq, FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
@@ -487,7 +487,7 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
 
 \todo{Check if the memory consumption is correct. Also take benchmark on better environment}
 
-The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. CPU utilization is substantially lower for FlatCityBuf across all datasets, ranging from 1.77× to over ??? improvement. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
+The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. CPU utilisation is substantially lower for FlatCityBuf across all datasets, ranging from 1.77× to over ??? improvement. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
 
 \subsubsection{Read performance FlatCityBuf vs CBOR}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cbor}
@@ -503,7 +503,7 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
     \tiny
     \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
@@ -592,7 +592,7 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
       \footnotesize
     \item[a] Ratio = CBOR metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
     \item Note: FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
@@ -614,7 +614,7 @@ The performance comparison between FlatCityBuf and BSON followed the same method
     \tiny
     \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilization}}
+      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
@@ -703,7 +703,7 @@ The performance comparison between FlatCityBuf and BSON followed the same method
       \footnotesize
     \item[a] Ratio = BSON metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilization may indicate measurement noise for very small operations
+    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
     \item Note: FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
@@ -716,7 +716,7 @@ The performance comparison between FlatCityBuf and BSON followed the same method
 To summarise the results of the local environment benchmark, we especially focus on the comparison between FlatCityBuf and CityJSONSeq since CityJSONSeq is the most standard data format of CityJSON at the moment.
 
 \begin{itemize}
-  \item CPU utilization: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilization while the worst case achieved still 1.77$\times$ improvement. \todo{think how to explain this, there is not 100\% CPU utilization} While the Ratio is sometimes important, since CPU utilization limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
+  \item CPU utilisation: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilisation while the worst case achieved still 1.77$\times$ improvement. \todo{think how to explain this, there is not 100\% CPU utilisation} While the Ratio is sometimes important, since CPU utilisation limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
   \item Processing time: Processing time is more considarable as its pirmary objective of the research. The best case achieved 46.62$\times$ improvement (Montréal) while the worst case achieved 8.48$\times$ improvement (3DBAG). The program can save a lot of time for large datasets.
   \item Memory consumption: Memory consumption is also an important metric. The best case achieved 3.11$\times$ improvement (Tokyo) while the worst case achieved 0.62$\times$ improvement (PLATEAU\_tran).
 \end{itemize}
