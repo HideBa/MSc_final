@@ -1,24 +1,102 @@
 \chapter{Theoretical background}
 \label{chap:theoretical_background}
 
-\section{Cloud-native}
+\section{Cloud-native and WebGIS}
 \label{tb:cloud_native}
-\todo{add here}
 
-\section{Binary Encoding}
-\label{tb:binary_encoding}
-Binary encoding is a technique used to convert data into a binary format. It is a fundamental concept in computer science and is used in various applications, including data storage, transmission, and processing.
-\todo{add here}
+Cloud computing in this context refers to the infrastructure for delivering computing services including data storage, processing power, and applications over the internet, typically using the HTTP protocol. While "cloud" encompasses a broad range of meanings, \citet{nist_cloud_computing_2011} defines it as \emph{"Cloud computing is a model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources (e.g., networks, servers, storage, applications, and services) that can be rapidly provisioned and released with minimal management effort or service provider interaction."}
 
-% NOTE: add raster, 2D Vector, etc?
+The fundamental shift from desktop to cloud-based applications is reflected in the geospatial domain as well. For example, Google Maps is widely used as a mapping application, with various features such as map delivery, navigation, and search provided as web services. Users do not need to download complete map datasets to their local machines. The application of GIS in web environments is often called WebGIS. \citet{esri_webgis} defines "web GIS" as any GIS that uses web technology to communicate between a server and a client.
+
+\subsection{Advantages of WebGIS}
+\label{tb:advantages_of_webgis}
+
+\citet{esri_webgis} lists the advantages of WebGIS as follows:
+
+\begin{itemize}
+  \item \textbf{Global reach}: Web GIS applications can be accessed worldwide from computers or mobile devices, with HTTP protocol support enabling broad accessibility through organisational firewalls.
+  \item \textbf{Scalability for multiple users}: Unlike desktop GIS limited to single users, web GIS can simultaneously support dozens or hundreds of users, requiring higher performance and scalability.
+  \item \textbf{Cross-platform compatibility}: Web browsers (Internet Explorer, Firefox, Safari, Chrome) largely comply with HTML and JavaScript standards, enabling web GIS to support different operating systems including Windows, Linux, and Mac OS.
+  \item \textbf{Diverse applications}: Web GIS serves a broader audience beyond GIS professionals, supporting diverse applications such as mapping, photo tagging, location services, and various public-facing geospatial services.
+\end{itemize}
+
+\subsection{Challenges of WebGIS}
+\label{tb:challenges_of_webgis}
+
+WebGIS faces several significant challenges that distinguish it from traditional desktop GIS applications. Network latency and bandwidth limitations represent primary constraints. While local disk access in desktop applications can achieve high-speed read and write operations, WebGIS must transfer data over networks. Loading 1GB of map data from a local machine versus downloading it over a network demonstrates this performance gap. This necessitates subsetting or streaming strategies where clients fetch only the data subsets they require. Traditional data formats such as GeoJSON, Shapefile, and WKT do not inherently support these selective access patterns.
+
+Another challenge is multi-user scalability. Desktop GIS typically serves a single user, whereas WebGIS may serve hundreds or thousands of users simultaneously—consider the scale of concurrent Google Maps usage. To provide stable service, WebGIS must be scalable and robust under high concurrent load.
+
+\subsection{Strategies for WebGIS}
+\label{tb:strategies_for_webgis}
+
+To address WebGIS challenges while leveraging its advantages, several strategies are commonly employed:
+
+\begin{itemize}
+  \item \textbf{Tiling and partitioning}: Large datasets are divided into small, manageable tiles or chunks. Slippy tiles exemplify this approach by dividing maps into square tiles for each zoom level. As users zoom in or out, new tiles are loaded and displayed, with clients loading only necessary tiles. Figure \ref{fig:tms} shows an example of Tile Map Service (TMS), a standard for tiling geospatial data \citep{tms}. This technique requires either pre-generated tiled data or dynamic tile generation by servers like GeoServer. Both raster and vector data are commonly tiled. For instance, 3DBAG divides entire countries into tiles for selective download, and PLATEAU publishes tiled datasets as open data.
+
+  \item \textbf{Spatial indexing}: Spatial indexing techniques index geospatial data by spatial properties. R-trees \citep{guttman_1984}, quadtrees \citep{finkel_1974}, and KD-trees \citep{bentley_1975} are commonly used indexing structures. These indices enable clients to quickly locate data within specified extents, find nearest neighbours, or perform other spatial queries. This technique requires pre-built spatial indices that must be updated when data changes.
+
+  \item \textbf{Data simplification and Level of Detail}: Also known as generalisation, this reduces geospatial data complexity for visualisation, especially at smaller scales. This technique is often combined with tiling and partitioning. For example, Cesium 3D Tiles \citep{3d_tiles} implements level-of-detail systems where higher zoom levels load more detailed data. GDAL's Mapbox Vector Tile driver also supports geometry simplification for smaller scales.
+
+  \item \textbf{Binary encoding and compression}: This technique reduces geospatial data size, resulting in faster download and display times. While compression reduces file size, it requires client-side decompression, creating a trade-off between file size and decompression time. For example, glTF 2.0 \citep{gltf_2_0}, used internally by Cesium 3D Tiles, supports Draco compression \citep{draco}. GeoParquet \citep{geoparquet} also supports various compression algorithms.
+\end{itemize}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figs/related_work_theoretical_bg/tms.png}
+  \caption{Tile Map Service (TMS) standard for tiling geospatial data, derived from \citet{tms}}
+  \label{fig:tms}
+\end{figure}
+
+% \section{Binary Encoding}
+% \label{tb:binary_encoding}
+
+% Binary encoding is a technique for converting data into binary format, representing a fundamental concept in computer science with applications in data storage, transmission, and processing. In the context of geospatial data, binary encoding offers several advantages over text-based formats such as reduced file size, faster parsing, and more efficient memory usage. However, binary formats typically sacrifice human readability and may introduce platform-specific compatibility considerations such as endianness \citep{endianness_mdn, danny_cohen_1981}.
+
+% % NOTE: add raster, 2D Vector, etc?
 
 \section{WebAssembly}
 \label{tb:webassembly}
-\todo{add here}
+WebAssembly (WASM) is a low-level assembly-like language with a compact binary format that enables near-native performance execution in modern web browsers \citep{WebAssembly}. Standardised by the W3C \citep{WebAssemblyCoreSpecification1, WebAssemblyCoreSpecification2}, WebAssembly provides a compilation target for languages such as C/C++, C\#, and Rust, allowing code written in these languages to run efficiently on the web platform.
 
-\section{Row based and column based data storage}
+WebAssembly is designed to complement and run alongside JavaScript rather than replace it. Through the WebAssembly JavaScript APIs, developers can load WebAssembly modules into JavaScript applications and share functionality between the two environments \citep{WebAssembly}. This interoperability enables developers to leverage WebAssembly's performance characteristics for computationally intensive tasks while maintaining JavaScript's expressiveness and flexibility for application logic and user interface development.
+
+A key advantage of WebAssembly is its ability to enable code reuse across platforms. Developers can compile existing codebases written in languages like C/C++, Rust, and C\# for browser deployment, eliminating the need to rewrite performance-critical components in JavaScript.
+
+In this research, WebAssembly enables the compilation of Rust libraries for 3D city model processing to run with near-native performance in web browsers. This approach bridges the performance gap between desktop and web-based geospatial applications while maintaining the accessibility and cross-platform benefits of web deployment.
+
+\section{Row-based and column-based data storage}
 \label{tb:row_based_column_based_data_storage}
-\todo{add here}
+
+Data storage systems can be broadly categorised into two fundamental approaches: row-based and column-based storage. Row-based storage stores consecutive rows of a table sequentially, while column-based storage stores consecutive columns of a table sequentially \citep{clickhouse_column}.
+
+To illustrate this distinction, consider the following example table:
+
+\begin{verbatim}
+id, city, country
+1, Tokyo, Japan
+2, London, UK
+3, Amsterdam, Netherlands
+\end{verbatim}
+
+Row-based storage organises the data sequentially by rows:
+
+\begin{verbatim}
+1, Tokyo, Japan, 2, London, UK, 3, Amsterdam, Netherlands
+\end{verbatim}
+
+Column-based storage organises the data sequentially by columns:
+
+\begin{verbatim}
+1, 2, 3, Tokyo, London, Amsterdam, Japan, UK, Netherlands
+\end{verbatim}
+
+These different storage approaches exhibit distinct performance characteristics depending on the query patterns. Row-based approaches perform well for single-row searches, such as querying the record for Amsterdam. Conversely, column-based approaches excel at analytical queries that involve aggregating or filtering columns \citep{clickhouse_column}.
+
+\citet{abadi_2008} provides a comprehensive comparison of column-stores versus row-stores, highlighting that column-based storage offers advantages in terms of storage efficiency and query performance for analytical workloads, while row-based storage is more suitable for Online Transaction Processing (OLTP) systems that require frequent lookups and updates.
+
+In the context of geospatial data, column-based storage is particularly well-suited for analytical queries such as calculating the average height of buildings in a city or filtering buildings by construction year. However, row-based storage remains preferable for frequently updated datasets or transactional systems where individual records are accessed and modified regularly.
 
 \section{Cache line}
 \label{tb:cache_line}
