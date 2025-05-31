@@ -2,16 +2,12 @@
 
 \chapter{Related Work}
 \label{rw:related_work}
-
-This section reviews the pertinent literature relevant to the optimisation of CityJSON for cloud-native environments.
-
-It highlights advancements and identifies existing gaps that this research aims to address.
+This chapter reviews the pertinent literature relevant to the optimisation of CityJSON for cloud-native environments. It highlights advancements and identifies existing gaps that this research aims to address.
 
 \section{Cloud-Optimised Geospatial Formats}
 \label{rw:cloud_optimised_formats}
 
-Cloud-optimised geospatial formats constitute specialised data structures engineered to maximise computational efficiency in distributed cloud environments \citep{cloud-optimised-formats}.
-These formats exhibit several quantifiable advantages:
+Cloud-optimised geospatial formats are data formats that are optimised for cloud environments by enabling efficient on-demand access to geospatial data in contrast to traditional GIS formats \citep{cloud-optimised-formats}. \citet{cloud-optimised-formats} defines four advantages of cloud-optimised geospatial formats:
 
 \begin{itemize}
   \item \textbf{Reduced Latency}: Facilitates partial data retrieval and processing without necessitating complete file downloads.
@@ -20,8 +16,7 @@ These formats exhibit several quantifiable advantages:
   \item \textbf{Cost-Effectiveness}: Optimises storage and transfer expenditures through efficient access patterns.
 \end{itemize}
 
-\citet{cloud-optimised-formats} provides a comprehensive overview of several cloud-optimised geospatial formats.
-These include Cloud Optimised GeoTIFF, Cloud Optimised Point Cloud, GeoParquet, PMTiles, FlatGeobuf.
+These include Cloud Optimised GeoTIFF, Cloud Optimised Point Cloud, GeoParquet, PMTiles, and FlatGeobuf. Although not mentioned by \citet{cloud-optimised-formats}, 3D Tiles \citep{3d_tiles} and Mapbox Vector Tiles \citep{mapbox-vector-tiles} can also be considered as cloud-optimised geospatial formats since they were developed by Web GIS companies Cesium and Mapbox respectively.
 
 \section{CityGML, CityJSON and Its Enhancements}
 \label{rw:cityjson_enhancements}
@@ -229,8 +224,10 @@ Despite CityJSONSeq's improvements for streaming applications, its text-based JS
 
 \subsection{3DBAG API}
 \label{rw:cityjson_enhancements:3dbag_api}
-\todo{include 3dbag api here}
-% TODO: include 3dbag api here
+
+3DBAG is both a dataset and a project dedicated to generating 3D building models for the entire Netherlands \citep{3dbag}. This open data initiative leverages the Register of Buildings and Addresses (BAG) as building footprints and the Actueel Hoogtebestand Nederland (AHN) \citep{ahn}, which serves as the national height model (point cloud) of the Netherlands. The 3DBAG data is automatically generated through the integration of BAG and AHN datasets and is publicly available in multiple formats including CityJSON \citep{ledoux_2019}, Wavefront OBJ \citep{wavefront_obj}, GeoPackage \citep{geopackage}, and FlatGeobuf \citep{flatgeobuf}.
+
+The 3DBAG API \citep{3dbag_api} represents one of the project's key web services, providing programmatic access to the dataset by returning CityJSONFeature objects as responses.
 
 \subsection{Enhancements to CityJSON Performance}
 \label{rw:cityjson_enhancements:performance}
@@ -252,9 +249,7 @@ While these findings provide valuable insights for binary encoding implementatio
 \label{rw:cityjson_enhancements:performance:flatbuffers}
 
 \citet{ravi_peters_2024_citybuf} explored the application of FlatBuffers \citep{flatbuffers} for encoding CityJSONFeature.
-
 This was done to enhance performance in cloud-native environments.
-
 The preliminary implementation revealed potential advantages in several key areas:
 
 \begin{itemize}
@@ -269,46 +264,29 @@ Building upon Peters' initial work, which focused solely on basic CityJSONFeatur
 \label{rw:research_gaps}
 
 While existing studies have made advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
-
 Several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}).
 
 Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats, their application to 3D city models has not been thoroughly investigated.
-
 For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
-
-This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies.
-These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimised binary encoding.
-
-The proposed approach is detailed in \autoref{methodology}.
+This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies. These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimised binary encoding. The proposed approach is detailed in \autoref{methodology}.
 
 \section{Non-Geospatial Formats in Cloud Environments}
 \label{rw:non_geospatial_formats}
 
 Modern cloud-optimised geospatial formats leverage established non-geospatial data structures.
-
 These enhance efficiency in data transfer, storage and processing operations.
-
 Notable implementations include GeoParquet \citep{geoparquet}, which employs Parquet \citep{parquet} for optimised geospatial data management.
-
-\citet{flatgeobuf} is constructed on FlatBuffers \citep{flatbuffers}.
-
-Mapbox Vector Tiles \citep{mapbox-vector-tiles} utilise Protocol Buffers (Protobuf) \citep{protobuf}.
-
+\citet{flatgeobuf} is constructed on FlatBuffers \citep{flatbuffers}. Mapbox Vector Tiles \citep{mapbox-vector-tiles} utilise Protocol Buffers (Protobuf) \citep{protobuf}.
 These underlying formats are meticulously designed to improve performance metrics.
-
 These include serialisation/deserialisation speed, memory utilisation and data compression.
 
 \subsection{FlatBuffers}
 \label{rw:non_geospatial_formats:flatbuffers}
 
 \citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}.
-
 It is optimised for efficient data access and transfer.
-
-The detailed characteristics and technical implementation of FlatBuffers will be explained in \autoref{tb:flatbuffers}.
-
+The detailed characteristics and technical implementation of FlatBuffers is explained in \autoref{tb:flatbuffers}.
 Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats.
-
 These include Protobuf \citep{protobuf} and JSON, in terms of deserialisation efficiency and memory utilisation.
 
 \subsection{Protocol Buffers (Protobuf)}

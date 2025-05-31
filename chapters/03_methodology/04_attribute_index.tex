@@ -66,7 +66,8 @@ Based on this analysis and the practical constraints of optimising for cloud-bas
   \item \textbf{Logical Combinations}: Supported at the query execution level
     \begin{itemize}
       \item AND (intersection of result sets)
-      \item OR (union of result sets) (This will be implemented in the future)
+      \item NOT (negation of result sets)
+        % \item OR (union of result sets) (This will be implemented in the future)
     \end{itemize}
 
     \todo{Uncomment if I could finish the implementation}
@@ -76,11 +77,9 @@ Based on this analysis and the practical constraints of optimising for cloud-bas
     %     \end{itemize}
 \end{enumerate}
 
-Other operators from the standards were evaluated but not prioritized in the initial implementation, either because they require more complex index structures (\eg, LIKE operators) or are less commonly used in typical 3D city model queries.
+While typical SQL supports more various operators (\eg, LIKE operators), these were not prioritised in the initial implementation as they are not part of either OGC Filter Encoding or OGC CQL standards, or because they require more complex index structures that are less commonly used in typical 3D city model queries.
 
-\todo{Ravi's comment "how do you know this?"}
-
-By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. \todo{Ravi's comment "FYI this has mostly to do with the OGC requirement that states that geometry should be fetchable in WGS84 (aside from the Dutch CRS), so not really relevant here I think. Instead you can point out that 1) it requires persistence server process and 2) does not support attribute queries aside from ID lookup"} This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full OGC compliance \citep{3dbag_api_2023}.
+By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. \todo{Ravi's comment "FYI this has mostly to do with the OGC requirement that states that geometry should be fetchable in WGS84 (aside from the Dutch CRS), so not really relevant here I think. Instead you can point out that 1) it requires persistence server process and 2) does not support attribute queries aside from ID lookup"} This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full OGC compliance \citep{3dbag_api}.
 
 \subsection{\texorpdfstring{\ac{s+tree}}{S+tree} Design and Modifications}
 \label{methodology:attribute_index:static_btree_design}
@@ -137,12 +136,12 @@ The attribute indexing system in FlatCityBuf is implemented as a binary encoded 
 \end{enumerate}
 
 \todo{make this figure better}
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{figs/methodology/attribute_index.png}
 \caption{Attribute index implementation in FlatCityBuf}
 \label{fig:methodology:attribute_index}
-\end{figure}
+\end{figure*}
 
 \subsection{Construction of the Attribute Index}
 \label{methodology:attribute_index:construction}

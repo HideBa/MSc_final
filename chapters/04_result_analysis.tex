@@ -10,8 +10,6 @@ Second, the datasets used throughout the evaluation are described, including bot
 
 Third, file size comparisons are conducted across different encoding formats to evaluate storage efficiency and compression characteristics of FlatCityBuf relative to existing CityJSON variants.
 
-Fourth, comprehensive local environment benchmarks assess computational performance, measuring read operation times, memory consumption, and CPU utilisation across various dataset sizes. These benchmarks utilise controlled conditions to provide precise performance metrics and direct comparability with existing formats.
-
 Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of HTTP Range Requests for selective data access, providing insights into bandwidth optimisation and response times critical for web-based 3D city model applications.
 
 The following sections present detailed results from each evaluation component, culminating in integrated analyses that synthesise findings to provide comprehensive insights into FlatCityBuf's performance characteristics and practical benefits for 3D city model applications.
@@ -39,7 +37,7 @@ This cross-platform approach enables FlatCityBuf to work with both Rust's native
 
 To demonstrate FlatCityBuf's capabilities in web environments and illustrate practical user interactions with the data, a functional web prototype was developed. The prototype is publicly accessible at \url{https://fcb-web-prototype.netlify.app/}. It leverages the WebAssembly module of FlatCityBuf combined with TypeScript and React for the frontend implementation, with Cesium serving as the 3D map rendering engine.
 
-The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilising the HTTP range request capabilities described in \autoref{methodology:http_range_requests}. Users can interact with the data through several query mechanisms:
+The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilising the HTTP range request capabilities described in \autoref{result:cross_platform_implementation:cloud_integration}. Users can interact with the data through several query mechanisms:
 
 \begin{itemize}
   \item \textbf{Spatial queries}: Users can filter features either by defining a spatial bounding box or by placing a point on the map to retrieve features based on intersection or nearest-neighbor relationships.
@@ -59,7 +57,7 @@ This prototype effectively demonstrates how FlatCityBuf enables browser-based ap
 \end{figure}
 
 \subsection{Integration with Cloud Infrastructure}
-\label{methodology:http_range_requests:cloud_integration}
+\label{result:cross_platform_implementation:cloud_integration}
 
 The HTTP Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
 
@@ -74,7 +72,7 @@ The HTTP Range Request mechanism integrates seamlessly with modern cloud infrast
 
 To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU \citep{plateau}. PLATEAU employs its own data specification combining CityGML 2.0 \citep{CityGML} with a custom \ac{ade}. The CityGML-encoded 3D city models were converted to CityJSON using citygml-tools, a command-line utility developed by \citet{citygml_tools}. Note that PLATEAU's \ac{ade} components are not included in the converted datasets since they are not compatible with the current CityJSON implementation.
 
-To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models including buildings, bridges, railways, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
+To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models including buildings, bridges, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
 
 \section{File Size Comparison}
 \label{result:file_size_comparison}
@@ -105,7 +103,6 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
       \textbf{Ingolstadt}     & 379     & 55     &      & \qty{3.84}{\mega\byte}  & \qty{3.11}{\mega\byte}  & $19.09\%$  & 88001    & 1600.02  & 33 & 13 \\
       \textbf{Montréal}       & 294     & 294    & tex  & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
       \textbf{NYC}            & 23777   & 23777  &      & \qty{95.45}{\mega\byte} & \qty{76.20}{\mega\byte} & $20.17\%$  & 1044145  & 43.91    & 3  & 3 \\
-      \textbf{Railway}        & 121     & 38     & tex+mat  & \qty{4.05}{\mega\byte}  & \qty{3.75}{\mega\byte}  & $7.35\%$   & 73856    & 1943.58  & 3  & 0 \\
       \textbf{Rotterdam}      & 853     & 853    & tex  & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
       \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
       \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
@@ -340,23 +337,6 @@ All benchmarks were executed within a consistent hardware and software configura
   \item \textbf{Runtime Environment:} Rust 1.86.0, with optimised release builds
 \end{itemize}
 
-% \subsection{Benchmark Methodology}
-% \label{result:benchmark_on_local_environment:benchmark_methodology}
-
-% The evaluation methodology followed rigorous scientific principles to ensure accuracy and reproducibility:
-
-% \begin{itemize}
-%   \item \textbf{Warm-up Phase:} Each format underwent a preliminary 5-second warm-up period with repeated operations to prime CPU caches and allow Just-In-Time compilation optimisations to stabilise
-
-%   \item \textbf{Measurement Protocol:} Each operation was executed through 100 consecutive iterations, with performance metrics recorded for every iteration
-
-%   \item \textbf{Statistical Analysis:} The collected measurements underwent comprehensive statistical processing to derive mean values, standard deviations, and 95\% confidence intervals
-
-%   \item \textbf{Process Isolation:} Format tests were executed in separate processes to prevent cross-contamination of memory state or cache contents
-
-%   \item \textbf{Cache Control:} File system caches were systematically cleared between format tests to ensure equivalent I/O conditions across all evaluations
-% \end{itemize}
-
 \subsection{Measurement Parameters}
 \label{result:benchmark_on_local_environment:measurement_parameters}
 
@@ -368,8 +348,6 @@ The benchmark framework captured multiple performance dimensions through the fol
 
   \item \textbf{Memory Efficiency:} Peak Resident Set Size (RSS) during file processing, providing an accurate measurement of maximum memory requirements
 
-  \item \textbf{Computational Overhead:} CPU utilisation percentage during operations, calculated as an average across the entire process lifecycle
-
 \end{itemize}
 
 These parameters were systematically measured across all encoding formats-CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. \todo{Ravi's comment "why these and not others?"} The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
@@ -377,117 +355,96 @@ These parameters were systematically measured across all encoding formats-CityJS
 \subsubsection{Read Performance FlatCityBuf vs CityJSONSeq}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
 
-The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring CPU utilisation, processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
-
-\todo{take benchmark well again}
+The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
 
 \begin{table}[ht]
   \centering
   \begin{threeparttable}
     \caption{Performance comparison between CityJSONSeq and FlatCityBuf}
     \label{tab:performance_comparison}
-    \setlength{\tabcolsep}{10pt}
+    \setlength{\tabcolsep}{6pt}
     \tiny
-    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+    \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
-      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
       \textbf{Dataset}
-      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
-      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
-      & \textbf{cjseq} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      & \textbf{CityJSONSeq} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}}
+      & \textbf{CityJSONSeq} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & 19.30\% & 2.10\% & 9.21$\times$
-      & \qty{59.00}{\milli\second} & \qty{7.00}{\milli\second} & 8.48$\times$
-      & \qty{41.67}{\mega\byte} & \qty{10.81}{\mega\byte} & 3.85$\times$ \\
+      & \qty{54}{\milli\second} & \qty{6}{\milli\second} & 9.0$\times$
+      & \qty{25.7}{\mega\byte} & \qty{5.4}{\mega\byte} & 4.7$\times$ \\
 
       3DBV
-      & 97.79\% & 41.92\% & 2.33$\times$
-      & \qty{4.03}{\second} & \qty{141.00}{\milli\second} & 28.51$\times$
-      & \qty{287.77}{\mega\byte} & \qty{296.58}{\mega\byte} & 0.97$\times$ \\
+      & \qty{3.79}{\second} & \qty{120}{\milli\second} & 31.6$\times$
+      & \qty{352.4}{\mega\byte} & \qty{59.0}{\mega\byte} & 6.0$\times$ \\
 
       Helsinki
-      & 97.75\% & 44.77\% & 2.18$\times$
-      & \qty{3.71}{\second} & \qty{159.00}{\milli\second} & 23.29$\times$
-      & \qty{1.77}{\giga\byte} & \qty{1.77}{\giga\byte} & 1.00$\times$ \\
+      & \qty{3.49}{\second} & \qty{127}{\milli\second} & 27.4$\times$
+      & \qty{16.1}{\mega\byte} & \qty{4.7}{\mega\byte} & 3.4$\times$ \\
 
       Ingolstadt
-      & 13.82\% & 0.87\% & 15.82$\times$
-      & \qty{39.00}{\milli\second} & \qty{1.00}{\milli\second} & 36.13$\times$
-      & \qty{1.86}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.01$\times$ \\
+      & \qty{37}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{36.0}{\mega\byte} & \qty{9.0}{\mega\byte} & 4.0$\times$ \\
 
       Montréal
-      & 23.67\% & 1.12\% & 21.13$\times$
-      & \qty{59.00}{\milli\second} & \qty{1.00}{\milli\second} & 46.62$\times$
-      & \qty{2.05}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.00$\times$ \\
+      & \qty{50}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{41.4}{\mega\byte} & \qty{10.4}{\mega\byte} & 4.0$\times$ \\
 
       NYC
-      & 94.91\% & 14.55\% & 6.52$\times$
-      & \qty{924.00}{\milli\second} & \qty{44.00}{\milli\second} & 20.93$\times$
-      & \qty{2.15}{\giga\byte} & \qty{2.15}{\giga\byte} & 1.00$\times$ \\
+      & \qty{949}{\milli\second} & \qty{42}{\milli\second} & 22.6$\times$
+      & \qty{22.7}{\mega\byte} & \qty{6.6}{\mega\byte} & 3.4$\times$ \\
 
       Rotterdam
-      & 8.33\% & 0.99\% & 8.41$\times$
-      & \qty{22.00}{\milli\second} & \qty{1.00}{\milli\second} & 14.25$\times$
-      & \qty{942.89}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.00$\times$ \\
+      & \qty{21}{\milli\second} & \qty{1}{\milli\second} & 21.0$\times$
+      & \qty{10.8}{\mega\byte} & \qty{4.3}{\mega\byte} & 2.5$\times$ \\
 
       Vienna
-      & 15.55\% & 1.02\% & 15.21$\times$
-      & \qty{48.00}{\milli\second} & \qty{2.00}{\milli\second} & 19.11$\times$
-      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.00$\times$ \\
+      & \qty{46}{\milli\second} & \qty{1}{\milli\second} & 46.0$\times$
+      & \qty{18.7}{\mega\byte} & \qty{5.7}{\mega\byte} & 3.3$\times$ \\
 
       Zürich
-      & 97.46\% & 55.11\% & 1.77$\times$
-      & \qty{1.98}{\second} & \qty{162.00}{\milli\second} & 12.12$\times$
-      & \qty{868.83}{\mega\byte} & \qty{1.02}{\giga\byte} & 0.83$\times$ \\
+      & \qty{1.88}{\second} & \qty{149}{\milli\second} & 12.6$\times$
+      & \qty{31.2}{\mega\byte} & \qty{5.9}{\mega\byte} & 5.3$\times$ \\
 
       Tokyo (PLATEAU)
-      & 91.34\% & 32.57\% & 2.80$\times$
-      & \qty{2.19}{\second} & \qty{99.00}{\milli\second} & 21.95$\times$
-      & \qty{47.27}{\mega\byte} & \qty{15.00}{\mega\byte} & 3.15$\times$ \\
+      & \qty{1.95}{\second} & \qty{94}{\milli\second} & 20.8$\times$
+      & \qty{71.9}{\mega\byte} & \qty{14.9}{\mega\byte} & 4.8$\times$ \\
 
       PLATEAU\_brid
-      & 33.61\% & 0.01\% & 2826.56$\times$
-      & \qty{91.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 103.64$\times$
-      & \qty{1.03}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+      & \qty{89}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{80.3}{\mega\byte} & \qty{19.2}{\mega\byte} & 4.2$\times$ \\
 
       PLATEAU\_rwy
-      & 14.62\% & -0.25\%\tnote{c} & -58.98$\times$
-      & \qty{44.00}{\milli\second} & \qty{4.00}{\milli\second} & 9.06$\times$
-      & \qty{1.11}{\giga\byte} & \qty{1.12}{\giga\byte} & 1.00$\times$ \\
+      & \qty{38}{\milli\second} & \qty{2}{\milli\second} & 19.0$\times$
+      & \qty{16.8}{\mega\byte} & \qty{4.7}{\mega\byte} & 3.6$\times$ \\
 
       PLATEAU\_tran
-      & 86.61\% & 2.70\% & 32.05$\times$
-      & \qty{267.00}{\milli\second} & \qty{14.00}{\milli\second} & 18.11$\times$
-      & \qty{416.45}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.62$\times$ \\
+      & \qty{259}{\milli\second} & \qty{14}{\milli\second} & 18.5$\times$
+      & \qty{76.7}{\mega\byte} & \qty{23.0}{\mega\byte} & 3.3$\times$ \\
 
       PLATEAU\_tun
-      & 15.95\% & 0.58\% & 27.40$\times$
-      & \qty{52.00}{\milli\second} & \qty{2.00}{\milli\second} & 22.42$\times$
-      & \qty{287.77}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.60$\times$ \\
+      & \qty{50}{\milli\second} & \qty{2}{\milli\second} & 25.0$\times$
+      & \qty{81.8}{\mega\byte} & \qty{14.2}{\mega\byte} & 5.8$\times$ \\
 
       PLATEAU\_veg
-      & 91.11\% & 12.59\% & 7.24$\times$
-      & \qty{938.00}{\milli\second} & \qty{60.00}{\milli\second} & 15.55$\times$
-      & \qty{212.42}{\mega\byte} & \qty{294.53}{\mega\byte} & 0.72$\times$ \\
+      & \qty{900}{\milli\second} & \qty{33}{\milli\second} & 27.3$\times$
+      & \qty{197.5}{\mega\byte} & \qty{70.4}{\mega\byte} & 2.8$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
-    \item Note: cjseq = CityJSONSeq, FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
 
 \todo{Check if the memory consumption is correct. Also take benchmark on better environment}
 
-The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. CPU utilisation is substantially lower for FlatCityBuf across all datasets, ranging from 1.77× to over ??? improvement. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
+The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
 
 \subsubsection{Read performance FlatCityBuf vs CBOR}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cbor}
@@ -499,101 +456,82 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
   \begin{threeparttable}
     \caption{Performance comparison between CBOR and FlatCityBuf}
     \label{tab:performance_comparison_cbor}
-    \setlength{\tabcolsep}{10pt}
+    \setlength{\tabcolsep}{6pt}
     \tiny
-    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+    \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
-      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
       \textbf{Dataset}
-      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
-      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
+      & \textbf{CBOR} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}}
       & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & 31.81\% & 2.10\% & 15.18$\times$
-      & \qty{91.00}{\milli\second} & \qty{7.00}{\milli\second} & 12.97$\times$
-      & \qty{155.47}{\mega\byte} & \qty{10.81}{\mega\byte} & 14.38$\times$ \\
+      & \qty{73}{\milli\second} & \qty{6}{\milli\second} & 12.2$\times$
+      & \qty{263.4}{\mega\byte} & \qty{5.4}{\mega\byte} & 48.6$\times$ \\
 
       3DBV
-      & 85.57\% & 41.92\% & 2.04$\times$
-      & \qty{6.50}{\second} & \qty{141.00}{\milli\second} & 46.00$\times$
-      & \qty{1.32}{\giga\byte} & \qty{296.58}{\mega\byte} & 4.56$\times$ \\
+      & \qty{5.05}{\second} & \qty{120}{\milli\second} & 42.1$\times$
+      & \qty{6.7}{\giga\byte} & \qty{59.0}{\mega\byte} & 116.6$\times$ \\
 
       Helsinki
-      & 84.68\% & 44.77\% & 1.89$\times$
-      & \qty{8.85}{\second} & \qty{159.00}{\milli\second} & 55.49$\times$
-      & \qty{1.27}{\giga\byte} & \qty{1.77}{\giga\byte} & 0.72$\times$ \\
+      & \qty{6.31}{\second} & \qty{127}{\milli\second} & 49.6$\times$
+      & \qty{7.0}{\giga\byte} & \qty{4.7}{\mega\byte} & 1521.5$\times$ \\
 
       Ingolstadt
-      & 15.14\% & 0.87\% & 17.33$\times$
-      & \qty{48.00}{\milli\second} & \qty{1.00}{\milli\second} & 44.85$\times$
-      & \qty{1.92}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.03$\times$ \\
+      & \qty{46}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{219.7}{\mega\byte} & \qty{9.0}{\mega\byte} & 24.4$\times$ \\
 
       Montréal
-      & 15.93\% & 1.12\% & 14.22$\times$
-      & \qty{61.00}{\milli\second} & \qty{1.00}{\milli\second} & 48.70$\times$
-      & \qty{2.06}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.01$\times$ \\
+      & \qty{59}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{304.6}{\mega\byte} & \qty{10.4}{\mega\byte} & 29.2$\times$ \\
 
       NYC
-      & 96.24\% & 14.55\% & 6.62$\times$
-      & \qty{1.35}{\second} & \qty{44.00}{\milli\second} & 30.47$\times$
-      & \qty{1.04}{\giga\byte} & \qty{2.15}{\giga\byte} & 0.48$\times$ \\
+      & \qty{1.40}{\second} & \qty{42}{\milli\second} & 33.2$\times$
+      & \qty{1.7}{\giga\byte} & \qty{6.6}{\mega\byte} & 262.2$\times$ \\
 
       Rotterdam
-      & 11.93\% & 0.99\% & 12.04$\times$
-      & \qty{30.00}{\milli\second} & \qty{1.00}{\milli\second} & 18.95$\times$
-      & \qty{946.36}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.01$\times$ \\
+      & \qty{31}{\milli\second} & \qty{1}{\milli\second} & 31.0$\times$
+      & \qty{206.0}{\mega\byte} & \qty{4.3}{\mega\byte} & 47.8$\times$ \\
 
       Vienna
-      & 18.54\% & 1.02\% & 18.14$\times$
-      & \qty{57.00}{\milli\second} & \qty{2.00}{\milli\second} & 22.45$\times$
-      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+      & \qty{59}{\milli\second} & \qty{1}{\milli\second} & 59.0$\times$
+      & \qty{221.4}{\mega\byte} & \qty{5.7}{\mega\byte} & 38.6$\times$ \\
 
       Zürich
-      & 96.21\% & 55.11\% & 1.75$\times$
-      & \qty{3.72}{\second} & \qty{162.00}{\milli\second} & 22.81$\times$
-      & \qty{942.11}{\mega\byte} & \qty{1.02}{\giga\byte} & 0.90$\times$ \\
+      & \qty{3.44}{\second} & \qty{149}{\milli\second} & 23.1$\times$
+      & \qty{4.6}{\giga\byte} & \qty{5.9}{\mega\byte} & 792.5$\times$ \\
 
       Tokyo (PLATEAU)
-      & 86.76\% & 32.57\% & 2.66$\times$
-      & \qty{3.71}{\second} & \qty{99.00}{\milli\second} & 37.14$\times$
-      & \qty{924.42}{\mega\byte} & \qty{15.00}{\mega\byte} & 61.63$\times$ \\
+      & \qty{3.12}{\second} & \qty{94}{\milli\second} & 33.2$\times$
+      & \qty{4.1}{\giga\byte} & \qty{14.9}{\mega\byte} & 284.3$\times$ \\
 
       PLATEAU\_brid
-      & 30.03\% & 0.01\% & 2525.25$\times$
-      & \qty{68.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 78.02$\times$
-      & \qty{1.07}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.06$\times$ \\
+      & \qty{71}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{287.3}{\mega\byte} & \qty{19.2}{\mega\byte} & 15.0$\times$ \\
 
       PLATEAU\_rwy
-      & 15.74\% & -0.25\%\tnote{c} & -63.51$\times$
-      & \qty{47.00}{\milli\second} & \qty{4.00}{\milli\second} & 9.63$\times$
-      & \qty{1.10}{\giga\byte} & \qty{1.12}{\giga\byte} & 0.98$\times$ \\
+      & \qty{47}{\milli\second} & \qty{2}{\milli\second} & 23.5$\times$
+      & \qty{112.2}{\mega\byte} & \qty{4.7}{\mega\byte} & 24.1$\times$ \\
 
       PLATEAU\_tran
-      & 88.01\% & 2.70\% & 32.57$\times$
-      & \qty{326.00}{\milli\second} & \qty{14.00}{\milli\second} & 22.14$\times$
-      & \qty{307.84}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.46$\times$ \\
+      & \qty{344}{\milli\second} & \qty{14}{\milli\second} & 24.6$\times$
+      & \qty{562.6}{\mega\byte} & \qty{23.0}{\mega\byte} & 24.4$\times$ \\
 
       PLATEAU\_tun
-      & 56.14\% & 0.58\% & 96.46$\times$
-      & \qty{222.00}{\milli\second} & \qty{2.00}{\milli\second} & 94.80$\times$
-      & \qty{293.31}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.61$\times$ \\
+      & \qty{156}{\milli\second} & \qty{2}{\milli\second} & 78.0$\times$
+      & \qty{389.6}{\mega\byte} & \qty{14.2}{\mega\byte} & 27.4$\times$ \\
 
       PLATEAU\_veg
-      & 92.28\% & 12.59\% & 7.33$\times$
-      & \qty{1.09}{\second} & \qty{60.00}{\milli\second} & 18.00$\times$
-      & \qty{727.64}{\mega\byte} & \qty{294.53}{\mega\byte} & 2.47$\times$ \\
+      & \qty{1.06}{\second} & \qty{33}{\milli\second} & 32.0$\times$
+      & \qty{1.7}{\giga\byte} & \qty{70.4}{\mega\byte} & 25.2$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = CBOR metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
-    \item Note: FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -610,101 +548,82 @@ The performance comparison between FlatCityBuf and BSON followed the same method
   \begin{threeparttable}
     \caption{Performance comparison between BSON and FlatCityBuf}
     \label{tab:performance_comparison_bson}
-    \setlength{\tabcolsep}{10pt}
+    \setlength{\tabcolsep}{6pt}
     \tiny
-    \begin{tabular}{@{}l|rrr|rrr|rrr@{}}
+    \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
-      & \multicolumn{3}{c|}{\textbf{CPU Utilisation}}
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
-      \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
       \textbf{Dataset}
-      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
-      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}}
-      & \textbf{BSON} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      & \textbf{BSON} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}}
+      & \textbf{BSON} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & 34.24\% & 2.10\% & 16.34$\times$
-      & \qty{118.00}{\milli\second} & \qty{7.00}{\milli\second} & 16.80$\times$
-      & \qty{276.41}{\mega\byte} & \qty{10.81}{\mega\byte} & 25.56$\times$ \\
+      & \qty{113}{\milli\second} & \qty{6}{\milli\second} & 18.8$\times$
+      & \qty{323.3}{\mega\byte} & \qty{5.4}{\mega\byte} & 59.6$\times$ \\
 
       3DBV
-      & 86.56\% & 41.92\% & 2.06$\times$
-      & \qty{11.26}{\second} & \qty{141.00}{\milli\second} & 79.70$\times$
-      & \qty{1.83}{\giga\byte} & \qty{296.58}{\mega\byte} & 6.33$\times$ \\
+      & \qty{8.82}{\second} & \qty{120}{\milli\second} & 73.5$\times$
+      & \qty{7.4}{\giga\byte} & \qty{59.0}{\mega\byte} & 129.1$\times$ \\
 
       Helsinki
-      & 89.31\% & 44.77\% & 1.99$\times$
-      & \qty{11.47}{\second} & \qty{159.00}{\milli\second} & 71.93$\times$
-      & \qty{1.82}{\giga\byte} & \qty{1.77}{\giga\byte} & 1.03$\times$ \\
+      & \qty{9.69}{\second} & \qty{127}{\milli\second} & 76.3$\times$
+      & \qty{7.4}{\giga\byte} & \qty{4.7}{\mega\byte} & 1620.9$\times$ \\
 
       Ingolstadt
-      & 31.23\% & 0.87\% & 35.74$\times$
-      & \qty{82.00}{\milli\second} & \qty{1.00}{\milli\second} & 76.56$\times$
-      & \qty{2.04}{\giga\byte} & \qty{1.85}{\giga\byte} & 1.10$\times$ \\
+      & \qty{81}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{323.5}{\mega\byte} & \qty{9.0}{\mega\byte} & 36.0$\times$ \\
 
       Montréal
-      & 80.62\% & 1.12\% & 71.96$\times$
-      & \qty{167.00}{\milli\second} & \qty{1.00}{\milli\second} & 132.33$\times$
-      & \qty{2.13}{\giga\byte} & \qty{2.05}{\giga\byte} & 1.04$\times$ \\
+      & \qty{152}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{526.8}{\mega\byte} & \qty{10.4}{\mega\byte} & 50.6$\times$ \\
 
       NYC
-      & 97.09\% & 14.55\% & 6.67$\times$
-      & \qty{1.82}{\second} & \qty{44.00}{\milli\second} & 41.19$\times$
-      & \qty{924.05}{\mega\byte} & \qty{2.15}{\giga\byte} & 0.42$\times$ \\
+      & \qty{1.78}{\second} & \qty{42}{\milli\second} & 42.4$\times$
+      & \qty{2.5}{\giga\byte} & \qty{6.6}{\mega\byte} & 385.5$\times$ \\
 
       Rotterdam
-      & 28.64\% & 0.99\% & 28.91$\times$
-      & \qty{67.00}{\milli\second} & \qty{1.00}{\milli\second} & 42.41$\times$
-      & \qty{995.86}{\mega\byte} & \qty{940.53}{\mega\byte} & 1.06$\times$ \\
+      & \qty{66}{\milli\second} & \qty{1}{\milli\second} & 66.0$\times$
+      & \qty{340.0}{\mega\byte} & \qty{4.3}{\mega\byte} & 78.8$\times$ \\
 
       Vienna
-      & 30.45\% & 1.02\% & 29.78$\times$
-      & \qty{79.00}{\milli\second} & \qty{2.00}{\milli\second} & 31.17$\times$
-      & \qty{1.02}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.01$\times$ \\
+      & \qty{81}{\milli\second} & \qty{1}{\milli\second} & 81.0$\times$
+      & \qty{287.4}{\mega\byte} & \qty{5.7}{\mega\byte} & 50.1$\times$ \\
 
       Zürich
-      & 92.20\% & 55.11\% & 1.67$\times$
-      & \qty{6.63}{\second} & \qty{162.00}{\milli\second} & 40.67$\times$
-      & \qty{1.88}{\giga\byte} & \qty{1.02}{\giga\byte} & 1.84$\times$ \\
+      & \qty{5.25}{\second} & \qty{149}{\milli\second} & 35.2$\times$
+      & \qty{7.2}{\giga\byte} & \qty{5.9}{\mega\byte} & 1245.8$\times$ \\
 
       Tokyo (PLATEAU)
-      & 85.47\% & 32.57\% & 2.62$\times$
-      & \qty{8.86}{\second} & \qty{99.00}{\milli\second} & 88.79$\times$
-      & \qty{1.26}{\giga\byte} & \qty{15.00}{\mega\byte} & 86.22$\times$ \\
+      & \qty{9.74}{\second} & \qty{94}{\milli\second} & 103.6$\times$
+      & \qty{7.3}{\giga\byte} & \qty{14.9}{\mega\byte} & 499.5$\times$ \\
 
       PLATEAU\_brid
-      & 83.38\% & 0.01\% & 7011.68$\times$
-      & \qty{179.00}{\milli\second} & \qty{0.00}{\milli\second}\tnote{b} & 202.83$\times$
-      & \qty{1.15}{\giga\byte} & \qty{1.01}{\giga\byte} & 1.13$\times$ \\
+      & \qty{179}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
+      & \qty{503.6}{\mega\byte} & \qty{19.2}{\mega\byte} & 26.3$\times$ \\
 
       PLATEAU\_rwy
-      & 31.74\% & -0.25\%\tnote{c} & -128.03$\times$
-      & \qty{91.00}{\milli\second} & \qty{4.00}{\milli\second} & 18.58$\times$
-      & \qty{835.27}{\mega\byte} & \qty{1.12}{\giga\byte} & 0.73$\times$ \\
+      & \qty{85}{\milli\second} & \qty{2}{\milli\second} & 42.5$\times$
+      & \qty{284.1}{\mega\byte} & \qty{4.7}{\mega\byte} & 61.0$\times$ \\
 
       PLATEAU\_tran
-      & 92.65\% & 2.70\% & 34.29$\times$
-      & \qty{582.00}{\milli\second} & \qty{14.00}{\milli\second} & 39.46$\times$
-      & \qty{492.06}{\mega\byte} & \qty{668.31}{\mega\byte} & 0.74$\times$ \\
+      & \qty{603}{\milli\second} & \qty{14}{\milli\second} & 43.1$\times$
+      & \qty{1.0}{\giga\byte} & \qty{23.0}{\mega\byte} & 46.0$\times$ \\
 
       PLATEAU\_tun
-      & 85.56\% & 0.58\% & 147.01$\times$
-      & \qty{253.00}{\milli\second} & \qty{2.00}{\milli\second} & 108.12$\times$
-      & \qty{347.58}{\mega\byte} & \qty{483.50}{\mega\byte} & 0.72$\times$ \\
+      & \qty{251}{\milli\second} & \qty{2}{\milli\second} & 125.5$\times$
+      & \qty{618.4}{\mega\byte} & \qty{14.2}{\mega\byte} & 43.5$\times$ \\
 
       PLATEAU\_veg
-      & 91.97\% & 12.59\% & 7.31$\times$
-      & \qty{2.57}{\second} & \qty{60.00}{\milli\second} & 42.58$\times$
-      & \qty{885.19}{\mega\byte} & \qty{294.53}{\mega\byte} & 3.01$\times$ \\
+      & \qty{2.15}{\second} & \qty{33}{\milli\second} & 65.3$\times$
+      & \qty{3.8}{\giga\byte} & \qty{70.4}{\mega\byte} & 55.9$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = BSON metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
-    \item[c] Negative CPU utilisation may indicate measurement noise for very small operations
-    \item Note: FCB = FlatCityBuf
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -716,13 +635,71 @@ The performance comparison between FlatCityBuf and BSON followed the same method
 To summarise the results of the local environment benchmark, we especially focus on the comparison between FlatCityBuf and CityJSONSeq since CityJSONSeq is the most standard data format of CityJSON at the moment.
 
 \begin{itemize}
-  \item CPU utilisation: FlatCityBuf is more efficient than CityJSONSeq in all cases. The best case achieved 32.05$\times$ improvement in CPU utilisation while the worst case achieved still 1.77$\times$ improvement. \todo{think how to explain this, there is not 100\% CPU utilisation} While the Ratio is sometimes important, since CPU utilisation limit is 100\%, for larger datasets it tends to be close since FlatCityBuf also utilises more CPU resources. Thus, it achieves better ratio for smaller datasets. However, ratio isn't the only metric to consider. The important thing is that FlatCityBuf can utilise less CPU resources for the same amount of data in comparison to CityJSONSeq.
   \item Processing time: Processing time is more considarable as its pirmary objective of the research. The best case achieved 46.62$\times$ improvement (Montréal) while the worst case achieved 8.48$\times$ improvement (3DBAG). The program can save a lot of time for large datasets.
   \item Memory consumption: Memory consumption is also an important metric. The best case achieved 3.11$\times$ improvement (Tokyo) while the worst case achieved 0.62$\times$ improvement (PLATEAU\_tran).
 \end{itemize}
 \todo{check again}
 
 \subsection{Benchmark over the web}
-\label{result:benchmark_on_local_environment:benchmark_over_the_web}
+\label{result:benchmark_over_the_web}
 
-\todo{write something about the results}
+To evaluate FlatCityBuf's performance in real-world web scenarios, we compared it with the 3DBAG API \citep{3dbag_api}. The 3DBAG API currently supports two query types: \textit{feature ID query} for retrieving CityJSONFeature by identifier (\eg, \texttt{identificatie} attribute of 3DBAG) and \textit{bounding box query} for spatial queries with configurable result limits via the \texttt{limit} parameter.
+
+While network-based benchmarking provides more realistic performance insights, it introduces additional complexity due to variable network latency and server-side factors such as concurrent request load and server capacity. As discussed in \autoref{result:cross_platform_implementation:cloud_integration}, FlatCityBuf operates without server-side processing, requiring only static file storage. Although storage servers are technically server applications, they are often considered serverless in cloud-native environments due to their scalability and availability as managed services from cloud providers, contrasting with traditional application and database servers.
+
+We acknowledged that comparing FlatCityBuf with the 3DBAG API is not entirely equitable due to these fundamental architectural differences. However, this comparison remains valuable as API-based access represents the current standard approach for CityJSON data consumption in web applications.
+
+\subsubsection{Benchmark environment}
+\label{result:benchmark_over_the_web:benchmark_environment}
+
+For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with HTTP range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG API operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}. To account for network variability and potential outliers, we collected 100 samples for each method with 10 warmup samples.
+
+\subsubsection{Feature ID query}
+\label{result:benchmark_over_the_web:feature_id_query}
+
+Both FlatCityBuf files and the 3DBAG API database organise features according to technical implementation decisions (\eg, FlatCityBuf features are typically sorted by Hilbert curve). To ensure fair comparison by identifier, we selected 5 features distributed across different regions of the Netherlands, representing landmark or well-known buildings. The benchmark results represent the average performance across 100 samples for all 5 features.
+
+\autoref{tab:feature_id_performance} presents the performance comparison between FlatCityBuf and the 3DBAG API for feature ID queries. Overall, FlatCityBuf demonstrates approximately 2.1$\times$ faster performance than the 3DBAG API for identifier-based feature retrieval. Performance ranged from 2.7$\times$ faster (Groningen station) to 1.5$\times$ faster (Eindhoven station).
+
+\begin{table}[ht]
+  \centering
+  \caption{Feature ID query performance comparison between FlatCityBuf and 3DBAG API}
+  \label{tab:feature_id_performance}
+  \begin{tabular}{llccc}
+    \toprule
+    \textbf{Feature ID} & \textbf{Location} & \textbf{FlatCityBuf} & \textbf{3DBAG API} & \textbf{Speedup} \\
+    & & \textbf{(ms)} & \textbf{(ms)} & \\
+    \midrule
+    NL.IMBAG.Pand.0503100000032914 & TU Delft BK building & 935.8 & 2412.5 & 2.6$\times$ \\
+    NL.IMBAG.Pand.0363100012185598 & Amsterdam Central Station & 858.0 & 2106.7 & 2.5$\times$ \\
+    NL.IMBAG.Pand.0014100010938997 & Groningen Station & 821.7 & 2254.8 & 2.7$\times$ \\
+    NL.IMBAG.Pand.0772100000295227 & Eindhoven Station & 1378.7 & 2013.4 & 1.5$\times$ \\
+    NL.IMBAG.Pand.0153100000261851 & Enschede Station & 1070.4 & 2058.8 & 1.9$\times$ \\
+    \midrule
+    \textbf{Average} & & \textbf{1012.9} & \textbf{2169.2} & \textbf{2.1$\times$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsubsection{Bounding box query}
+\label{result:benchmark_over_the_web:bounding_box_query}
+
+For spatial query performance comparison, we selected a 2km $\times$ 2km bounding box around the Delft University of Technology campus, requesting the first 10 features within the area (matching the 3DBAG API's default limit). The benchmark results represent the average of 100 samples. The bounding box coordinates were \texttt{(84000.0, 444000.0, 86000.0, 446000.0)} in the Amersfoort / RD New + NAP height (EPSG:7415) coordinate system.
+
+FlatCityBuf demonstrated approximately 15.1$\times$ faster performance than the 3DBAG API for bounding box queries. This significant improvement over feature ID queries likely results from FlatCityBuf's Hilbert curve-based feature sorting, which enables spatially proximate features to be retrieved in batched operations.
+
+\begin{table}[ht]
+  \centering
+  \caption{Bounding box query performance comparison between FlatCityBuf and 3DBAG API}
+  \label{tab:bounding_box_performance}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Query Type} & \textbf{FlatCityBuf} & \textbf{3DBAG API} & \textbf{Speedup} \\
+    & \textbf{(ms)} & \textbf{(ms)} & \\
+    \midrule
+    Bounding box (2km $\times$ 2km) & 492.6 & 7420.3 & 15.1$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Despite the architectural differences between FlatCityBuf and the 3DBAG API, FlatCityBuf demonstrated superior performance across both query patterns. Notably, FlatCityBuf does not distinguish between identifier-based and attribute-based queries, as both utilize the same underlying mechanism. Consequently, we can expect similar performance characteristics for other attribute-based queries as well. These performance results highlight FlatCityBuf's potential for web application deployment.

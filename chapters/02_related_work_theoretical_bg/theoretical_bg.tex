@@ -1,43 +1,43 @@
 \chapter{Theoretical background}
 \label{chap:theoretical_background}
 
-\section{Cloud-native and WebGIS}
+\section{Cloud-native and Web GIS}
 \label{tb:cloud_native}
-
 Cloud computing in this context refers to the infrastructure for delivering computing services including data storage, processing power, and applications over the internet, typically using the HTTP protocol. While "cloud" encompasses a broad range of meanings, \citet{nist_cloud_computing_2011} defines it as \emph{"Cloud computing is a model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources (e.g., networks, servers, storage, applications, and services) that can be rapidly provisioned and released with minimal management effort or service provider interaction."}
 
-The fundamental shift from desktop to cloud-based applications is reflected in the geospatial domain as well. For example, Google Maps is widely used as a mapping application, with various features such as map delivery, navigation, and search provided as web services. Users do not need to download complete map datasets to their local machines. The application of GIS in web environments is often called WebGIS. \citet{esri_webgis} defines "web GIS" as any GIS that uses web technology to communicate between a server and a client.
+The fundamental shift from desktop to cloud-based applications is reflected in the geospatial domain as well. For example, Google Maps Platform \citep{google_maps_platform} is widely used as a mapping application, with various features such as map delivery, navigation, and search provided as web services. Users do not need to download complete map datasets to their local machines.
 
-\subsection{Advantages of WebGIS}
+In this research, the terms "Web GIS" and "cloud-based GIS" are used interchangeably to refer to geospatial technologies delivered through cloud technologies or provided over networks, in contrast to traditional desktop GIS applications that operate on local machines with locally stored data. This encompasses any GIS system that uses web technology to communicate between a server and a client, as defined by \citet{esri_webgis}, but emphasises the network-based delivery model that distinguishes it from standalone desktop applications. Throughout this research, "web" and "cloud" imply essentially the same meaning—systems that deliver geospatial services over networks rather than through local desktop applications.
+
+\subsection{Advantages of Web GIS}
 \label{tb:advantages_of_webgis}
 
-\citet{esri_webgis} lists the advantages of WebGIS as follows:
+\citet{esri_webgis} lists the advantages of Web GIS as follows:
 
 \begin{itemize}
   \item \textbf{Global reach}: Web GIS applications can be accessed worldwide from computers or mobile devices, with HTTP protocol support enabling broad accessibility through organisational firewalls.
   \item \textbf{Scalability for multiple users}: Unlike desktop GIS limited to single users, web GIS can simultaneously support dozens or hundreds of users, requiring higher performance and scalability.
-  \item \textbf{Cross-platform compatibility}: Web browsers (Internet Explorer, Firefox, Safari, Chrome) largely comply with HTML and JavaScript standards, enabling web GIS to support different operating systems including Windows, Linux, and Mac OS.
+  \item \textbf{Cross-platform compatibility}: Web browsers (Internet Explorer, Firefox, Safari, Chrome) largely comply with HTML and JavaScript standards, enabling Web GIS to support different operating systems including Windows, Linux, and Mac OS.
   \item \textbf{Diverse applications}: Web GIS serves a broader audience beyond GIS professionals, supporting diverse applications such as mapping, photo tagging, location services, and various public-facing geospatial services.
 \end{itemize}
 
-\subsection{Challenges of WebGIS}
+\subsection{Challenges of Web GIS}
 \label{tb:challenges_of_webgis}
 
-WebGIS faces several significant challenges that distinguish it from traditional desktop GIS applications. Network latency and bandwidth limitations represent primary constraints. While local disk access in desktop applications can achieve high-speed read and write operations, WebGIS must transfer data over networks. Loading 1GB of map data from a local machine versus downloading it over a network demonstrates this performance gap. This necessitates subsetting or streaming strategies where clients fetch only the data subsets they require. Traditional data formats such as GeoJSON, Shapefile, and WKT do not inherently support these selective access patterns.
+Web GIS faces several significant challenges that distinguish it from traditional desktop GIS applications. Network latency and bandwidth limitations represent primary constraints. While local disk access in desktop applications can achieve high-speed read and write operations, Web GIS must transfer data over networks \citep{alesheikh_2002}. Loading 1GB of map data from a local machine versus downloading it over a network demonstrates this performance gap. This necessitates subsetting or streaming strategies where clients fetch only the data subsets they require. Traditional data formats such as GeoJSON, Shapefile, and WKT do not inherently support these selective access patterns.
 
-Another challenge is multi-user scalability. Desktop GIS typically serves a single user, whereas WebGIS may serve hundreds or thousands of users simultaneously—consider the scale of concurrent Google Maps usage. To provide stable service, WebGIS must be scalable and robust under high concurrent load.
+Another challenge is multi-user scalability. Desktop GIS typically serves a single user, whereas Web GIS may serve hundreds or thousands of users simultaneously. To provide stable service, Web GIS must be scalable and robust under high concurrent load \citep{esri_webgis}.
 
-\subsection{Strategies for WebGIS}
+\subsection{Strategies for Web GIS}
 \label{tb:strategies_for_webgis}
 
-To address WebGIS challenges while leveraging its advantages, several strategies are commonly employed:
-
+To address Web GIS challenges while leveraging its advantages, several strategies are commonly employed:
 \begin{itemize}
-  \item \textbf{Tiling and partitioning}: Large datasets are divided into small, manageable tiles or chunks. Slippy tiles exemplify this approach by dividing maps into square tiles for each zoom level. As users zoom in or out, new tiles are loaded and displayed, with clients loading only necessary tiles. Figure \ref{fig:tms} shows an example of Tile Map Service (TMS), a standard for tiling geospatial data \citep{tms}. This technique requires either pre-generated tiled data or dynamic tile generation by servers like GeoServer. Both raster and vector data are commonly tiled. For instance, 3DBAG divides entire countries into tiles for selective download, and PLATEAU publishes tiled datasets as open data.
+  \item \textbf{Tiling and partitioning}: Large datasets are divided into small, manageable tiles or chunks. Tile Map Service (TMS) exemplifies this approach by dividing maps into square tiles for each zoom level. As users zoom in or out, new tiles are loaded and displayed, with clients loading only necessary tiles. Figure \ref{fig:tms} shows an example of TMS, a standard for tiling geospatial data \citep{tms}. This technique requires either pre-generated tiled data or dynamic tile generation by servers like GeoServer \citep{geoserver}. Both raster and vector data are commonly tiled. This approach is not limited to 2D geospatial data; it is also used for 3D city model data. For instance, 3DBAG divides entire countries into tiles for selective download \citep{3dbag} and PLATEAU publishes tiled datasets as open data \citep{plateau}.
 
   \item \textbf{Spatial indexing}: Spatial indexing techniques index geospatial data by spatial properties. R-trees \citep{guttman_1984}, quadtrees \citep{finkel_1974}, and KD-trees \citep{bentley_1975} are commonly used indexing structures. These indices enable clients to quickly locate data within specified extents, find nearest neighbours, or perform other spatial queries. This technique requires pre-built spatial indices that must be updated when data changes.
 
-  \item \textbf{Data simplification and Level of Detail}: Also known as generalisation, this reduces geospatial data complexity for visualisation, especially at smaller scales. This technique is often combined with tiling and partitioning. For example, Cesium 3D Tiles \citep{3d_tiles} implements level-of-detail systems where higher zoom levels load more detailed data. GDAL's Mapbox Vector Tile driver also supports geometry simplification for smaller scales.
+  \item \textbf{Data simplification and Level of Detail}: Also known as generalisation, this reduces geospatial data complexity for visualisation, especially at smaller scales. This technique is often combined with tiling and partitioning. For example, Cesium 3D Tiles \citep{3d_tiles} implements level-of-detail systems where higher zoom levels load more detailed data. GDAL's Mapbox Vector Tile driver also supports geometry simplification for smaller scales \citep{gdal_mvt}.
 
   \item \textbf{Binary encoding and compression}: This technique reduces geospatial data size, resulting in faster download and display times. While compression reduces file size, it requires client-side decompression, creating a trade-off between file size and decompression time. For example, glTF 2.0 \citep{gltf_2_0}, used internally by Cesium 3D Tiles, supports Draco compression \citep{draco}. GeoParquet \citep{geoparquet} also supports various compression algorithms.
 \end{itemize}
@@ -49,12 +49,16 @@ To address WebGIS challenges while leveraging its advantages, several strategies
   \label{fig:tms}
 \end{figure}
 
-% \section{Binary Encoding}
-% \label{tb:binary_encoding}
+When incorporating these strategies, the optimisation approaches that enable on-demand access to geospatial data are collectively referred to as \emph{cloud-optimised} formats \citep{cloud-optimised-formats}. The properties and related work of these cloud-optimised geospatial formats are discussed in detail in \autoref{rw:cloud_optimised_formats}.
 
-% Binary encoding is a technique for converting data into binary format, representing a fundamental concept in computer science with applications in data storage, transmission, and processing. In the context of geospatial data, binary encoding offers several advantages over text-based formats such as reduced file size, faster parsing, and more efficient memory usage. However, binary formats typically sacrifice human readability and may introduce platform-specific compatibility considerations such as endianness \citep{endianness_mdn, danny_cohen_1981}.
+\section{Binary file}
+\label{tb:binary_file}
+Binary file represents a fundamental approach to data storage that uses sequences of bits rather than human-readable text. Unlike plain text files that consist of characters interpreted through common character sets like ASCII, binary files store data in a format optimised for machine processing \citep{binary_file}.
 
-% % NOTE: add raster, 2D Vector, etc?
+Binary encoding offers several key advantages: superior storage efficiency through data compression and faster program execution. Binary files are commonly used for images, audio, executable programs, and compressed data.
+However, binary encoding presents notable challenges. Binary files are not human-readable, making debugging, correction, or modification complex without specialised tools. Many binary systems are proprietary and platform-specific, creating portability issues and potential long-term accessibility problems. The Unix philosophy advocates for plain text storage when practical, emphasising that text serves as a universal interface enabling efficient program interoperability \citep{binary_file}.
+
+In geospatial domains, prominent examples of text-based formats include GeoJSON \citep{geojson} and Geography Markup Language (GML) \citep{gml} as text representations for general geospatial data. For 3D city model data specifically, CityGML \citep{CityGML} and CityJSON \citep{cityjson} (including its streaming variant CityJSONSeq \citep{ledoux_2024}) represent the primary text-based standards. Conversely, binary geospatial formats include GeoPackage \citep{geopackage} and GeoTIFF \citep{geotiff}. Notably, no widely adopted standard binary formats currently exist for 3D city model data, representing a gap that this research aims to address.
 
 \section{WebAssembly}
 \label{tb:webassembly}
@@ -97,10 +101,17 @@ These different storage approaches exhibit distinct performance characteristics 
 \citet{abadi_2008} provides a comprehensive comparison of column-stores versus row-stores, highlighting that column-based storage offers advantages in terms of storage efficiency and query performance for analytical workloads, while row-based storage is more suitable for Online Transaction Processing (OLTP) systems that require frequent lookups and updates.
 
 In the context of geospatial data, column-based storage is particularly well-suited for analytical queries such as calculating the average height of buildings in a city or filtering buildings by construction year. However, row-based storage remains preferable for frequently updated datasets or transactional systems where individual records are accessed and modified regularly.
+\section{CPU Caches}
+\label{tb:cache}
+Modern computing systems face a fundamental challenge to software performance due to the disparity between the speed of Central Processing Units (CPUs) and the latency of main memory. CPUs operate at clock speeds that far exceed the access speeds of dynamic random-access memory (DRAM), which typically serves as main memory. Consequently, the CPU frequently idles while waiting for data from the slower memory subsystem. To mitigate this performance bottleneck, CPU caches were developed. These caches utilise a small amount of very fast Static RAM (SRAM) to store temporary copies of data and instructions that are likely to be used again soon \citep{drepper_2007}.
 
-\section{Cache line}
-\label{tb:cache_line}
-\todo{add here, I write about CPU cache and cache miss}
+The effectiveness of CPU caches hinges on two fundamental principles of program behaviour: temporal locality and spatial locality. Temporal locality refers to the tendency of a program to access data that has been recently accessed again in the near future. Spatial locality refers to the tendency of a program to access data that is located nearby in memory to previously accessed data. In other words, small chunks of data that have been accessed recently or are located nearby in memory are likely to be accessed again soon. Modern processors employ multiple levels of caches to maximise the effectiveness of these principles. This hierarchy typically consists of L1, L2, L3 caches, and main memory. The lower levels of the cache hierarchy are faster and smaller, while the higher levels are slower and larger \citep{drepper_2007}.
+
+Data is not loaded into caches byte by byte. Instead, it is loaded in blocks called cache lines, typically 64 bytes in size. This design reduces the number of separate memory transactions and effectively amortises the substantial latency involved in accessing main memory \citep{drepper_2007}.
+
+The performance of a cache is fundamentally determined by its hit rate. A cache hit occurs when the requested data is found within the cache, resulting in very fast access. In contrast, a cache miss occurs when the requested data is not found within the cache, necessitating a much slower retrieval from a higher-level cache or, in the worst case, main memory \citep{abayomi_2020}.
+
+Understanding these aspects of cache behaviour is crucial when designing binary data formats, as cache-friendly data layouts can significantly improve application performance.
 
 \section{Serialisation and Deserialisation}
 \label{tb:serialisation_deserialisation}
@@ -160,8 +171,7 @@ A useful analogy is date notation: little-endian resembles the European date for
 
 Binary search is a fundamental algorithm for finding elements in a sorted array. The classic implementation follows a simple approach: compare the search key with the middle element of the array, then recursively search the left or right half depending on the comparison result \citep{binary_search}.
 
-\todo{explain about cache miss}
-The time complexity of binary search is logarithmic—the height of the implicit binary search tree is $\log_2(n)$ for an array of size $n$. While this is theoretically efficient, the actual performance suffers when implemented on modern hardware due to memory access patterns. Each comparison requires the processor to fetch a new element, potentially causing a cache miss. In the worst case, the number of memory read operations will be proportional to the height of the tree, with each read potentially requiring access to a different cache line or disk block \citep{binary_search}.
+The time complexity of binary search is logarithmic—the height of the implicit binary search tree is $\log_2(n)$ for an array of size $n$. While this is theoretically efficient, the actual performance suffers when implemented on modern hardware due to memory access patterns. Each comparison requires the processor to fetch a new element, potentially causing a cache miss (cache miss is explained in \autoref{tb:cache}). In the worst case, the number of memory read operations will be proportional to the height of the tree, with each read potentially requiring access to a different cache line or disk block \citep{binary_search}.
 
 This inefficiency is particularly problematic when binary search is implemented on external memory or over HTTP, where each access incurs significant latency. The sorted array representation with binary search does not take advantage of CPU cache locality, as consecutive comparisons frequently access distant memory locations.
 
@@ -170,24 +180,22 @@ This inefficiency is particularly problematic when binary search is implemented 
 
 While preserving the same algorithmic idea as binary search, the Eytzinger layout (also known as a complete binary tree layout or level-order layout) rearranges the array elements to match the access pattern of a binary search \citep{binary_search}. Instead of storing elements in sorted order, it places them in the order they would be visited during a level-order traversal of a complete binary tree.
 
-This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. \todo{ravi's comment "relate this also to network (range) requests, and how it would eg. help reduce latency"} This spatial locality enables effective hardware prefetching, allowing the CPU to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
+This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. This layout also proves beneficial for managing data fetched over networks, as consecutive elements accessed during binary search are more likely to be retrieved in the same HTTP range request, thereby reducing the number of network roundtrips and overall latency. This spatial locality enables effective hardware prefetching, allowing the CPU to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
 
-The \autoref{fig:eytzinger_layout} shows how the layout looks when applied to binary search. The \autoref{fig:eytzinger_layout2} shows that the algorithm starts from the first element and then jumps to either $2k$ or $2k+1$ depending on the comparison result.
+\autoref{fig:eytzinger_layout} shows how the layout appears when applied to binary search. \autoref{fig:eytzinger_layout2} shows that the algorithm starts from the first element and then jumps to either $2k$ or $2k+1$ depending on the comparison result. The heatmap represents the expected frequency of comparisons for search (the closer to the top, the more frequent the comparison).
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{figs/related_work_theoretical_bg/eytzinger_layout.png}
-  \caption{Eytzinger layout as conceptual representation as tree and actual data layout (derived from \citet{binary_search})}
+  \caption{Eytzinger layout as conceptual representation as tree and actual data layout (modified from \citet{binary_search})}
   \label{fig:eytzinger_layout}
 \end{figure}
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{figs/related_work_theoretical_bg/eytzinger_layout2.png}
-  \caption{Binary search traversal pattern in Eytzinger layout (derived from \citet{binary_search})}
+  \caption{Binary search traversal pattern in Eytzinger layout (modified from \citet{binary_search})}
   \label{fig:eytzinger_layout2}
 \end{figure}
-
-\todo{ravi's comment "ideally make this the same example data set as fig 3.1, and also show what the access pattern would look like if the array was sorted"}
 
 \section{\texorpdfstring{\ac{s+tree}}{S+tree}}
 \label{tb:static_btree}
@@ -201,8 +209,6 @@ B-Trees and their variants address this limitation by storing multiple keys in e
 
 The key insight is that fetching a single node still takes roughly the same time regardless of whether it contains one key or multiple keys, as long as the entire node fits into a single memory block or disk page. By packing multiple keys into each node, B-Trees significantly reduce the number of disk or memory accesses required to locate an element.
 
-\todo{ravi's comment "draw a figure that illustrates the difference between B and B+ trees"}
-
 B+Trees are a variant of B-Trees specifically optimised for range queries and sequential access patterns. In a B+Tree:
 \begin{itemize}
   \item Internal nodes contain up to $B$ keys that serve as routing information, with each key associated with one of the $(B+1)$ pointers to child nodes. Each key at position $i$ represents the smallest key in the subtree pointed to by the $(i+1)$-th child pointer.
@@ -211,11 +217,31 @@ B+Trees are a variant of B-Trees specifically optimised for range queries and se
 
 This linked structure of leaf nodes enables B+Trees to efficiently support range queries by traversing from one leaf to the next without needing to return to higher levels of the tree.
 
+As the figure \ref{fig:btree_bplus_tree} shows, the B+Tree has pointers to the next leaf node, which enables efficient sequential traversal for range queries. On the other hand, the B+Tree has duplicate keys in the internal nodes, which is not the case for the B-Tree.
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/related_work_theoretical_bg/btree.png}
+    \caption{B-Tree (branching factor 3)}
+    \label{fig:btree}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/related_work_theoretical_bg/bplus_tree.png}
+    \caption{B+Tree (branching factor 3)}
+    \label{fig:bplus_tree}
+  \end{subfigure}
+  \caption{B-Tree and B+Tree}
+  \label{fig:btree_bplus_tree}
+\end{figure}
+
 \subsection{\texorpdfstring{\ac{s+tree}}{S+tree}}
 \label{tb:stree}
 
-The \ac{s+tree} approach, introduced by Algorithmica \citep{static_b_trees}, builds upon the B+Tree concept but is specifically designed for static datasets where the tree structure never changes after construction. Unlike traditional B+Trees that use explicit pointers between nodes, the Static B+Tree uses an implicit structure where child positions are calculated mathematically.
-\todo{Ravi's comment "this is the same as S+Tree?"}
+The S+Tree (Static B+Tree), introduced by Algorithmica \citep{static_b_trees}, builds upon the B+Tree concept but is specifically designed for static datasets where the tree structure never changes after construction. Unlike traditional B+Trees that use explicit pointers between nodes, the S+Tree uses an implicit structure where child positions are calculated mathematically.
 This is possible because:
 \begin{itemize}
   \item The tree is constructed once and never modified (static)
