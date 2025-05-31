@@ -374,70 +374,65 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
       & \textbf{CityJSONSeq} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & \qty{54}{\milli\second} & \qty{6}{\milli\second} & 9.0$\times$
-      & \qty{25.7}{\mega\byte} & \qty{5.4}{\mega\byte} & 4.7$\times$ \\
+      & \qty{56.3}{\milli\second} & \qty{6.6}{\milli\second} & 8.6$\times$
+      & \qty{23.9}{\mega\byte} & \qty{5.1}{\mega\byte} & 4.7$\times$ \\
 
       3DBV
-      & \qty{3.79}{\second} & \qty{120}{\milli\second} & 31.6$\times$
-      & \qty{352.4}{\mega\byte} & \qty{59.0}{\mega\byte} & 6.0$\times$ \\
+      & \qty{3.99}{\second} & \qty{122.5}{\milli\second} & 32.6$\times$
+      & \qty{283.8}{\mega\byte} & \qty{63.2}{\mega\byte} & 4.5$\times$ \\
 
       Helsinki
-      & \qty{3.49}{\second} & \qty{127}{\milli\second} & 27.4$\times$
-      & \qty{16.1}{\mega\byte} & \qty{4.7}{\mega\byte} & 3.4$\times$ \\
+      & \qty{4.05}{\second} & \qty{132.2}{\milli\second} & 30.6$\times$
+      & \qty{15.3}{\mega\byte} & \qty{5.2}{\mega\byte} & 2.9$\times$ \\
 
       Ingolstadt
-      & \qty{37}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{36.0}{\mega\byte} & \qty{9.0}{\mega\byte} & 4.0$\times$ \\
+      & \qty{37.2}{\milli\second} & \qty{0.5}{\milli\second} & 75.8$\times$
+      & \qty{30.1}{\mega\byte} & \qty{6.9}{\mega\byte} & 4.4$\times$ \\
 
       Montréal
-      & \qty{50}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{41.4}{\mega\byte} & \qty{10.4}{\mega\byte} & 4.0$\times$ \\
+      & \qty{50.3}{\milli\second} & \qty{0.6}{\milli\second} & 81.6$\times$
+      & \qty{36.3}{\mega\byte} & \qty{5.7}{\mega\byte} & 6.4$\times$ \\
 
       NYC
-      & \qty{949}{\milli\second} & \qty{42}{\milli\second} & 22.6$\times$
-      & \qty{22.7}{\mega\byte} & \qty{6.6}{\mega\byte} & 3.4$\times$ \\
+      & \qty{887.6}{\milli\second} & \qty{42.9}{\milli\second} & 20.7$\times$
+      & \qty{20.6}{\mega\byte} & \qty{5.0}{\mega\byte} & 4.1$\times$ \\
 
       Rotterdam
-      & \qty{21}{\milli\second} & \qty{1}{\milli\second} & 21.0$\times$
-      & \qty{10.8}{\mega\byte} & \qty{4.3}{\mega\byte} & 2.5$\times$ \\
+      & \qty{22.2}{\milli\second} & \qty{1.3}{\milli\second} & 17.6$\times$
+      & \qty{9.2}{\mega\byte} & \qty{4.4}{\mega\byte} & 2.1$\times$ \\
 
       Vienna
-      & \qty{46}{\milli\second} & \qty{1}{\milli\second} & 46.0$\times$
-      & \qty{18.7}{\mega\byte} & \qty{5.7}{\mega\byte} & 3.3$\times$ \\
+      & \qty{45.9}{\milli\second} & \qty{1.9}{\milli\second} & 24.0$\times$
+      & \qty{14.6}{\mega\byte} & \qty{5.2}{\mega\byte} & 2.8$\times$ \\
 
       Zürich
-      & \qty{1.88}{\second} & \qty{149}{\milli\second} & 12.6$\times$
-      & \qty{31.2}{\mega\byte} & \qty{5.9}{\mega\byte} & 5.3$\times$ \\
+      & \qty{1.88}{\second} & \qty{151.9}{\milli\second} & 12.4$\times$
+      & \qty{31.3}{\mega\byte} & \qty{5.1}{\mega\byte} & 6.2$\times$ \\
 
       Tokyo (PLATEAU)
-      & \qty{1.95}{\second} & \qty{94}{\milli\second} & 20.8$\times$
-      & \qty{71.9}{\mega\byte} & \qty{14.9}{\mega\byte} & 4.8$\times$ \\
+      & \qty{1.98}{\second} & \qty{95.7}{\milli\second} & 20.7$\times$
+      & \qty{56.8}{\mega\byte} & \qty{12.0}{\mega\byte} & 4.7$\times$ \\
 
       PLATEAU\_brid
-      & \qty{89}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{80.3}{\mega\byte} & \qty{19.2}{\mega\byte} & 4.2$\times$ \\
-
-      PLATEAU\_rwy
-      & \qty{38}{\milli\second} & \qty{2}{\milli\second} & 19.0$\times$
-      & \qty{16.8}{\mega\byte} & \qty{4.7}{\mega\byte} & 3.6$\times$ \\
+      & \qty{83.9}{\milli\second} & \qty{0.3}{\milli\second} & 256.8$\times$
+      & \qty{75.0}{\mega\byte} & \qty{12.0}{\mega\byte} & 6.3$\times$ \\
 
       PLATEAU\_tran
-      & \qty{259}{\milli\second} & \qty{14}{\milli\second} & 18.5$\times$
-      & \qty{76.7}{\mega\byte} & \qty{23.0}{\mega\byte} & 3.3$\times$ \\
+      & \qty{244.0}{\milli\second} & \qty{13.3}{\milli\second} & 18.4$\times$
+      & \qty{76.7}{\mega\byte} & \qty{20.2}{\mega\byte} & 3.8$\times$ \\
 
       PLATEAU\_tun
-      & \qty{50}{\milli\second} & \qty{2}{\milli\second} & 25.0$\times$
-      & \qty{81.8}{\mega\byte} & \qty{14.2}{\mega\byte} & 5.8$\times$ \\
+      & \qty{47.9}{\milli\second} & \qty{1.9}{\milli\second} & 24.9$\times$
+      & \qty{70.6}{\mega\byte} & \qty{12.6}{\mega\byte} & 5.6$\times$ \\
 
       PLATEAU\_veg
-      & \qty{900}{\milli\second} & \qty{33}{\milli\second} & 27.3$\times$
-      & \qty{197.5}{\mega\byte} & \qty{70.4}{\mega\byte} & 2.8$\times$ \\
+      & \qty{852.3}{\milli\second} & \qty{32.9}{\milli\second} & 25.9$\times$
+      & \qty{189.8}{\mega\byte} & \qty{56.9}{\mega\byte} & 3.3$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
-    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -465,73 +460,68 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
       \cmidrule(lr){2-4} \cmidrule(lr){5-7}
       \textbf{Dataset}
       & \textbf{CBOR} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}}
-      & \textbf{CBOR} & \textbf{FCB} & \textbf{Ratio\tnote{a}} \\
+      & \textbf{CBOR} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & \qty{73}{\milli\second} & \qty{6}{\milli\second} & 12.2$\times$
-      & \qty{263.4}{\mega\byte} & \qty{5.4}{\mega\byte} & 48.6$\times$ \\
+      & \qty{74.0}{\milli\second} & \qty{6.6}{\milli\second} & 11.2$\times$
+      & \qty{194.1}{\mega\byte} & \qty{5.1}{\mega\byte} & 38.1$\times$ \\
 
       3DBV
-      & \qty{5.05}{\second} & \qty{120}{\milli\second} & 42.1$\times$
-      & \qty{6.7}{\giga\byte} & \qty{59.0}{\mega\byte} & 116.6$\times$ \\
+      & \qty{6.34}{\second} & \qty{122.5}{\milli\second} & 51.8$\times$
+      & \qty{4.96}{\giga\byte} & \qty{63.2}{\mega\byte} & 80.3$\times$ \\
 
       Helsinki
-      & \qty{6.31}{\second} & \qty{127}{\milli\second} & 49.6$\times$
-      & \qty{7.0}{\giga\byte} & \qty{4.7}{\mega\byte} & 1521.5$\times$ \\
+      & \qty{7.97}{\second} & \qty{132.2}{\milli\second} & 60.3$\times$
+      & \qty{5.14}{\giga\byte} & \qty{5.2}{\mega\byte} & 1011.2$\times$ \\
 
       Ingolstadt
-      & \qty{46}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{219.7}{\mega\byte} & \qty{9.0}{\mega\byte} & 24.4$\times$ \\
+      & \qty{46.9}{\milli\second} & \qty{0.5}{\milli\second} & 95.7$\times$
+      & \qty{187.5}{\mega\byte} & \qty{6.9}{\mega\byte} & 27.3$\times$ \\
 
       Montréal
-      & \qty{59}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{304.6}{\mega\byte} & \qty{10.4}{\mega\byte} & 29.2$\times$ \\
+      & \qty{58.4}{\milli\second} & \qty{0.6}{\milli\second} & 94.7$\times$
+      & \qty{257.1}{\mega\byte} & \qty{5.7}{\mega\byte} & 45.3$\times$ \\
 
       NYC
-      & \qty{1.40}{\second} & \qty{42}{\milli\second} & 33.2$\times$
-      & \qty{1.7}{\giga\byte} & \qty{6.6}{\mega\byte} & 262.2$\times$ \\
+      & \qty{1.33}{\second} & \qty{42.9}{\milli\second} & 31.0$\times$
+      & \qty{1.65}{\giga\byte} & \qty{5.0}{\mega\byte} & 337.4$\times$ \\
 
       Rotterdam
-      & \qty{31}{\milli\second} & \qty{1}{\milli\second} & 31.0$\times$
-      & \qty{206.0}{\mega\byte} & \qty{4.3}{\mega\byte} & 47.8$\times$ \\
+      & \qty{30.8}{\milli\second} & \qty{1.3}{\milli\second} & 24.4$\times$
+      & \qty{140.0}{\mega\byte} & \qty{4.4}{\mega\byte} & 31.9$\times$ \\
 
       Vienna
-      & \qty{59}{\milli\second} & \qty{1}{\milli\second} & 59.0$\times$
-      & \qty{221.4}{\mega\byte} & \qty{5.7}{\mega\byte} & 38.6$\times$ \\
+      & \qty{58.8}{\milli\second} & \qty{1.9}{\milli\second} & 30.7$\times$
+      & \qty{179.8}{\mega\byte} & \qty{5.2}{\mega\byte} & 34.7$\times$ \\
 
       Zürich
-      & \qty{3.44}{\second} & \qty{149}{\milli\second} & 23.1$\times$
-      & \qty{4.6}{\giga\byte} & \qty{5.9}{\mega\byte} & 792.5$\times$ \\
+      & \qty{3.53}{\second} & \qty{151.9}{\milli\second} & 23.3$\times$
+      & \qty{4.51}{\giga\byte} & \qty{5.1}{\mega\byte} & 913.2$\times$ \\
 
       Tokyo (PLATEAU)
-      & \qty{3.12}{\second} & \qty{94}{\milli\second} & 33.2$\times$
-      & \qty{4.1}{\giga\byte} & \qty{14.9}{\mega\byte} & 284.3$\times$ \\
+      & \qty{2.63}{\second} & \qty{95.7}{\milli\second} & 27.4$\times$
+      & \qty{4.11}{\giga\byte} & \qty{12.0}{\mega\byte} & 351.5$\times$ \\
 
       PLATEAU\_brid
-      & \qty{71}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{287.3}{\mega\byte} & \qty{19.2}{\mega\byte} & 15.0$\times$ \\
-
-      PLATEAU\_rwy
-      & \qty{47}{\milli\second} & \qty{2}{\milli\second} & 23.5$\times$
-      & \qty{112.2}{\mega\byte} & \qty{4.7}{\mega\byte} & 24.1$\times$ \\
+      & \qty{63.6}{\milli\second} & \qty{0.3}{\milli\second} & 194.7$\times$
+      & \qty{305.4}{\mega\byte} & \qty{12.0}{\mega\byte} & 25.6$\times$ \\
 
       PLATEAU\_tran
-      & \qty{344}{\milli\second} & \qty{14}{\milli\second} & 24.6$\times$
-      & \qty{562.6}{\mega\byte} & \qty{23.0}{\mega\byte} & 24.4$\times$ \\
+      & \qty{316.1}{\milli\second} & \qty{13.3}{\milli\second} & 23.8$\times$
+      & \qty{614.5}{\mega\byte} & \qty{20.2}{\mega\byte} & 30.5$\times$ \\
 
       PLATEAU\_tun
-      & \qty{156}{\milli\second} & \qty{2}{\milli\second} & 78.0$\times$
-      & \qty{389.6}{\mega\byte} & \qty{14.2}{\mega\byte} & 27.4$\times$ \\
+      & \qty{147.7}{\milli\second} & \qty{1.9}{\milli\second} & 76.7$\times$
+      & \qty{400.2}{\mega\byte} & \qty{12.6}{\mega\byte} & 31.8$\times$ \\
 
       PLATEAU\_veg
-      & \qty{1.06}{\second} & \qty{33}{\milli\second} & 32.0$\times$
-      & \qty{1.7}{\giga\byte} & \qty{70.4}{\mega\byte} & 25.2$\times$ \\
+      & \qty{997.8}{\milli\second} & \qty{32.9}{\milli\second} & 30.3$\times$
+      & \qty{1.97}{\giga\byte} & \qty{56.9}{\mega\byte} & 35.3$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = CBOR metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
-    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -560,48 +550,48 @@ The performance comparison between FlatCityBuf and BSON followed the same method
       & \textbf{BSON} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
       \midrule
       3DBAG
-      & \qty{113}{\milli\second} & \qty{6}{\milli\second} & 18.8$\times$
-      & \qty{323.3}{\mega\byte} & \qty{5.4}{\mega\byte} & 59.6$\times$ \\
+      & \qty{117.1}{\milli\second} & \qty{6.6}{\milli\second} & 17.8$\times$
+      & \qty{276.8}{\mega\byte} & \qty{5.1}{\mega\byte} & 54.3$\times$ \\
 
       3DBV
-      & \qty{8.82}{\second} & \qty{120}{\milli\second} & 73.5$\times$
-      & \qty{7.4}{\giga\byte} & \qty{59.0}{\mega\byte} & 129.1$\times$ \\
+      & \qty{9.97}{\second} & \qty{122.5}{\milli\second} & 81.4$\times$
+      & \qty{6.38}{\giga\byte} & \qty{63.2}{\mega\byte} & 103.4$\times$ \\
 
       Helsinki
-      & \qty{9.69}{\second} & \qty{127}{\milli\second} & 76.3$\times$
-      & \qty{7.4}{\giga\byte} & \qty{4.7}{\mega\byte} & 1620.9$\times$ \\
+      & \qty{14.64}{\second} & \qty{132.2}{\milli\second} & 110.7$\times$
+      & \qty{6.77}{\giga\byte} & \qty{5.2}{\mega\byte} & 1331.7$\times$ \\
 
       Ingolstadt
-      & \qty{81}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{323.5}{\mega\byte} & \qty{9.0}{\mega\byte} & 36.0$\times$ \\
+      & \qty{79.9}{\milli\second} & \qty{0.5}{\milli\second} & 163.1$\times$
+      & \qty{267.3}{\mega\byte} & \qty{6.9}{\mega\byte} & 38.9$\times$ \\
 
       Montréal
-      & \qty{152}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{526.8}{\mega\byte} & \qty{10.4}{\mega\byte} & 50.6$\times$ \\
+      & \qty{151.3}{\milli\second} & \qty{0.6}{\milli\second} & 245.5$\times$
+      & \qty{445.5}{\mega\byte} & \qty{5.7}{\mega\byte} & 78.6$\times$ \\
 
       NYC
-      & \qty{1.78}{\second} & \qty{42}{\milli\second} & 42.4$\times$
-      & \qty{2.5}{\giga\byte} & \qty{6.6}{\mega\byte} & 385.5$\times$ \\
+      & \qty{1.78}{\second} & \qty{42.9}{\milli\second} & 41.5$\times$
+      & \qty{2.50}{\giga\byte} & \qty{5.0}{\mega\byte} & 510.7$\times$ \\
 
       Rotterdam
-      & \qty{66}{\milli\second} & \qty{1}{\milli\second} & 66.0$\times$
-      & \qty{340.0}{\mega\byte} & \qty{4.3}{\mega\byte} & 78.8$\times$ \\
+      & \qty{67.6}{\milli\second} & \qty{1.3}{\milli\second} & 53.5$\times$
+      & \qty{265.1}{\mega\byte} & \qty{4.4}{\mega\byte} & 60.4$\times$ \\
 
       Vienna
-      & \qty{81}{\milli\second} & \qty{1}{\milli\second} & 81.0$\times$
-      & \qty{287.4}{\mega\byte} & \qty{5.7}{\mega\byte} & 50.1$\times$ \\
+      & \qty{82.0}{\milli\second} & \qty{1.9}{\milli\second} & 42.9$\times$
+      & \qty{239.8}{\mega\byte} & \qty{5.2}{\mega\byte} & 46.2$\times$ \\
 
       Zürich
-      & \qty{5.25}{\second} & \qty{149}{\milli\second} & 35.2$\times$
-      & \qty{7.2}{\giga\byte} & \qty{5.9}{\mega\byte} & 1245.8$\times$ \\
+      & \qty{5.80}{\second} & \qty{151.9}{\milli\second} & 38.2$\times$
+      & \qty{6.97}{\giga\byte} & \qty{5.1}{\mega\byte} & 1409.0$\times$ \\
 
       Tokyo (PLATEAU)
-      & \qty{9.74}{\second} & \qty{94}{\milli\second} & 103.6$\times$
-      & \qty{7.3}{\giga\byte} & \qty{14.9}{\mega\byte} & 499.5$\times$ \\
+      & \qty{6.92}{\second} & \qty{95.7}{\milli\second} & 72.3$\times$
+      & \qty{6.99}{\giga\byte} & \qty{12.0}{\mega\byte} & 597.3$\times$ \\
 
       PLATEAU\_brid
-      & \qty{179}{\milli\second} & \qty{0}{\milli\second}\tnote{b} & $\infty$
-      & \qty{503.6}{\mega\byte} & \qty{19.2}{\mega\byte} & 26.3$\times$ \\
+      & \qty{177.0}{\milli\second} & \qty{0.3}{\milli\second} & 541.8$\times$
+      & \qty{500.2}{\mega\byte} & \qty{12.0}{\mega\byte} & 41.9$\times$ \\
 
       PLATEAU\_rwy
       & \qty{85}{\milli\second} & \qty{2}{\milli\second} & 42.5$\times$
@@ -616,14 +606,13 @@ The performance comparison between FlatCityBuf and BSON followed the same method
       & \qty{618.4}{\mega\byte} & \qty{14.2}{\mega\byte} & 43.5$\times$ \\
 
       PLATEAU\_veg
-      & \qty{2.15}{\second} & \qty{33}{\milli\second} & 65.3$\times$
-      & \qty{3.8}{\giga\byte} & \qty{70.4}{\mega\byte} & 55.9$\times$ \\
+      & \qty{2.07}{\second} & \qty{33}{\milli\second} & 65.3$\times$
+      & \qty{3.99}{\giga\byte} & \qty{70.4}{\mega\byte} & 71.8$\times$ \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
     \item[a] Ratio = BSON metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
-    \item[b] Time recorded as 0 ms due to measurement precision limitations for very fast operations
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
