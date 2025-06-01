@@ -6,15 +6,309 @@
 \todo{add description of header}
 \begin{lstlisting}[caption={Header schema},  basicstyle=\small]
 
-  table Header {
-    version: string;
-    transform: Transform;
-    reference_system: ReferenceSystem;
-    geographical_extent: GeographicalExtent;
-    identifier: string;
-    title: string;
-    reference_date: string;
+  include "geometry.fbs";
+  include "extension.fbs";
+
+  enum ColumnType: ubyte {
+    Byte,                         // Signed 8-bit integer
+    UByte,                        // Unsigned 8-bit integer
+    Bool,                         // Boolean
+    Short,                        // Signed 16-bit integer
+    UShort,                       // Unsigned 16-bit integer
+    Int,                          // Signed 32-bit integer
+    UInt,                         // Unsigned 32-bit integer
+    Long,                         // Signed 64-bit integer
+    ULong,                        // Unsigned 64-bit integer
+    Float,                        // Single precision floating point number
+    Double,                       // Double precision floating point number
+    String,                       // UTF8 string
+    Json,                         // General JSON type intended to be application specific
+    DateTime,                     // ISO 8601 date time
+    Binary                        // General binary type intended to be application specific
+    // Array                         // Array of values
   }
+
+  table Column {
+    index: ushort;                // Column index (0 = first column) This index is used to identify the column in the FlatBuffer. The reason why index is used instead of column name is to save more space on attribute field.
+    name: string (required);      // Column name
+    type: ColumnType;             // Column type
+    title: string;                // Column title
+    description: string;          // Column description (intended for free form long text)
+    precision: int = -1;          // Column values expected precision (-1 = unknown) as defined by SQL
+    scale: int = -1;              // Column values expected scale (-1 = unknown) as defined by SQL
+    nullable: bool = true;        // Column values expected nullability
+    unique: bool = false;         // Column values expected uniqueness
+    primary_key: bool = false;    // Indicates this column has been (part of) a primary key
+    metadata: string;             // Column metadata (intended to be application specific and suggested to be structured fx. JSON)
+  }
+
+  table ReferenceSystem {
+    authority: string;            // Case-insensitive name of the defining organization e.g. EPSG or epsg (NULL = EPSG)
+    version: int;                 // Version of the Spatial Reference System assigned by the organization (0 = not defined)
+    code: int;                    // Numeric ID of the Spatial Reference System assigned by the organization (0 = unknown)
+    code_string: string;          // Text ID of the Spatial Reference System assigned by the organization in the (rare) case when it is not an integer and thus cannot be set into code
+  }
+
+  struct Vector {
+    x:double;
+    y:double;
+    z:double;
+  }
+
+  struct Transform {
+    scale: Vector;
+    translate: Vector;
+  }
+
+  struct GeographicalExtent {
+    min: Vector;
+    max: Vector;
+  }
+
+  struct AttributeIndex {
+    index: ushort;
+    length: uint;
+    branching_factor: ushort;
+    num_unique_items: uint;
+  }
+
+  struct Vec2 {
+    u: double;
+    v: double;
+  }
+
+  table Material {
+    name: string (required);
+    ambient_intensity: double = null; // from 0.0 to 1.0
+    // Expected to contain 3 items from 0.0 to 1.0 for (RGB); implementations MUST check length.
+    diffuse_color: [double];
+    emissive_color: [double];
+    specular_color: [double];
+    shininess: double = null; // from 0.0 to 1.0
+    transparency: double = null; // from 0.0 to 1.0
+    is_smooth: bool = null;
+  }
+
+  enum TextureFormat:ubyte {
+    PNG,
+    JPG
+  }
+
+  enum WrapMode:ubyte {
+    None,
+    Wrap,
+    Mirror,
+    Clamp,
+    Border
+  }
+
+  enum TextureType:ubyte {
+    Unknown,
+    Specific,
+    Typical
+  }
+
+  table Texture {
+    type: TextureFormat; // NOTICE: "type" fields refers to TextureFormat while "textureType" refers to TextureType.
+    image: string (required);        // Image file name / URL
+    wrap_mode: WrapMode = null;
+    texture_type: TextureType = null;  // e.g., "unknown", "specific", or "typical"
+    // Expected to contain 4 items (RGBA)
+    border_color: [double]; // from 0.0 to 1.0 for (RGBA)
+  }
+
+  table Appearance {
+    materials: [Material];
+    textures: [Texture];
+    vertices_texture: [Vec2];  // List of UV coordinates, each coordinate must be between 0.0 and 1.0
+    default_theme_texture: string;  // Default theme name for textures when multiple themes exist
+    default_theme_material: string; // Default theme name for materials when multiple themes exist
+  }
+
+  struct DoubleVertex {
+    x: double;
+    y: double;
+    z: double;
+  }
+
+  table Header {
+    transform: Transform;                     // Transformation vectors
+    appearance: Appearance;                   // Appearance object for materials and textures
+    columns: [Column];                        // Attribute columns schema (can be omitted if per feature schema)
+    semantic_columns: [Column];              // Semantic columns schema (can be omitted if per feature schema)
+    features_count: ulong;                    // Number of features in the dataset (0 = unknown)
+    index_node_size: ushort = 16;          // Index node size (0 = no index)
+    attribute_index: [AttributeIndex];
+    // metadata
+    geographical_extent: GeographicalExtent;  // Bounds
+    reference_system: ReferenceSystem;        // Spatial Reference System
+    identifier: string;                       // Dataset identifier
+    reference_date: string;                   // Reference date
+    title: string;                            // Dataset title
+    // geometry templates
+    templates: [Geometry];
+    templates_vertices: [DoubleVertex];
+    // extensions
+    extensions: [Extension];
+    // Point of contact
+    poc_contact_name: string;                 // Point of contact name
+    poc_contact_type: string;                 // Point of contact type
+    poc_role: string;                         // Point of contact role
+    poc_phone: string;                        // Point of contact phone
+    poc_email: string;                        // Point of contact email
+    poc_website: string;                      // Point of contact website
+    poc_address_thoroughfare_number: string;  // Point of contact address thoroughfare number
+    poc_address_thoroughfare_name: string;    // Point of contact address thoroughfare name
+    poc_address_locality: string;             // Point of contact address locality
+    poc_address_postcode: string;             // Point of contact address postcode
+    poc_address_country: string;              // Point of contact address country
+    attributes: [ubyte];                      // Other attributes that are stored in root CityJSON object
+    version: string (required);               // CityJSON version
+  }
+
+  root_type Header;
+\end{lstlisting}
+
+\section{Geometry}
+\label{appendix:flatcitybuf_schema:geometry}
+\begin{lstlisting}[caption={Geometry schema}, basicstyle=\small]
+
+enum SemanticSurfaceType:ubyte {
+  // Building
+  RoofSurface,
+  GroundSurface,
+  WallSurface,
+  ClosureSurface,
+  OuterCeilingSurface,
+  OuterFloorSurface,
+  Window,
+  Door,
+  InteriorWallSurface,
+  CeilingSurface,
+  FloorSurface,
+  // WaterBody
+  WaterSurface,
+  WaterGroundSurface,
+  WaterClosureSurface,
+  // Transportation ("Road", "Railway", "TransportSquare")
+  TrafficArea,
+  AuxiliaryTrafficArea,
+  TransportationMarking,
+  TransportationHole,
+
+  // Extension objects. In the JSON data, it's written like "+ThermalSurface". However as we can't expect the extended semantic surface type, just mark it as "ExtraSemanticSurface".
+  ExtraSemanticSurface
+}
+
+enum GeometryType:ubyte {
+  MultiPoint,
+  MultiLineString,
+  MultiSurface,
+  CompositeSurface,
+  Solid,
+  MultiSolid,
+  CompositeSolid,
+  GeometryInstance
+}
+
+table MaterialMapping {
+  theme: string;
+  solids: [uint];
+  shells: [uint];
+  vertices: [uint]; // flat list of vertex indices.
+  // The depth of material indices will be boundaries depth minus 2:
+  // - For MultiSurface/CompositeSurface: one material index per surface
+  // - For Solid: one material index per surface in each shell
+  // - For MultiSolid/CompositeSolid: one material index per surface in each shell of each solid
+  value: uint = null; // used only when it uses the shared material of CityJSON
+}
+
+table TextureMapping {
+  theme: string;
+  solids: [uint];
+  shells: [uint];
+  surfaces: [uint];
+  strings: [uint];
+  vertices: [uint]; // flat list of vertex indices.
+  // The depth of texture indices matches the boundaries array:
+  // - For each ring: first vertex is texture index, remaining vertices are UV coordinate indices
+  // - UV coordinates must be between 0.0 and 1.0 and reference vertices_texture array
+}
+
+table Geometry {
+  type:GeometryType;
+  lod:string;
+
+  // these are lengths in the
+  // depending on the geometry_type, different fields are used
+  solids:[uint];
+  shells:[uint];
+  surfaces:[uint];
+  strings:[uint];           // Rings or LineStrings
+
+  boundaries:[uint];        // flat list of vertex indices
+
+  semantics:[uint];         // flat list of semantic object indices
+  semantics_objects:[SemanticObject];
+
+  material: [MaterialMapping]; // Maps each surface/shells to an index in appearance.materials.
+  texture: [TextureMapping];   // Maps each primitives to an index in appearance.textures.
+}
+
+table SemanticObject {
+  type:SemanticSurfaceType;
+  attributes:[ubyte];
+  children:[uint];
+  parent:uint = null;       // default is null, important to be able to check if this field is set
+  extension_type: string; // extension type of the semantic object. e.g. "+ThermalSurface"
+}
+
+struct TransformationMatrix {
+  m00:double;
+  m01:double;
+  m02:double;
+  m03:double;
+  m10:double;
+  m11:double;
+  m12:double;
+  m13:double;
+  m20:double;
+  m21:double;
+  m22:double;
+  m23:double;
+  m30:double;
+  m31:double;
+  m32:double;
+  m33:double;
+}
+
+table GeometryInstance {
+  // "type": "GeometryInstance" isn't written in the file as it's obvious
+  transformation: TransformationMatrix;
+  template: uint;
+  boundaries: [uint]; //contains only one vertex index of vertices. "referencePoint" of CityGML
+}
+\end{lstlisting}
+
+\section{Extension}
+\label{appendix:flatcitybuf_schema:extension}
+\todo{add description of extension}
+\begin{lstlisting}[caption={Extension schema}, basicstyle=\small]
+// Extension is a struct that contains schema of the extension.
+// To simplify FlatBuffers schema, we just store stringified JSON schema.
+// This Extension can be derived from ExtensionMeta's url.
+table Extension {
+  // "type": "CityJSONExtension" isn't written in the file as it's obvious
+  name: string; // name of the extension. It's the same as ExtensionMeta's name.
+  description: string; // description of the extension. It's the same as ExtensionMeta's description.
+  url: string; // url of the extension. It's the same as ExtensionMeta's url.
+  version: string; // version of the extension. It's the same as ExtensionMeta's version.
+  version_cityjson: string; // version of the extension in CityJSON format.
+  extra_attributes: string; // extra attributes of the extension. stringified JSON object.
+  extra_city_objects: string; // extra city objects of the extension. stringified JSON object.
+  extra_root_properties: string; // extra root properties of the extension. stringified JSON object.
+  extra_semantic_surfaces: string; // extra semantic surfaces of the extension. stringified JSON object.
+}
 \end{lstlisting}
 
 \section{Feature}
@@ -22,10 +316,82 @@
 \todo{add description of feature}
 \begin{lstlisting}[caption={Feature schema}, basicstyle=\small]
 
-  table Feature {
-    id: string;
-    objects: [CityObject];
-    vertices: [Vertex];
+  include "header.fbs";
+  include "geometry.fbs";
+
+  // namespace FlatCityBuf;
+
+  enum CityObjectType:ubyte {
+    Bridge,
+    BridgePart,
+    BridgeInstallation,
+    BridgeConstructiveElement,
+    BridgeRoom,
+    BridgeFurniture,
+
+    Building,
+    BuildingPart,
+    BuildingInstallation,
+    BuildingConstructiveElement,
+    BuildingFurniture,
+    BuildingStorey,
+    BuildingRoom,
+    BuildingUnit,
+
+    CityFurniture,
+    CityObjectGroup,
+    GenericCityObject,
+    LandUse,
+    OtherConstruction,
+    PlantCover,
+    SolitaryVegetationObject,
+    TINRelief,
+
+    // Transportation objects
+    Road,
+    Railway,
+    Waterway,
+    TransportSquare,
+
+    Tunnel,
+    TunnelPart,
+    TunnelInstallation,
+    TunnelConstructiveElement,
+    TunnelHollowSpace,
+    TunnelFurniture,
+
+    WaterBody,
+
+    // Extension objects. Since we can't expect the extended city object type, just mark it as "ExtensionObject".
+    ExtensionObject
+  }
+
+  struct Vertex {
+    x:int;
+    y:int;
+    z:int;
+  }
+
+  table CityFeature {
+    id:string (key, required);
+    objects:[CityObject];
+    vertices:[Vertex];
     appearance: Appearance;
   }
+
+  table CityObject {
+    type:CityObjectType;
+    extension_type: string; // extension type of the city object. e.g. +NoiseCityFurnitureSegment
+    id:string (key, required);
+    geographical_extent:GeographicalExtent;
+    geometry:[Geometry];
+    geometry_instances:[GeometryInstance];
+    attributes:[ubyte];
+    columns:[Column];         // Attribute columns schema (optional, if set it should be used instead of the header columns)
+    children:[string];
+    children_roles:[string];  // for CityObjectGroup only
+    parents:[string];
+  }
+
+  root_type CityFeature;
 \end{lstlisting}

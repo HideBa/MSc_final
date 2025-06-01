@@ -332,7 +332,6 @@ All benchmarks were executed within a consistent hardware and software configura
 \begin{itemize}
   \item \textbf{Hardware:} Apple MacBook Pro with M1 Max chip, 32GB unified memory
   \item \textbf{Operating System:} macOS Sequoia 15.4
-  \item \textbf{Filesystem:} APFS (Apple File System)
   \item \textbf{Storage:} 1TB SSD with approximately 200GB available capacity
   \item \textbf{Runtime Environment:} Rust 1.86.0, with optimised release builds
 \end{itemize}
@@ -350,9 +349,9 @@ The benchmark framework captured multiple performance dimensions through the fol
 
 \end{itemize}
 
-These parameters were systematically measured across all encoding formats-CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. \todo{Ravi's comment "why these and not others?"} The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
+These parameters were systematically measured across all encoding formats—CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. CBOR and BSON were selected as additional comparison formats because they are JSON-compatible binary encoding formats, providing a meaningful intermediate comparison between text-based CityJSONSeq and the custom FlatCityBuf implementation. Other data formats such as Protocol Buffers or GeoParquet would require developing dedicated libraries similar to the FlatBuffers implementation, making them less suitable for this comparative analysis. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
 
-\subsubsection{Read Performance FlatCityBuf vs CityJSONSeq}
+\subsection{Read Performance FlatCityBuf vs CityJSONSeq}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
 
 The performance comparison between FlatCityBuf and CityJSONSeq was conducted across multiple datasets, measuring processing time, and memory consumption as key metrics. \autoref{tab:performance_comparison} presents these results.
@@ -437,11 +436,9 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
   \end{threeparttable}
 \end{table}
 
-\todo{Check if the memory consumption is correct. Also take benchmark on better environment}
+The performance comparison reveals significant advantages for FlatCityBuf in both processing time and memory consumption. FlatCityBuf demonstrates consistently superior performance, processing data between 8.6$\times$ and 256.8$\times$ faster than CityJSONSeq across all datasets. The most dramatic improvements are observed for the PLATEAU bridge model and Ingolstadt datasets, which suggests that FlatCityBuf exhibits lower overhead when handling smaller datasets. Memory consumption is also consistently reduced compared to CityJSONSeq, with FlatCityBuf showing particularly notable advantages for certain datasets, including Zürich and the Tokyo PLATEAU models.
 
-The performance comparison reveals significant advantages for FlatCityBuf across multiple metrics. Processing time shows even more dramatic improvements, with FlatCityBuf consistently processing data between 8× and 46× faster than CityJSONSeq. Memory consumption results are mixed, with FlatCityBuf showing notable advantages for some datasets (particularly 3DBAG and Tokyo PLATEAU) while requiring slightly more memory for others.
-
-\subsubsection{Read performance FlatCityBuf vs CBOR}
+\subsection{Read performance FlatCityBuf vs CBOR}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cbor}
 
 The performance comparison between FlatCityBuf and CBOR was conducted using the same datasets and measurement methodology. \autoref{tab:performance_comparison_cbor} presents these results.
@@ -526,9 +523,11 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
   \end{threeparttable}
 \end{table}
 
-\todo{write something about the results. Also take benchmark on better environment}
+The benchmark results demonstrate that FlatCityBuf consistently outperforms CBOR across all tested datasets. When compared to CBOR, FlatCityBuf achieved processing time improvements ranging from 11.2$\times$ to 194.7$\times$, with particularly significant speedups observed for smaller datasets such as the PLATEAU bridge model and Ingolstadt. This pattern reflects FlatCityBuf's zero-copy deserialization advantage, which provides proportionally greater benefits when parsing overhead dominates the total processing time in smaller datasets.
 
-\subsubsection{Read performance FlatCityBuf vs BSON}
+Memory consumption was reduced by factors ranging from 25.6$\times$ to 1011.2$\times$, with the most dramatic improvements observed in larger datasets such as Helsinki and Zürich. This trend occurs because CBOR requires loading the entire dataset into memory during deserialization, while FlatCityBuf's zero-copy approach allows selective access without full memory allocation. As dataset size increases, this fundamental difference in memory management strategy becomes increasingly pronounced.
+
+\subsection{Read performance FlatCityBuf vs BSON}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_bson}
 
 The performance comparison between FlatCityBuf and BSON followed the same methodology as the previous comparisons. \autoref{tab:performance_comparison_bson} presents the detailed results.
@@ -617,19 +616,21 @@ The performance comparison between FlatCityBuf and BSON followed the same method
   \end{threeparttable}
 \end{table}
 
-\todo{Write some analysis about the results. Also take benchmark on better environment}
+The benchmark results show that FlatCityBuf significantly outperforms BSON across all tested datasets. Processing time improvements ranged from 17.8$\times$ to 541.8$\times$, with the most dramatic speedup observed for the PLATEAU bridge model. The exceptional performance gain for smaller datasets like PLATEAU\_brid reflects FlatCityBuf's zero-copy deserialization advantage, where parsing overhead represents a larger proportion of total processing time.
 
-\subsubsection{Summary of local environment benchmark}
+Memory consumption was reduced by factors ranging from 38.9$\times$ to 1409.0$\times$, with the largest improvements seen in datasets such as Zürich and Helsinki. This substantial memory efficiency stems from BSON's requirement to deserialize the entire document into memory structures, while FlatCityBuf enables direct access to data without full memory allocation. The performance gains are generally more pronounced than those observed in the CBOR comparison.
+
+\subsection{Summary of local environment benchmark}
 \label{result:benchmark_on_local_environment:summary}
-To summarise the results of the local environment benchmark, we especially focus on the comparison between FlatCityBuf and CityJSONSeq since CityJSONSeq is the most standard data format of CityJSON at the moment.
+To summarise the results of the local environment benchmark, FlatCityBuf demonstrates significant performance improvements across all tested formats and datasets, with varying degrees of enhancement depending on the comparison format and dataset characteristics.
 
 \begin{itemize}
-  \item Processing time: Processing time is more considarable as its pirmary objective of the research. The best case achieved 46.62$\times$ improvement (Montréal) while the worst case achieved 8.48$\times$ improvement (3DBAG). The program can save a lot of time for large datasets.
-  \item Memory consumption: Memory consumption is also an important metric. The best case achieved 3.11$\times$ improvement (Tokyo) while the worst case achieved 0.62$\times$ improvement (PLATEAU\_tran).
-\end{itemize}
-\todo{check again}
+  \item Processing time: Processing time improvements represent the primary objective of this research. Compared to CityJSONSeq, FlatCityBuf achieved speedups ranging from 8.6$\times$ (3DBAG) to 256.8$\times$ (PLATEAU bridge model). Against CBOR, improvements ranged from 11.2$\times$ (3DBAG) to 194.7$\times$ (PLATEAU bridge model). For BSON, the most dramatic gains were observed, ranging from 17.8$\times$ (3DBAG) to 541.8$\times$ (PLATEAU bridge model). Generally, smaller datasets exhibit higher performance ratios, while larger datasets show significant absolute time savings despite lower ratios.
 
-\subsection{Benchmark over the web}
+  \item Memory consumption: Memory efficiency improvements varied significantly across formats. Compared to CityJSONSeq, FlatCityBuf achieved reductions ranging from 1.9$\times$ (Rotterdam) to 6.3$\times$ (PLATEAU bridge model). Against CBOR, memory consumption was reduced by factors of 27.3$\times$ to 1011.2$\times$, with the largest improvements in datasets like Helsinki and Zürich. For BSON, memory reductions ranged from 38.9$\times$ to 1409.0$\times$, with exceptional efficiency gains in large datasets. It should be noted that memory consumption comparisons with CBOR and BSON formats are not entirely equitable, as these formats require encoding and loading entire datasets into memory, while both FlatCityBuf and CityJSONSeq support streaming operations that enable incremental data processing without full memory allocation.
+\end{itemize}
+
+\section{Benchmark over the web}
 \label{result:benchmark_over_the_web}
 
 To evaluate FlatCityBuf's performance in real-world web scenarios, we compared it with the 3DBAG API \citep{3dbag_api}. The 3DBAG API currently supports two query types: \textit{feature ID query} for retrieving CityJSONFeature by identifier (\eg, \texttt{identificatie} attribute of 3DBAG) and \textit{bounding box query} for spatial queries with configurable result limits via the \texttt{limit} parameter.
@@ -638,12 +639,12 @@ While network-based benchmarking provides more realistic performance insights, i
 
 We acknowledged that comparing FlatCityBuf with the 3DBAG API is not entirely equitable due to these fundamental architectural differences. However, this comparison remains valuable as API-based access represents the current standard approach for CityJSON data consumption in web applications.
 
-\subsubsection{Benchmark environment}
+\subsection{Benchmark environment}
 \label{result:benchmark_over_the_web:benchmark_environment}
 
 For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with HTTP range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG API operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}. To account for network variability and potential outliers, we collected 100 samples for each method with 10 warmup samples.
 
-\subsubsection{Feature ID query}
+\subsection{Feature ID query}
 \label{result:benchmark_over_the_web:feature_id_query}
 
 Both FlatCityBuf files and the 3DBAG API database organise features according to technical implementation decisions (\eg, FlatCityBuf features are typically sorted by Hilbert curve). To ensure fair comparison by identifier, we selected 5 features distributed across different regions of the Netherlands, representing landmark or well-known buildings. The benchmark results represent the average performance across 100 samples for all 5 features.
@@ -656,7 +657,7 @@ Both FlatCityBuf files and the 3DBAG API database organise features according to
   \label{tab:feature_id_performance}
   \begin{tabular}{llccc}
     \toprule
-    \textbf{Feature ID} & \textbf{Location} & \textbf{FlatCityBuf} & \textbf{3DBAG API} & \textbf{Speedup} \\
+    \textbf{Feature ID} & \textbf{Location} & \textbf{FCB\tnote{a}} & \textbf{API\tnote{b}} & \textbf{Ratio\tnote{c}} \\
     & & \textbf{(ms)} & \textbf{(ms)} & \\
     \midrule
     NL.IMBAG.Pand.0503100000032914 & TU Delft BK building & 935.8 & 2412.5 & 2.6$\times$ \\
@@ -668,9 +669,16 @@ Both FlatCityBuf files and the 3DBAG API database organise features according to
     \textbf{Average} & & \textbf{1012.9} & \textbf{2169.2} & \textbf{2.1$\times$} \\
     \bottomrule
   \end{tabular}
+
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] FCB = FlatCityBuf
+  \item[b] API = 3DBAG API
+  \item[c] Ratio = 3DBAG API / FlatCityBuf (higher values indicate better FlatCityBuf performance)
+  \end{tablenotes}
 \end{table}
 
-\subsubsection{Bounding box query}
+\subsection{Bounding box query}
 \label{result:benchmark_over_the_web:bounding_box_query}
 
 For spatial query performance comparison, we selected a 2km $\times$ 2km bounding box around the Delft University of Technology campus, requesting the first 10 features within the area (matching the 3DBAG API's default limit). The benchmark results represent the average of 100 samples. The bounding box coordinates were \texttt{(84000.0, 444000.0, 86000.0, 446000.0)} in the Amersfoort / RD New + NAP height (EPSG:7415) coordinate system.
@@ -683,12 +691,16 @@ FlatCityBuf demonstrated approximately 15.1$\times$ faster performance than the 
   \label{tab:bounding_box_performance}
   \begin{tabular}{lccc}
     \toprule
-    \textbf{Query Type} & \textbf{FlatCityBuf} & \textbf{3DBAG API} & \textbf{Speedup} \\
+    \textbf{Query Type} & \textbf{FlatCityBuf} & \textbf{3DBAG API} & \textbf{Ratio\tnote{a}} \\
     & \textbf{(ms)} & \textbf{(ms)} & \\
     \midrule
     Bounding box (2km $\times$ 2km) & 492.6 & 7420.3 & 15.1$\times$ \\
     \bottomrule
   \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Ratio = 3DBAG API / FlatCityBuf (higher values indicate better FlatCityBuf performance)
+  \end{tablenotes}
 \end{table}
 
 Despite the architectural differences between FlatCityBuf and the 3DBAG API, FlatCityBuf demonstrated superior performance across both query patterns. Notably, FlatCityBuf does not distinguish between identifier-based and attribute-based queries, as both utilize the same underlying mechanism. Consequently, we can expect similar performance characteristics for other attribute-based queries as well. These performance results highlight FlatCityBuf's potential for web application deployment.

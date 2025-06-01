@@ -13,7 +13,7 @@ This section examines the most appropriate application scenarios for the FlatCit
 
 Providing users with the ability to download specific data of interest represents one of the most valuable applications of 3D city models, particularly within open data initiatives. Existing services such as 3DBAG offer download functionality for CityJSON data in various formats including CityJSON, OBJ, and GeoPackage. However, these services typically constrain users to downloading predefined tiles rather than precisely the data matching their specific requirements.
 
-\citet{fcb-web-demo} demonstrates a web application that enables users to download precisely the data they require. This implementation successfully showcases FlatCityBuf's capability to facilitate targeted data retrieval. Through its attribute indexing mechanism, users can download filtered datasets based on specific criteria, such as features exceeding 100 metres in height.
+\href{https://fcb-web-prototype.netlify.app}{This web prototype} demonstrates that users can download precisely the data they require. This implementation successfully showcases FlatCityBuf's capability to facilitate targeted data retrieval. Through its attribute indexing mechanism, users can download filtered datasets based on specific criteria, such as features exceeding 100 metres in height.
 
 \subsection{Data Analysis}
 \label{data_analysis}
@@ -31,21 +31,21 @@ FlatCityBuf introduces significant opportunities for simplifying server architec
 \subsection{Traditional Server Architecture}
 \label{traditional_server_architecture}
 
-Conventional server architectures for 3D city models typically employ both application and database servers. For example, \citet{3dcitydb} utilises PostgreSQL or Oracle as the database server with PostgREST API \citep{postgrest} providing data access through its toolchain. Similarly, the 3DBAG API uses PostgreSQL as its database server and Flask (Python) as the application server.
+Conventional server architectures for 3D city models typically employ both application and database servers. For example, \citet{3dcitydb} utilises PostgreSQL or Oracle as the database server with PostgREST API \citep{postgrest} providing data access through its toolchain. Similarly, the 3DBAG API uses PostgreSQL as its database server and Flask (Python web framework) as the application server.
 
-In contrast, FlatCityBuf operates as a static file, requiring only a basic HTTP server such as Nginx for data distribution. This approach aligns with modern cloud service offerings, where providers like AWS S3 and Google Cloud Storage offer optimised solutions for serving static content.
+In contrast, FlatCityBuf operates as a static file, requiring only a basic HTTP server such as Nginx \citep{nginx} for data distribution. This approach aligns with modern cloud service offerings, where providers like AWS S3 \citep{s3} and Google Cloud Storage \citep{gsc} offer optimised solutions for serving static content.
 
 \subsection{Cloud Architecture Advantages}
 \label{cloud_architecture_achieved}
 
-\subsection{Scalability}
+\subsubsection{Scalability}
 \label{scalability}
 
 Scalability presents a significant challenge in traditional server architectures. These systems typically employ Relational Database Management Systems (RDBMS) that often encounter scaling limitations. Common mitigation strategies include sharding and replication (horizontal scaling) or resource expansion (vertical scaling), both requiring additional computational, memory, and storage resources.
 
 FlatCityBuf circumvents these challenges by functioning as a static file that can leverage cloud providers' inherent scalability and high availability infrastructure. This characteristic offers substantial benefits for applications built on 3D city model data. Service providers can host static FlatCityBuf files on standard servers, allowing unrestricted access for various use cases without implementing the rate-limiting mechanisms often necessary with traditional server architectures.
 
-\subsection{Cost-effectiveness}
+\subsubsection{Cost-effectiveness}
 \label{cost_effectiveness}
 
 FlatCityBuf contributes significantly to operational cost-effectiveness. Although precise server costs vary according to specific use cases, hosting static files through cloud service providers is generally substantially more economical than maintaining dedicated database and application servers.
@@ -78,12 +78,34 @@ Despite its advantages in simplicity, scalability, and cost-effectiveness, FlatC
 \subsection{Query Flexibility}
 \label{flexibility_of_query}
 
-While FlatCityBuf supports both spatial and attribute indexing, its query capabilities remain more constrained than those of specialised spatial database applications. Traditional approaches employing RDBMS with spatial indexing provide more comprehensive query functionality. For instance, 3DCityDB enables filtering by LoD, CityObject type, and various other parameters, whereas FlatCityBuf primarily supports attribute-based filtering. Similarly, regarding spatial functions, 3DCityDB can utilise the extensive spatial capabilities of PostGIS, while FlatCityBuf currently only implements bounding box queries. Consequently, FlatCityBuf is optimised for scenarios requiring relatively straightforward filtering conditions.
-
+While FlatCityBuf supports both spatial and attribute indexing, its query capabilities remain more constrained than those of specialised spatial database applications. Traditional approaches employing RDBMS with spatial indexing provide more comprehensive query functionality. For instance, 3DCityDB enables filtering by LoD, CityObject type \citep{3dcitydb}, and various other parameters, whereas FlatCityBuf primarily supports attribute-based filtering. Similarly, regarding spatial functions, 3DCityDB can utilise the extensive spatial capabilities of PostGIS \citep{postgis}, while FlatCityBuf currently only implements bounding box queries, nearest neighbour queries, and point intersection queries. Consequently, FlatCityBuf is optimised for scenarios requiring relatively straightforward filtering conditions.
 \subsection{Client-side Application Complexity}
 \label{complexity_of_client_side_application}
 
-Although FlatCityBuf simplifies server architecture, it introduces additional complexity in client-side applications, which must implement logic for loading and processing the format. By comparison, OGC API and equivalent Web API services adhere to standardised designs that can be utilised by any client application—whether accessed through command-line interfaces, browsers, or mobile applications. While FlatCityBuf supports cross-platform applications, it requires language-specific or platform-specific library implementations.
+Although FlatCityBuf simplifies server architecture, it introduces additional complexity in client-side applications, which must implement logic for loading and processing the format. This shift in computational responsibility follows the client-server architecture spectrum described by \citet{alesheikh_2002}, who categorised systems ranging from "Thin Client" (where clients primarily handle display) to "Thick Client" (where clients perform most processing tasks).
+
+Figure \ref{fig:alesheikh_2002_architecture} illustrates the original model proposed by \citet{alesheikh_2002}, while Figure \ref{fig:fcb_thickness} demonstrates where FlatCityBuf fits within this framework. As these figures show, FlatCityBuf represents an extreme case of the "Thick Client" architecture. Since the client assumes responsibility for filtering services in addition to other processing tasks, the complexity exceeds that of traditional architectures where such operations are handled server-side.
+
+This architectural choice has implications for interoperability. OGC API \citep{ogc_api} and equivalent Web API services adhere to standardised designs that enable universal client access—whether through command-line interfaces, web browsers, or mobile applications. While FlatCityBuf supports cross-platform deployment, it requires language-specific or platform-specific library implementations, potentially limiting its accessibility compared to standard web APIs.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/discussion/client_architecture1.png}
+    \caption{Client architecture model modified from \citet{alesheikh_2002}}
+    \label{fig:alesheikh_2002_architecture}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/discussion/client_architecture2.png}
+    \caption{FlatCityBuf architecture with \citet{alesheikh_2002}'s model}
+    \label{fig:fcb_thickness}
+  \end{subfigure}
+  \caption{Comparison of client complexity with \citet{alesheikh_2002}'s model and FlatCityBuf's architecture.}
+  \label{fig:thickness_of_client}
+\end{figure}
 
 \subsection{Update Complexity}
 \label{ease_of_update}
