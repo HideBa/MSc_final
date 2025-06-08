@@ -5,8 +5,8 @@
 
 Efficient spatial querying is a critical requirement for 3D city model formats, particularly in cloud environments where minimising data transfer is essential. FlatCityBuf implements a packed Hilbert R-tree spatial indexing mechanism \citep{Roussopoulos_Leifker_1985} to enable selective retrieval of city features based on their geographic location. This section details the implementation approach, design decisions, and performance characteristics of the spatial indexing component.
 
-\subsection{Design Attribution}
-\label{methodology:spatial_index:attribution}
+\subsection{The packed Hilbert R-tree}
+\label{methodology:spatial_index:packed_hilbert_rtree}
 
 The spatial indexing mechanism implemented in FlatCityBuf directly adapts the packed Hilbert R-tree approach developed for FlatGeoBuf \citep{horance_2022_detail}. The design combines several key features:
 
@@ -27,7 +27,7 @@ While the original FlatGeoBuf implementation targets 2D vector geometries, FlatC
 
 \subsection{Feature sorting}
 \label{methodology:spatial_index:feature_sorting}
-\todo{add figure here}
+
 A key optimisation in FlatCityBuf's indexing strategy is the spatial ordering of features using a Hilbert space-filling curve. This technique enhances data locality by ensuring that features which are spatially proximate in 2D (and 3D) space are also stored close together in the file, thereby optimising both disk access patterns and HTTP range requests \citep{horance_2022_detail}.
 
 The Hilbert curve encoding process for FlatCityBuf follows these steps:
@@ -39,6 +39,13 @@ The Hilbert curve encoding process for FlatCityBuf follows these steps:
   \item Sort all features according to their computed Hilbert values in ascending order
   \item During serialisation of the sorted features, record both the 2D bounding box and the byte offset (relative position from the start of the feature section) for each feature
 \end{enumerate}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./figs/methodology/hilbert_sort.png}
+  \caption{Example of a Hilbert curve. Image sourced from \cite{horance_2022_detail}.}
+  \label{fig:hilbert_curve}
+\end{figure}
 
 These recorded bounding boxes and byte offsets become the foundation for constructing the bottom layer of the R-tree index. The Hilbert encoding implementation uses a non-recursive algorithm described in \citet{hacker_delight_2012}, which has been adapted from the FlatGeoBuf implementation \citep{flatgeobuf_github}, which in turn was inspired by a public domain implementation by \citet{rawrunprotected_2016}.
 

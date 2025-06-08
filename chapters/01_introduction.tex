@@ -10,16 +10,25 @@ As demonstrated by \citet{biljecki_2015}, these models now serve essential funct
 The widespread adoption of these models is evidenced by significant national initiatives, such as the Netherlands' comprehensive 3D building database \citep{3dbag}, Japan's urban digital twin project \citep{plateau}, US's Open City Model \citep{us_buildings3d}, and Switzerland's SwissBUILDINGS3D \citep{swiss_buildings3d}.
 To support this adoption, the CityGML Conceptual Model \citep{CityGML} provides a standardised framework for comprehensive urban environment representation, with implementations including CityGML \citep{CityGML}, CityJSON \citep{cityjson}, and 3DCityDB \citep{3dcitydb} achieving substantial adoption in both research and practical applications.
 
-\todo{refer what is cloud-native, what is cloud-optimised}
-Beside these trends, geospatial data apt to grow both file size and complexity.
+Concurrent with the growth of 3D city models, the geospatial industry has undergone a fundamental shift from desktop-based to cloud-native and web-based Geographic Information Systems (GIS).
+Cloud-native GIS, as defined by \citet{nist_cloud_computing_2011}, leverages cloud computing infrastructure to deliver geospatial services over networks, enabling ubiquitous access to shared computing resources with minimal management overhead.
+This paradigm shift offers substantial advantages including global accessibility, multi-user scalability, cross-platform compatibility, and support for diverse applications beyond traditional GIS workflows \citep{esri_webgis}.
+Popular examples such as Google Maps Platform \citep{google_maps_platform} demonstrate how web-based geospatial services have become integral to modern applications, eliminating the need for users to download complete datasets to local machines.
 
-The transition towards cloud-native geographic information systems (GIS), which will be detailed in \autoref{tb:cloud_native}, introduces specific technical requirements for 3D city model implementations.
+However, this transition introduces specific technical challenges for 3D city model implementations.
+Web GIS faces inherent constraints including network latency, bandwidth limitations, and the need to serve hundreds or thousands of concurrent users \citep{alesheikh_2002}.
+Unlike desktop applications that benefit from high-speed local disk access, web-based systems must efficiently transfer data over networks, necessitating strategies such as data subsetting, streaming, and selective access patterns.
+Traditional geospatial formats including GeoJSON, Shapefile, and WKT do not inherently support these cloud-optimised access patterns.
+
+The transition towards cloud-native geographic information systems introduces specific technical requirements for 3D city model implementations.
 These requirements encompass scalable processing capabilities, efficient data transfer mechanisms, optimised query performance, and distributed access protocols \citep{cloud-optimised-formats}.
-While CityGML and CityJSON provide comprehensive data models, their text-based implementations often result in slower processing times and increased memory consumption \citep{jordi_van_liempt_2020}. \todo{check proper citation} \ac{cjseq} was developed as a variant of CityJSON to enable streaming processing of 3D city model data, but it still inherits the performance limitations of text-based formats.
+While CityGML and CityJSON provide comprehensive data models, their text-based implementations often result in slower processing times and increased memory consumption \citep{jordi_van_liempt_2020}. \ac{cjseq} was developed as a variant of CityJSON to enable streaming processing of 3D city model data, but it still inherits the performance limitations of text-based formats.
 Furthermore, although cloud-optimised geospatial formats have emerged to address these challenges, they primarily focus on two-dimensional data, leaving a gap in efficient cloud-native solutions for 3D city models.
 This gap necessitates the development of specialised data formats that can effectively operate within cloud computing environments while maintaining the semantic richness of 3D city models.
 
-\todo{mention what is cloud native and cloud optimised in intro section}
+To address these challenges in the cloud-native environment, the geospatial community has developed several optimisation strategies including tiling and partitioning, spatial indexing, data simplification with level-of-detail systems, and binary encoding with compression.
+These approaches, collectively referred to as \emph{cloud-optimised} geospatial formats \citep{cloud-optimised-formats}, enable on-demand access to geospatial data and have proven successful for 2D geospatial applications.
+However, these optimisation techniques have not been comprehensively applied to 3D city model formats, creating a significant gap in cloud-native solutions for urban digital twin applications.
 
 \section{Research Objectives}
 \label{introduction:research_objectives}
@@ -44,15 +53,10 @@ The following aspects, while relevant to the overall system performance, are not
 \end{itemize}
 
 The resulting proposed data format, called FlatCityBuf, leverages FlatBuffers' exceptional read performance efficiency and random access capabilities, which are essential for fetching subsets of data without processing the entire file—these advantages will be explained in detail in \autoref{tb:flatbuffers}.
-
 The proposed methodology combines FlatBuffers' efficient binary serialisation with HTTP Range Requests, enabling partial data retrieval over the web while facilitating serverless architectures for enhanced scalability.
-
 The investigation aims to address the aforementioned cloud-native requirements while maintaining the semantic richness of CityJSON's data model.
-
 Notably, the research prioritises read performance over update capabilities, as read operations predominate in typical use cases (see \autoref{methodology}).
-
 Furthermore, while file size optimisation remains relevant, it is considered secondary to query efficiency and partial data accessibility.
-
 The technical implementation strategy and preliminary findings are detailed in \autoref{methodology}, while the evaluation of cloud-optimised formats is presented in \autoref{rw:cloud_optimised_formats}.
 
 \section{Scope of the Research}
@@ -62,7 +66,7 @@ Since the primary focus of the research is to explore the potential of FlatBuffe
 
 \begin{itemize}
   \item Define the data specification of the proposed new encoding format, FlatCityBuf.
-  \item Implement a Rust library for encoding and decoding operations for FlatCityBuf, with WASM bindings for web-based decoding.
+  \item Implement a Rust library for encoding and decoding operations for FlatCityBuf, with \ac{wasm} bindings for web-based decoding.
   \item Support spatial querying and attribute-based querying to achieve log-time complexity for feature retrieval.
   \item Demonstrate how the proposed encoding format can be used over the web with HTTP Range Requests.
   \item Evaluate the performance of the proposed encoding format compared to the other encoding formats.

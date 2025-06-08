@@ -67,19 +67,15 @@ Based on this analysis and the practical constraints of optimising for cloud-bas
     \begin{itemize}
       \item AND (intersection of result sets)
       \item NOT (negation of result sets)
-        % \item OR (union of result sets) (This will be implemented in the future)
     \end{itemize}
 
-    \todo{Uncomment if I could finish the implementation}
-    %   \item \textbf{Spatial Filtering}: Integrated with attribute filtering
-    %     \begin{itemize}
-    %       \item BBOX (bounding box intersection)
-    %     \end{itemize}
 \end{enumerate}
 
 While typical SQL supports more various operators (\eg, LIKE operators), these were not prioritised in the initial implementation as they are not part of either OGC Filter Encoding or OGC CQL standards, or because they require more complex index structures that are less commonly used in typical 3D city model queries.
 
-By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. \todo{Ravi's comment "FYI this has mostly to do with the OGC requirement that states that geometry should be fetchable in WGS84 (aside from the Dutch CRS), so not really relevant here I think. Instead you can point out that 1) it requires persistence server process and 2) does not support attribute queries aside from ID lookup"} This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full OGC compliance \citep{3dbag_api}.
+By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full OGC compliance \citep{3dbag_api}.
+
+% \todo{Ravi's comment "FYI this has mostly to do with the OGC requirement that states that geometry should be fetchable in WGS84 (aside from the Dutch CRS), so not really relevant here I think. Instead you can point out that 1) it requires persistence server process and 2) does not support attribute queries aside from ID lookup"}
 
 \subsection{\texorpdfstring{\ac{s+tree}}{S+tree} Design and Modifications}
 \label{methodology:attribute_index:static_btree_design}
@@ -87,9 +83,9 @@ By focusing on these high-priority operators, FlatCityBuf's attribute indexing s
 After evaluating alternatives, a \ac{s+tree} with significant modifications was adopted for FlatCityBuf's attribute indexing. \ac{s+tree} is a variant of the Static B+Tree that is specialised for read-only access patterns. Its theoretical background is described in \autoref{tb:static_btree}. This decision was based on the following considerations:
 
 \begin{itemize}
-\item \textbf{\ac{io} Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common CPU cache sizes, offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of \ac{io} operations and network roundtrips compared to binary search, making it ideal for HTTP Range Requests where each roundtrip incurs substantial latency.
+  \item \textbf{\ac{io} Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common \acp{cpu} cache sizes, offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of \ac{io} operations and network roundtrips compared to binary search, making it ideal for HTTP Range Requests where each roundtrip incurs substantial latency.
 
-\item \textbf{Query Versatility}: Unlike specialised data structures such as hash tables (optimised for exact matches) or sorted arrays (better for range queries), the B+tree structure provides a balanced performance across both exact match and range queries. While not achieving the optimal performance of specialised structures for specific query types, this balanced approach makes it well-suited for the diverse query patterns common in 3D city model applications.
+  \item \textbf{Query Versatility}: Unlike specialised data structures such as hash tables (optimised for exact matches) or sorted arrays (better for range queries), the B+tree structure provides a balanced performance across both exact match and range queries. While not achieving the optimal performance of specialised structures for specific query types, this balanced approach makes it well-suited for the diverse query patterns common in 3D city model applications.
 \end{itemize}
 
 \subsubsection{\ac{s+tree} Characteristics}
@@ -98,27 +94,27 @@ After evaluating alternatives, a \ac{s+tree} with significant modifications was 
 A \ac{s+tree} differs from a traditional B+tree in several important aspects:
 
 \begin{itemize}
-\item \textbf{Immutability}: Once constructed, the tree structure remains fixed, eliminating the need for complex rebalancing operations.
+  \item \textbf{Immutability}: Once constructed, the tree structure remains fixed, eliminating the need for complex rebalancing operations.
 
-\item \textbf{Perfect Node Fill}: All nodes except possibly the rightmost nodes at each level are filled to capacity, maximising space efficiency.
+  \item \textbf{Perfect Node Fill}: All nodes except possibly the rightmost nodes at each level are filled to capacity, maximising space efficiency.
 
-\item \textbf{Predictable Structure}: The tree shape is determined solely by the number of elements and the node size, making navigation more efficient.
+  \item \textbf{Predictable Structure}: The tree shape is determined solely by the number of elements and the node size, making navigation more efficient.
 
-\item \textbf{Bulk Construction}: The tree is built bottom-up in a single pass from sorted data, rather than through incremental insertions.
+  \item \textbf{Bulk Construction}: The tree is built bottom-up in a single pass from sorted data, rather than through incremental insertions.
 \end{itemize}
 
 The original S+tree algorithm as described by \citet{static_b_trees} provides an excellent foundation for read-only indexing. However, several significant modifications were necessary to adapt it to the specific requirements of FlatCityBuf:
 
 \begin{itemize}
-\item \textbf{Duplicate Key Handling}: 3D city model attributes often contain numerous duplicate values (\eg, hundreds of features with "Delft" as the value for "city name"). The \ac{s+tree} implementation described in literature \citep{static_b_trees} does not address the case of having duplicate values. The modified implementation incorporates a dedicated payload section that efficiently stores multiple feature references for identical attribute values without compromising the tree structure or search performance.
+  \item \textbf{Duplicate Key Handling}: 3D city model attributes often contain numerous duplicate values (\eg, hundreds of features with "Delft" as the value for "city name"). The \ac{s+tree} implementation described in literature \citep{static_b_trees} does not address the case of having duplicate values. The modified implementation incorporates a dedicated payload section that efficiently stores multiple feature references for identical attribute values without compromising the tree structure or search performance.
 
-For handling duplicate keys in indexing structures, \citet{ramez_2015} outlines three main approaches: (1) including duplicate entries in the index, (2) using variable-length records with a repeating pointer field, or (3) keeping fixed-length index entries with a single entry per key value and an extra level of indirection to handle multiple pointers. FlatCityBuf adopts the third approach, which is "more commonly used" according to \citet{ramez_2015}, by implementing a payload section that stores the collection of feature offsets for each duplicate key. This design choice was made to maintain a simple implementation for search algorithms while efficiently handling attributes with potentially high duplicate cardinality. The fixed-length entries in the tree structure preserve the binary search efficiency, while the separate payload section accommodates the variable number of references without complicating the tree traversal logic.
+    For handling duplicate keys in indexing structures, \citet{ramez_2015} outlines three main approaches: (1) including duplicate entries in the index, (2) using variable-length records with a repeating pointer field, or (3) keeping fixed-length index entries with a single entry per key value and an extra level of indirection to handle multiple pointers. FlatCityBuf adopts the third approach, which is "more commonly used" according to \citet{ramez_2015}, by implementing a payload section that stores the collection of feature offsets for each duplicate key. This design choice was made to maintain a simple implementation for search algorithms while efficiently handling attributes with potentially high duplicate cardinality. The fixed-length entries in the tree structure preserve the binary search efficiency, while the separate payload section accommodates the variable number of references without complicating the tree traversal logic.
 
-\item \textbf{Multi-type Support}: The index structure was extended to handle various attribute data types commonly found in 3D city models, including numeric types (integers, floating-point), string values, boolean flags, and temporal data (dates, timestamps).
+  \item \textbf{Multi-type Support}: The index structure was extended to handle various attribute data types commonly found in 3D city models, including numeric types (integers, floating-point), string values, boolean flags, and temporal data (dates, timestamps).
 
-\item \textbf{Explicit Node Offsets}: While the original S+tree uses mathematical calculations to determine node positions, FlatCityBuf's implementation stores explicit byte offsets to child nodes. \todo{Ravi's comment "I’m curious, why did this get complicated? the formula in chap 3 looked simple also: what is the overall storage space tradeoff?"} This modification simplifies the implementation without compromising performance. The parent node item has a 64-bit offset to the first child item of left child node.
+  \item \textbf{Explicit Node Offsets}: While the original S+tree uses mathematical calculations to determine node positions, FlatCityBuf's implementation stores explicit byte offsets to child nodes. This modification simplifies the implementation without compromising performance. The parent node item has a 64-bit offset to the first child item of left child node.
 
-\item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimises both the storage overhead and redundant HTTP requests for unique keys while enabling support for duplicate keys.
+  \item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimises both the storage overhead and redundant HTTP requests for unique keys while enabling support for duplicate keys.
 
 \end{itemize}
 
@@ -130,17 +126,16 @@ These modifications ensure that the S+tree implementation is optimised for the s
 The attribute indexing system in FlatCityBuf is implemented as a binary encoded structure with four main components:
 
 \begin{enumerate}
-\item \textbf{Index Metadata}: Contains metadata about the index, including the column being indexed, branching factor, and number of unique values. This is stored in the header section of the file \autoref{methodology:header:schema_indexing}.
-\item \textbf{Tree Structure}: A hierarchical arrangement of nodes with keys and pointers. Though it's called as "tree", it's conceptual structure. The actual structure is a linear sequence of nodes. Both internal and leaf nodes are stored consecutively in the "flat" structure.
-\item \textbf{Payload Section}: Stores arrays of feature offsets for duplicate key values. Each payload entry has a 32-bit length prefix that indicates the number of feature offsets that follow.
+  \item \textbf{Index Metadata}: Contains metadata about the index, including the column being indexed, branching factor, and number of unique values. This is stored in the header section of the file \autoref{methodology:header:schema_indexing}.
+  \item \textbf{Tree Structure}: A hierarchical arrangement of nodes with keys and pointers. Though it's called as "tree", it's conceptual structure. The actual structure is a linear sequence of nodes. Both internal and leaf nodes are stored consecutively in the "flat" structure.
+  \item \textbf{Payload Section}: Stores arrays of feature offsets for duplicate key values. Each payload entry has a 32-bit length prefix that indicates the number of feature offsets that follow.
 \end{enumerate}
 
-\todo{make this figure better}
 \begin{figure*}[htbp]
-\centering
-\includegraphics[width=1.0\textwidth]{figs/methodology/attribute_index.png}
-\caption{Attribute index implementation in FlatCityBuf}
-\label{fig:methodology:attribute_index}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/methodology/attribute_index.png}
+  \caption{Attribute index implementation in FlatCityBuf}
+  \label{fig:methodology:attribute_index}
 \end{figure*}
 
 \subsection{Construction of the Attribute Index}
@@ -149,15 +144,15 @@ The attribute indexing system in FlatCityBuf is implemented as a binary encoded 
 The construction of the attribute index follows these processes:
 
 \begin{enumerate}
-\item Create pairs of attribute values and their corresponding feature offsets.
-\item Sort the pairs by the attribute values.
-\item Create the payload section by grouping the feature offsets for duplicate attribute values.
-\item Build the tree structure from the bottom layer up, using the configured branching factor and number of unique values to determine the tree's height and the array ranges for each level.
-\begin{itemize}
-  \item Leaf nodes: $\text{branching factor} - 1$ items are grouped together as one leaf node. Each item has a key and a u64 offset to either the feature or payload section.
-  \item Internal nodes: $\text{branching factor} - 1$ items are grouped together as one internal node. The key value of an internal node is the minimum key of the subtree of its right child node.
-\end{itemize}
-\item Structure the tree from bottom to top and write it to the file in the order from top to bottom.
+  \item Create pairs of attribute values and their corresponding feature offsets.
+  \item Sort the pairs by the attribute values.
+  \item Create the payload section by grouping the feature offsets for duplicate attribute values.
+  \item Build the tree structure from the bottom layer up, using the configured branching factor and number of unique values to determine the tree's height and the array ranges for each level.
+    \begin{itemize}
+      \item Leaf nodes: $\text{branching factor} - 1$ items are grouped together as one leaf node. Each item has a key and a u64 offset to either the feature or payload section.
+      \item Internal nodes: $\text{branching factor} - 1$ items are grouped together as one internal node. The key value of an internal node is the minimum key of the subtree of its right child node.
+    \end{itemize}
+  \item Structure the tree from bottom to top and write it to the file in the order from top to bottom.
 \end{enumerate}
 
 \subsection{Serialisation of Keys in the Tree}
@@ -171,12 +166,12 @@ Key serialisation in the attribute index is a critical aspect of the implementat
 Fixed-length values offer significant advantages for tree structures, enabling predictable node sizes and efficient binary search within nodes. FlatCityBuf serialises fixed-length values using the following strategies:
 
 \begin{itemize}
-\item \textbf{Integer Types}: Primitive integer types (i8, i16, i32, i64, u8, u16, u32, u64) are serialised directly in their native binary format using little-endian byte order. For example, a u64 value occupies exactly 8 bytes in the index structure.
+  \item \textbf{Integer Types}: Primitive integer types (i8, i16, i32, i64, u8, u16, u32, u64) are serialised directly in their native binary format using little-endian byte order. For example, a u64 value occupies exactly 8 bytes in the index structure.
 
-\item \textbf{Floating-Point Types}: IEEE 754 floating-point values \citep{ieee_754_2023} use their native binary representation, with special handling for NaN values to ensure consistent ordering semantics. Since Rust's native floating-point types do not implement ordering traits, the implementation uses the \texttt{OrderedFloat} wrapper type from the Rust ecosystem to provide total ordering for floating-point values while preserving their binary efficiency.
+  \item \textbf{Floating-Point Types}: IEEE 754 floating-point values \citep{ieee_754_2023} use their native binary representation, with special handling for NaN values to ensure consistent ordering semantics. Since Rust's native floating-point types do not implement ordering traits, the implementation uses the \texttt{OrderedFloat} wrapper type from the Rust ecosystem to provide total ordering for floating-point values while preserving their binary efficiency.
 
-\item \textbf{Temporal Types}: Date and timestamp values are serialised using a normalised representation that preserves chronological ordering. Timestamps are encoded as a composite of two components: an i64 representing seconds since the epoch, followed by a u32 representing nanosecond precision, both in little-endian order. This 12-byte representation supports the full range of ISO 8601 datetime values with timezone information \citep{iso_8601_2023}.
-\item \textbf{Boolean Values}: Boolean values are encoded as a single byte (0 for false, 1 for true), aligning with common binary encodings while ensuring consistent sort order. Since boolean attributes can only have two possible values (true or false), this results in a degenerate tree structure with just a single root node containing both values. While this implementation maintains consistency with the general indexing approach, boolean attributes are rarely used as index keys in real-world 3D city model applications due to their limited discriminative power.
+  \item \textbf{Temporal Types}: Date and timestamp values are serialised using a normalised representation that preserves chronological ordering. Timestamps are encoded as a composite of two components: an i64 representing seconds since the epoch, followed by a u32 representing nanosecond precision, both in little-endian order. This 12-byte representation supports the full range of ISO 8601 datetime values with timezone information \citep{iso_8601_2023}.
+  \item \textbf{Boolean Values}: Boolean values are encoded as a single byte (0 for false, 1 for true), aligning with common binary encodings while ensuring consistent sort order. Since boolean attributes can only have two possible values (true or false), this results in a degenerate tree structure with just a single root node containing both values. While this implementation maintains consistency with the general indexing approach, boolean attributes are rarely used as index keys in real-world 3D city model applications due to their limited discriminative power.
 \end{itemize}
 
 This direct serialisation approach for fixed-length types minimises both computational overhead during tree traversal and storage requirements in the index structure.
@@ -198,20 +193,20 @@ For strings shorter than the fixed length, padding with space characters ensures
 The attribute index implementation provides two core functions that enable efficient query execution:
 
 \begin{itemize}
-\item \textbf{find\_exact\_match}: Traverses the tree structure to locate an exact match for a specified key value.
-\item \textbf{find\_partition\_point}: Identifies the boundary positions within the tree for a given query value, essential for range-based operations.
+  \item \textbf{find\_exact\_match}: Traverses the tree structure to locate an exact match for a specified key value.
+  \item \textbf{find\_partition\_point}: Identifies the boundary positions within the tree for a given query value, essential for range-based operations.
 \end{itemize}
 
 These fundamental functions support both exact match and range queries. Range queries are implemented by determining lower and upper bounds using \texttt{find\_partition\_point} and then retrieving all results within those boundaries. For inequality queries, the implementation uses \texttt{find\_exact\_match} to identify the target item and then returns all items except the matched one. This query functionality aligns with the standard operators defined in \citet{ogc_filter_encoding_2010}:
 
 \begin{itemize}
-\item \texttt{PropertyIsEqualTo}
-\item \texttt{PropertyIsNotEqualTo}
-\item \texttt{PropertyIsLessThan}
-\item \texttt{PropertyIsGreaterThan}
-\item \texttt{PropertyIsLessThanOrEqualTo}
-\item \texttt{PropertyIsGreaterThanOrEqualTo}
-\item \texttt{PropertyIsBetween}
+  \item \texttt{PropertyIsEqualTo}
+  \item \texttt{PropertyIsNotEqualTo}
+  \item \texttt{PropertyIsLessThan}
+  \item \texttt{PropertyIsGreaterThan}
+  \item \texttt{PropertyIsLessThanOrEqualTo}
+  \item \texttt{PropertyIsGreaterThanOrEqualTo}
+  \item \texttt{PropertyIsBetween}
 \end{itemize}
 
 For complex logical operations, the implementation supports compound queries by executing multiple index lookups and combining the results. For \texttt{AND} operations, it computes the intersection of result sets, while \texttt{OR} operations would use the union of results. Currently, only the \texttt{AND} logical operator is fully implemented.
@@ -222,11 +217,11 @@ For complex logical operations, the implementation supports compound queries by 
 The index is structured to optimize for HTTP Range Requests, with several techniques employed to minimize network overhead:
 
 \begin{itemize}
-\item \textbf{Streaming search}: The search algorithm operates in a streaming fashion, requesting only the nodes necessary for query evaluation in sequential order. This approach ensures that even with large indices, the system avoids loading the entire tree structure into memory, significantly reducing resource requirements.
-\item \textbf{Payload Prefetching}: Proactively caches parts of the payload section during initial query execution, reducing HTTP requests for duplicate keys.
-\item \textbf{Batch Payload Resolution}: Collects multiple payload references during tree traversal and resolves them with consolidated HTTP requests.
-\item \textbf{Request Batching}: Groups adjacent node requests to minimise network roundtrips.
-\item \textbf{Block Alignment}: Nodes are aligned to fixed size boundaries to match typical file system and HTTP caching patterns.
+  \item \textbf{Streaming search}: The search algorithm operates in a streaming fashion, requesting only the nodes necessary for query evaluation in sequential order. This approach ensures that even with large indices, the system avoids loading the entire tree structure into memory, significantly reducing resource requirements.
+  \item \textbf{Payload Prefetching}: Proactively caches parts of the payload section during initial query execution, reducing HTTP requests for duplicate keys.
+  \item \textbf{Batch Payload Resolution}: Collects multiple payload references during tree traversal and resolves them with consolidated HTTP requests.
+  \item \textbf{Request Batching}: Groups adjacent node requests to minimise network roundtrips.
+  \item \textbf{Block Alignment}: Nodes are aligned to fixed size boundaries to match typical file system and HTTP caching patterns.
 \end{itemize}
 
 During query execution, the system interprets the provided condition (\eg, \texttt{building\_height > 25}) and traverses the appropriate attribute index to find matching features. The search algorithm selects between \texttt{find\_exact\_match} for equality conditions or \texttt{find\_partition\_point} for range queries, adapting the traversal strategy accordingly. Results are returned as a set of feature offsets, which can then be used to retrieve the actual feature data from the features section of the file.

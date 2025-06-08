@@ -6,7 +6,7 @@ This chapter presents comprehensive evaluations of the FlatCityBuf format, demon
 
 The chapter is structured around several key evaluation components. First, a web prototype implementation is presented to demonstrate FlatCityBuf's practical capabilities in browser environments, showcasing how the format enables partial data access for large 3D city models through HTTP Range Requests.
 
-Second, the datasets used throughout the evaluation are described, including both the established benchmark datasets from \citet{ledoux_2024} and additional PLATEAU datasets, providing context for the performance comparisons and ensuring reproducibility of results.
+Second, the datasets used throughout the evaluation are described, including both the established benchmark datasets from \citet{ledoux_2024} and additional PLATEAU datasets from the Takeshiba district of Tokyo, providing context for the performance comparisons and ensuring reproducibility of results.
 
 Third, file size comparisons are conducted across different encoding formats to evaluate storage efficiency and compression characteristics of FlatCityBuf relative to existing CityJSON variants.
 
@@ -28,10 +28,10 @@ FlatCityBuf is implemented primarily as a Rust library that can be used in both 
 
 \begin{itemize}
   \item Native Rust library for server-side applications and desktop GIS tools
-  \item WebAssembly (WASM) module for browser-based applications with JavaScript interoperability
+  \item \ac{wasm} module for browser-based applications with JavaScript interoperability
 \end{itemize}
 
-This cross-platform approach enables FlatCityBuf to work with both Rust's native HTTP clients and browser-based Fetch API implementations. The WASM implementation has one notable limitation: current browser WebAssembly implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming WebAssembly Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
+This cross-platform approach enables FlatCityBuf to work with both Rust's native HTTP clients and browser-based Fetch \ac{api} implementations. The \ac{wasm} implementation has one notable limitation: current browser \ac{wasm} implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming \ac{wasm} Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
 \subsubsection{Web prototype}
 \label{result:cross_platform_implementation:web_prototype}
 
@@ -72,7 +72,7 @@ The HTTP Range Request mechanism integrates seamlessly with modern cloud infrast
 
 To evaluate file sizes and conduct both local and web-based benchmarks, we employed a diverse range of datasets from \citet{ledoux_2024} supplemented with additional datasets from PLATEAU \citep{plateau}. PLATEAU employs its own data specification combining CityGML 2.0 \citep{CityGML} with a custom \ac{ade}. The CityGML-encoded 3D city models were converted to CityJSON using citygml-tools, a command-line utility developed by \citet{citygml_tools}. Note that PLATEAU's \ac{ade} components are not included in the converted datasets since they are not compatible with the current CityJSON implementation.
 
-To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models including buildings, bridges, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. Comprehensive information regarding these datasets and their attributions is provided in \autoref{appendix:dataset}.
+To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models including buildings, bridges, transport, tunnels, and vegetation. The dataset collection spans various urban environments from small-scale architectural models to large metropolitan areas across European and Japanese cities, enabling evaluation across different feature types, geometric complexities, and data modeling approaches. \footnote{The datasets used in this evaluation are publicly available at \url{https://github.com/HideBa/flatcitybuf-data}.}
 
 \section{File Size Comparison}
 \label{result:file_size_comparison}
@@ -81,16 +81,14 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
 \label{result:overview:filesize_comparison}
 
 \autoref{tab:dataset_comparison} presents a comparison of datasets in both CityJSONSeq and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16.36\%, 19.09\%, and 20.17\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with CityJSONSeq format demonstrating better storage efficiency.
-
-\todo{Add whole 3DBAG}
 \begin{table*}
   \centering
   \begin{threeparttable}
     \caption{The datasets used for the benchmark.}
     \label{tab:dataset_comparison}
     \scriptsize
-    \setlength{\tabcolsep}{4pt}
-    \begin{tabular}{@{}lrrlrrr@{\hskip 3pt}rrrr@{}}
+    \setlength{\tabcolsep}{1pt}
+    \begin{tabular}{@{}lrrlrrr@{\hskip 2pt}rrrr@{}}
       \toprule
       & \multicolumn{3}{c}{\textbf{dataset}} & \multicolumn{3}{c}{\textbf{size of file}} & \multicolumn{4}{c}{\textbf{attributes}} \\
       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-11}
@@ -106,13 +104,12 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
       \textbf{Rotterdam}      & 853     & 853    & tex  & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
       \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
       \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
-      \textbf{PLATEAU\_bldg}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
-      \textbf{PLATEAU\_brid}  & 60      & 8      &      & \qty{4.78}{\mega\byte}  & \qty{5.21}{\mega\byte}  & $-9.09\%$  & 16357    & 2044.62  & 5  & 2 \\
-      \textbf{PLATEAU\_rwy}   & 412     & 412    &      & \qty{4.15}{\mega\byte}  & \qty{4.23}{\mega\byte}  & $-1.90\%$  & 5846     & 14.19    & 3  & 2 \\
-      \textbf{PLATEAU\_tran}  & 8136    & 8136   &      & \qty{26.47}{\mega\byte} & \qty{26.62}{\mega\byte} & $-0.54\%$  & 45992    & 5.65     & 3  & 2 \\
-      \textbf{PLATEAU\_tun}   & 21      & 3      &      & \qty{4.86}{\mega\byte}  & \qty{4.64}{\mega\byte}  & $4.41\%$   & 12306    & 4102.00  & 4  & 1 \\
-      \textbf{PLATEAU\_veg}   & 936     & 936    &      & \qty{1.78}{\mega\byte}  & \qty{2.32}{\mega\byte}  & $-30.50\%$ & 2567     & 2.74     & 3  & 0 \\
-      \textbf{Tokyo\_PLATEAU} & 49764   & 38627  &      & \qty{209.62}{\mega\byte}& \qty{216.76}{\mega\byte}& $-3.41\%$  & 316607   & 8.20     & 15 & 1 \\
+      \textbf{PLATEAU (Building)}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
+      \textbf{PLATEAU (Bridge)}  & 60      & 8      &      & \qty{4.78}{\mega\byte}  & \qty{5.21}{\mega\byte}  & $-9.09\%$  & 16357    & 2044.62  & 5  & 2 \\
+      \textbf{PLATEAU (Railway)}   & 412     & 412    &      & \qty{4.15}{\mega\byte}  & \qty{4.23}{\mega\byte}  & $-1.90\%$  & 5846     & 14.19    & 3  & 2 \\
+      \textbf{PLATEAU (Transport)}  & 8136    & 8136   &      & \qty{26.47}{\mega\byte} & \qty{26.62}{\mega\byte} & $-0.54\%$  & 45992    & 5.65     & 3  & 2 \\
+      \textbf{PLATEAU (Tunnels)}   & 21      & 3      &      & \qty{4.86}{\mega\byte}  & \qty{4.64}{\mega\byte}  & $4.41\%$   & 12306    & 4102.00  & 4  & 1 \\
+      \textbf{PLATEAU (Vegetation)}   & 936     & 936    &      & \qty{1.78}{\mega\byte}  & \qty{2.32}{\mega\byte}  & $-30.50\%$ & 2567     & 2.74     & 3  & 0 \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
@@ -133,11 +130,11 @@ Although \autoref{result:overview:filesize_comparison} provides a summary of fil
 \subsubsection{Level of detail}
 \label{result:overview:analysis_of_file_size_results:level_of_detail}
 
-To examine how level of detail (LOD) affects file size, I conducted a series of tests using the TU Delft BK building model at various LOD levels. Each LOD variant was systematically extracted from the original model, with attributes and semantic information deliberately removed to isolate the effect of geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
+To examine how \ac{lod} affects file size, I conducted a series of tests using the TU Delft BK building model at various \ac{lod} levels. Each \ac{lod} variant was systematically extracted from the original model, with attributes and semantic information deliberately removed to isolate the effect of geometric complexity. \autoref{tab:lod_comparison} presents the results of this analysis.
 
 Since each test dataset contains only a single city feature, we compare feature sizes rather than total file sizes. This approach is necessary because FlatCityBuf incorporates a larger header structure, which would disproportionately affect comparisons involving minimal features.
 
-The results demonstrate that while file sizes increase with higher levels of detail, the compression factor remains largely independent of LOD. Both formats show similar proportional growth in size as geometric complexity increases, with FlatCityBuf consistently achieving approximately 24-25\% size reduction compared to CityJSONSeq regardless of the LOD level. This suggests that the compression efficiency is determined by the underlying format design rather than the geometric complexity of the data.
+The results demonstrate that while file sizes increase with higher levels of detail, the compression factor remains largely independent of \ac{lod}. Both formats show similar proportional growth in size as geometric complexity increases, with FlatCityBuf consistently achieving approximately 24-25\% size reduction compared to CityJSONSeq regardless of the \ac{lod} level. This suggests that the compression efficiency is determined by the underlying format design rather than the geometric complexity of the data.
 
 \begin{table}[htbp]
   \centering
@@ -148,10 +145,10 @@ The results demonstrate that while file sizes increase with higher levels of det
     \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Vertices} \\
     \midrule
     TUD BK All & \qty{139.75}{\kilo\byte} & \qty{189.01}{\kilo\byte} & $26.08\%$ & 4549 \\
-    TUD BK LOD0 & \qty{12.77}{\kilo\byte} & \qty{20.72}{\kilo\byte} & $38.11\%$ & 785 \\
-    TUD BK LOD1.2 & \qty{37.45}{\kilo\byte} & \qty{49.40}{\kilo\byte} & $24.23\%$ & 1350 \\
-    TUD BK LOD1.3 & \qty{44.66}{\kilo\byte} & \qty{59.25}{\kilo\byte} & $24.67\%$ & 1600 \\
-    TUD BK LOD2.2 & \qty{62.02} {\kilo\byte} & \qty{82.74}{\kilo\byte} & $25.07\%$ & 2168 \\
+    TUD BK \ac{lod}0 & \qty{12.77}{\kilo\byte} & \qty{20.72}{\kilo\byte} & $38.11\%$ & 785 \\
+    TUD BK \ac{lod}1.2 & \qty{37.45}{\kilo\byte} & \qty{49.40}{\kilo\byte} & $24.23\%$ & 1350 \\
+    TUD BK \ac{lod}1.3 & \qty{44.66}{\kilo\byte} & \qty{59.25}{\kilo\byte} & $24.67\%$ & 1600 \\
+    TUD BK \ac{lod}2.2 & \qty{62.02} {\kilo\byte} & \qty{82.74}{\kilo\byte} & $25.07\%$ & 2168 \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -192,7 +189,7 @@ To assess the impact of attributes on file size, we tested simple cube models fr
 
 The randomly generated attributes in our test datasets followed a consistent pattern, as shown in the example below:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={Example of a CityJSON feature with attributes},  basicstyle=\small]
 {
   "type": "Building",
   "geometry": [...],
@@ -206,7 +203,7 @@ The randomly generated attributes in our test datasets followed a consistent pat
     "attr_n": "value_n"
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 For integer attribute tests, all values were randomly generated integers between 0 and 1000. For string attribute tests, values were randomly generated strings of varying lengths between 5 and 15 characters. This approach ensured a realistic representation of typical attribute data while maintaining controlled test conditions.
 
@@ -308,7 +305,7 @@ This characteristic explains the pattern observed in \autoref{result:overview:fi
 The comprehensive analysis of various factors affecting file size reveals distinct patterns in the compression performance of FlatCityBuf compared to CityJSONSeq:
 
 \begin{itemize}
-  \item \textbf{Level of Detail:} The analysis demonstrates that geometric detail levels have minimal impact on compression efficiency. While file sizes naturally increase with higher LODs, the compression advantage of FlatCityBuf remains relatively consistent at approximately 24-25\% across different levels of geometric complexity.
+  \item \textbf{Level of Detail:} The analysis demonstrates that geometric detail levels have minimal impact on compression efficiency. While file sizes naturally increase with higher \ac{lod}s, the compression advantage of FlatCityBuf remains relatively consistent at approximately 24-25\% across different levels of geometric complexity.
 
   \item \textbf{Attribute Quantity:} The number of attributes significantly influences compression performance. FlatCityBuf's efficiency increases dramatically with attribute count, from minimal compression (5.07\%) with 10 attributes to substantial compression (44.13\%) with 1000 attributes. This progressive advantage stems from FlatCityBuf's schema-based approach that eliminates redundant attribute key storage.
 
@@ -348,8 +345,7 @@ The benchmark framework captured multiple performance dimensions through the fol
   \item \textbf{Memory Efficiency:} Peak Resident Set Size (RSS) during file processing, providing an accurate measurement of maximum memory requirements
 
 \end{itemize}
-
-These parameters were systematically measured across all encoding formats—CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. CBOR and BSON were selected as additional comparison formats because they are JSON-compatible binary encoding formats, providing a meaningful intermediate comparison between text-based CityJSONSeq and the custom FlatCityBuf implementation. Other data formats such as Protocol Buffers or GeoParquet would require developing dedicated libraries similar to the FlatBuffers implementation, making them less suitable for this comparative analysis. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
+These parameters were systematically measured across all encoding formats—CityJSONSeq, CBOR, BSON, and FlatCityBuf—to facilitate direct performance comparisons. CBOR and BSON were selected as additional comparison formats because they are JSON-compatible binary encoding formats, providing a meaningful intermediate comparison between text-based CityJSONSeq and the custom FlatCityBuf implementation. For CBOR and BSON evaluation, single CityJSON files were encoded, which serve as the source for the corresponding CityJSONSeq datasets. Other data formats such as Protocol Buffers or GeoParquet would require developing dedicated libraries similar to the FlatBuffers implementation, making them less suitable for this comparative analysis. The subsequent sections present a detailed analysis of these measurements and their implications for practical applications.
 
 \subsection{Read Performance FlatCityBuf vs CityJSONSeq}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cityjsonseq}
@@ -361,16 +357,16 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
   \begin{threeparttable}
     \caption{Performance comparison between CityJSONSeq and FlatCityBuf}
     \label{tab:performance_comparison}
-    \setlength{\tabcolsep}{6pt}
-    \tiny
+    \setlength{\tabcolsep}{10pt}
+    \scriptsize
     \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
       & \multicolumn{3}{c}{\textbf{Memory Consumption}} \\
       \cmidrule(lr){2-4} \cmidrule(lr){5-7}
       \textbf{Dataset}
-      & \textbf{CityJSONSeq} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}}
-      & \textbf{CityJSONSeq} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{a}} \\
+      & \textbf{cjseq\tnote{a}} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{b}}
+      & \textbf{cjseq\tnote{a}} & \textbf{FlatCityBuf} & \textbf{Ratio\tnote{b}} \\
       \midrule
       3DBAG
       & \qty{56.3}{\milli\second} & \qty{6.6}{\milli\second} & 8.6$\times$
@@ -408,35 +404,41 @@ The performance comparison between FlatCityBuf and CityJSONSeq was conducted acr
       & \qty{1.88}{\second} & \qty{151.9}{\milli\second} & 12.4$\times$
       & \qty{31.3}{\mega\byte} & \qty{5.1}{\mega\byte} & 6.2$\times$ \\
 
-      Tokyo (PLATEAU)
-      & \qty{1.98}{\second} & \qty{95.7}{\milli\second} & 20.7$\times$
-      & \qty{56.8}{\mega\byte} & \qty{12.0}{\mega\byte} & 4.7$\times$ \\
+      PLATEAU (Building)
+      & \qty{861.4}{\milli\second} & \qty{32.5}{\milli\second} & 26.5$\times$
+      & \qty{220.9}{\mega\byte} & \qty{64.4}{\mega\byte} & 3.4$\times$ \\
 
-      PLATEAU\_brid
+      PLATEAU (Bridge)
       & \qty{83.9}{\milli\second} & \qty{0.3}{\milli\second} & 256.8$\times$
       & \qty{75.0}{\mega\byte} & \qty{12.0}{\mega\byte} & 6.3$\times$ \\
 
-      PLATEAU\_tran
+      PLATEAU (Railway)
+      & \qty{37.9}{\milli\second} & \qty{2.0}{\milli\second} & 18.5$\times$
+      & \qty{19.0}{\mega\byte} & \qty{5.1}{\mega\byte} & 3.8$\times$ \\
+
+      PLATEAU (Transport)
       & \qty{244.0}{\milli\second} & \qty{13.3}{\milli\second} & 18.4$\times$
       & \qty{76.7}{\mega\byte} & \qty{20.2}{\mega\byte} & 3.8$\times$ \\
 
-      PLATEAU\_tun
+      PLATEAU (Tunnels)
       & \qty{47.9}{\milli\second} & \qty{1.9}{\milli\second} & 24.9$\times$
       & \qty{70.6}{\mega\byte} & \qty{12.6}{\mega\byte} & 5.6$\times$ \\
 
-      PLATEAU\_veg
+      PLATEAU (Vegetation)
       & \qty{852.3}{\milli\second} & \qty{32.9}{\milli\second} & 25.9$\times$
       & \qty{189.8}{\mega\byte} & \qty{56.9}{\mega\byte} & 3.3$\times$ \\
+
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
       \footnotesize
-    \item[a] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
+    \item[a] CityJSONSeq
+    \item[b] Ratio = CityJSONSeq metric / FlatCityBuf metric (higher values indicate better FlatCityBuf performance)
     \end{tablenotes}
   \end{threeparttable}
 \end{table}
 
-The performance comparison reveals significant advantages for FlatCityBuf in both processing time and memory consumption. FlatCityBuf demonstrates consistently superior performance, processing data between 8.6$\times$ and 256.8$\times$ faster than CityJSONSeq across all datasets. The most dramatic improvements are observed for the PLATEAU bridge model and Ingolstadt datasets, which suggests that FlatCityBuf exhibits lower overhead when handling smaller datasets. Memory consumption is also consistently reduced compared to CityJSONSeq, with FlatCityBuf showing particularly notable advantages for certain datasets, including Zürich and the Tokyo PLATEAU models.
+The performance comparison reveals significant advantages for FlatCityBuf in both processing time and memory consumption. FlatCityBuf demonstrates consistently superior performance, processing data between 8.6$\times$ and 256.8$\times$ faster than CityJSONSeq across all datasets. The most dramatic improvements are observed for the PLATEAU bridge model and Ingolstadt datasets, which suggests that FlatCityBuf exhibits lower overhead when handling smaller datasets. Memory consumption is also consistently reduced compared to CityJSONSeq, with FlatCityBuf showing particularly notable advantages for certain datasets, including Montréal and the PLATEAU Bridge model.
 
 \subsection{Read performance FlatCityBuf vs CBOR}
 \label{result:benchmark_on_local_environment:read_performance_flatcitybuf_vs_cbor}
@@ -448,8 +450,8 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
   \begin{threeparttable}
     \caption{Performance comparison between CBOR and FlatCityBuf}
     \label{tab:performance_comparison_cbor}
-    \setlength{\tabcolsep}{6pt}
-    \tiny
+    \setlength{\tabcolsep}{10pt}
+    \scriptsize
     \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
@@ -495,25 +497,30 @@ The performance comparison between FlatCityBuf and CBOR was conducted using the 
       & \qty{3.53}{\second} & \qty{151.9}{\milli\second} & 23.3$\times$
       & \qty{4.51}{\giga\byte} & \qty{5.1}{\mega\byte} & 913.2$\times$ \\
 
-      Tokyo (PLATEAU)
-      & \qty{2.63}{\second} & \qty{95.7}{\milli\second} & 27.4$\times$
-      & \qty{4.11}{\giga\byte} & \qty{12.0}{\mega\byte} & 351.5$\times$ \\
+      PLATEAU (Building)
+      & \qty{1.06}{\second} & \qty{32.5}{\milli\second} & 32.4$\times$
+      & \qty{1.83}{\giga\byte} & \qty{64.4}{\mega\byte} & 28.4$\times$ \\
 
-      PLATEAU\_brid
+      PLATEAU (Bridge)
       & \qty{63.6}{\milli\second} & \qty{0.3}{\milli\second} & 194.7$\times$
       & \qty{305.4}{\mega\byte} & \qty{12.0}{\mega\byte} & 25.6$\times$ \\
 
-      PLATEAU\_tran
+      PLATEAU (Railway)
+      & \qty{46.3}{\milli\second} & \qty{2.0}{\milli\second} & 22.7$\times$
+      & \qty{141.0}{\mega\byte} & \qty{5.1}{\mega\byte} & 27.9$\times$ \\
+
+      PLATEAU (Transport)
       & \qty{316.1}{\milli\second} & \qty{13.3}{\milli\second} & 23.8$\times$
       & \qty{614.5}{\mega\byte} & \qty{20.2}{\mega\byte} & 30.5$\times$ \\
 
-      PLATEAU\_tun
+      PLATEAU (Tunnels)
       & \qty{147.7}{\milli\second} & \qty{1.9}{\milli\second} & 76.7$\times$
       & \qty{400.2}{\mega\byte} & \qty{12.6}{\mega\byte} & 31.8$\times$ \\
 
-      PLATEAU\_veg
+      PLATEAU (Vegetation)
       & \qty{997.8}{\milli\second} & \qty{32.9}{\milli\second} & 30.3$\times$
       & \qty{1.97}{\giga\byte} & \qty{56.9}{\mega\byte} & 35.3$\times$ \\
+
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
@@ -537,8 +544,8 @@ The performance comparison between FlatCityBuf and BSON followed the same method
   \begin{threeparttable}
     \caption{Performance comparison between BSON and FlatCityBuf}
     \label{tab:performance_comparison_bson}
-    \setlength{\tabcolsep}{6pt}
-    \tiny
+    \setlength{\tabcolsep}{10pt}
+    \scriptsize
     \begin{tabular}{@{}l|rrr|rrr@{}}
       \toprule
       & \multicolumn{3}{c|}{\textbf{Processing Time}}
@@ -584,29 +591,30 @@ The performance comparison between FlatCityBuf and BSON followed the same method
       & \qty{5.80}{\second} & \qty{151.9}{\milli\second} & 38.2$\times$
       & \qty{6.97}{\giga\byte} & \qty{5.1}{\mega\byte} & 1409.0$\times$ \\
 
-      Tokyo (PLATEAU)
-      & \qty{6.92}{\second} & \qty{95.7}{\milli\second} & 72.3$\times$
-      & \qty{6.99}{\giga\byte} & \qty{12.0}{\mega\byte} & 597.3$\times$ \\
+      PLATEAU (Building)
+      & \qty{2.37}{\second} & \qty{32.5}{\milli\second} & 72.7$\times$
+      & \qty{3.76}{\giga\byte} & \qty{64.4}{\mega\byte} & 58.4$\times$ \\
 
-      PLATEAU\_brid
+      PLATEAU (Bridge)
       & \qty{177.0}{\milli\second} & \qty{0.3}{\milli\second} & 541.8$\times$
       & \qty{500.2}{\mega\byte} & \qty{12.0}{\mega\byte} & 41.9$\times$ \\
 
-      PLATEAU\_rwy
-      & \qty{85}{\milli\second} & \qty{2}{\milli\second} & 42.5$\times$
-      & \qty{284.1}{\mega\byte} & \qty{4.7}{\mega\byte} & 61.0$\times$ \\
+      PLATEAU (Railway)
+      & \qty{80.5}{\milli\second} & \qty{2.0}{\milli\second} & 39.4$\times$
+      & \qty{294.0}{\mega\byte} & \qty{5.1}{\mega\byte} & 58.1$\times$ \\
 
-      PLATEAU\_tran
+      PLATEAU (Transport)
       & \qty{603}{\milli\second} & \qty{14}{\milli\second} & 43.1$\times$
       & \qty{1.0}{\giga\byte} & \qty{23.0}{\mega\byte} & 46.0$\times$ \\
 
-      PLATEAU\_tun
+      PLATEAU (Tunnels)
       & \qty{251}{\milli\second} & \qty{2}{\milli\second} & 125.5$\times$
       & \qty{618.4}{\mega\byte} & \qty{14.2}{\mega\byte} & 43.5$\times$ \\
 
-      PLATEAU\_veg
+      PLATEAU (Vegetation)
       & \qty{2.07}{\second} & \qty{33}{\milli\second} & 65.3$\times$
       & \qty{3.99}{\giga\byte} & \qty{70.4}{\mega\byte} & 71.8$\times$ \\
+
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
@@ -616,7 +624,7 @@ The performance comparison between FlatCityBuf and BSON followed the same method
   \end{threeparttable}
 \end{table}
 
-The benchmark results show that FlatCityBuf significantly outperforms BSON across all tested datasets. Processing time improvements ranged from 17.8$\times$ to 541.8$\times$, with the most dramatic speedup observed for the PLATEAU bridge model. The exceptional performance gain for smaller datasets like PLATEAU\_brid reflects FlatCityBuf's zero-copy deserialization advantage, where parsing overhead represents a larger proportion of total processing time.
+The benchmark results show that FlatCityBuf significantly outperforms BSON across all tested datasets. Processing time improvements ranged from 17.8$\times$ to 541.8$\times$, with the most dramatic speedup observed for the PLATEAU bridge model. The exceptional performance gain for smaller datasets like PLATEAU bridge model reflects FlatCityBuf's zero-copy deserialization advantage, where parsing overhead represents a larger proportion of total processing time.
 
 Memory consumption was reduced by factors ranging from 38.9$\times$ to 1409.0$\times$, with the largest improvements seen in datasets such as Zürich and Helsinki. This substantial memory efficiency stems from BSON's requirement to deserialize the entire document into memory structures, while FlatCityBuf enables direct access to data without full memory allocation. The performance gains are generally more pronounced than those observed in the CBOR comparison.
 
@@ -632,58 +640,61 @@ To summarise the results of the local environment benchmark, FlatCityBuf demonst
 
 \section{Benchmark over the web}
 \label{result:benchmark_over_the_web}
+To evaluate FlatCityBuf's performance in real-world web scenarios, we compared it with the 3DBAG \ac{api} \citep{3dbag_api}. The 3DBAG \ac{api} currently supports two query types: \textit{feature ID query} for retrieving CityJSONFeature by identifier (\eg, \texttt{identificatie} attribute of 3DBAG) and \textit{bounding box query} for spatial queries with configurable result limits via the \texttt{limit} parameter.
 
-To evaluate FlatCityBuf's performance in real-world web scenarios, we compared it with the 3DBAG API \citep{3dbag_api}. The 3DBAG API currently supports two query types: \textit{feature ID query} for retrieving CityJSONFeature by identifier (\eg, \texttt{identificatie} attribute of 3DBAG) and \textit{bounding box query} for spatial queries with configurable result limits via the \texttt{limit} parameter.
+While network-based benchmarking provides more realistic performance insights, it introduces additional complexity due to variable network latency and server-side factors. As discussed in \autoref{result:cross_platform_implementation:cloud_integration}, FlatCityBuf operates without server-side processing, requiring only static file storage, contrasting with traditional application and database servers.
 
-While network-based benchmarking provides more realistic performance insights, it introduces additional complexity due to variable network latency and server-side factors such as concurrent request load and server capacity. As discussed in \autoref{result:cross_platform_implementation:cloud_integration}, FlatCityBuf operates without server-side processing, requiring only static file storage. Although storage servers are technically server applications, they are often considered serverless in cloud-native environments due to their scalability and availability as managed services from cloud providers, contrasting with traditional application and database servers.
-
-We acknowledged that comparing FlatCityBuf with the 3DBAG API is not entirely equitable due to these fundamental architectural differences. However, this comparison remains valuable as API-based access represents the current standard approach for CityJSON data consumption in web applications.
+We acknowledge that this comparison is not entirely equitable due to fundamental architectural differences and the 3DBAG \ac{api} being a public service potentially handling concurrent requests. However, this comparison remains valuable as API-based access represents the current standard approach for CityJSON data consumption in web applications.
 
 \subsection{Benchmark environment}
 \label{result:benchmark_over_the_web:benchmark_environment}
 
-For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with HTTP range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG API operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}. To account for network variability and potential outliers, we collected 100 samples for each method with 10 warmup samples.
+For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with HTTP range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG \ac{api}, publicly available at \url{https://api.3dbag.nl/}, operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}.
+
+To account for network variability and potential outliers, we collected 100 samples for each method with 10 warmup samples.
 
 \subsection{Feature ID query}
 \label{result:benchmark_over_the_web:feature_id_query}
 
-Both FlatCityBuf files and the 3DBAG API database organise features according to technical implementation decisions (\eg, FlatCityBuf features are typically sorted by Hilbert curve). To ensure fair comparison by identifier, we selected 5 features distributed across different regions of the Netherlands, representing landmark or well-known buildings. The benchmark results represent the average performance across 100 samples for all 5 features.
+Both FlatCityBuf files and the 3DBAG \ac{api} database organise features according to technical implementation decisions (\eg, FlatCityBuf features are typically sorted by Hilbert curve). To ensure fair comparison by identifier, we selected 5 features distributed across different regions of the Netherlands, representing landmark or well-known buildings. The benchmark results represent the average performance across 100 samples for all 5 features.
 
-\autoref{tab:feature_id_performance} presents the performance comparison between FlatCityBuf and the 3DBAG API for feature ID queries. Overall, FlatCityBuf demonstrates approximately 2.1$\times$ faster performance than the 3DBAG API for identifier-based feature retrieval. Performance ranged from 2.7$\times$ faster (Groningen station) to 1.5$\times$ faster (Eindhoven station).
+\autoref{tab:feature_id_performance} presents the performance comparison between FlatCityBuf and the 3DBAG \ac{api} for feature ID queries. Overall, FlatCityBuf demonstrates approximately 2.1$\times$ faster performance than the 3DBAG \ac{api} for identifier-based feature retrieval. Performance ranged from 2.7$\times$ faster (Groningen station) to 1.5$\times$ faster (Eindhoven station).
 
 \begin{table}[ht]
   \centering
   \caption{Feature ID query performance comparison between FlatCityBuf and 3DBAG API}
   \label{tab:feature_id_performance}
-  \begin{tabular}{llccc}
-    \toprule
-    \textbf{Feature ID} & \textbf{Location} & \textbf{FCB\tnote{a}} & \textbf{API\tnote{b}} & \textbf{Ratio\tnote{c}} \\
-    & & \textbf{(ms)} & \textbf{(ms)} & \\
-    \midrule
-    NL.IMBAG.Pand.0503100000032914 & TU Delft BK building & 935.8 & 2412.5 & 2.6$\times$ \\
-    NL.IMBAG.Pand.0363100012185598 & Amsterdam Central Station & 858.0 & 2106.7 & 2.5$\times$ \\
-    NL.IMBAG.Pand.0014100010938997 & Groningen Station & 821.7 & 2254.8 & 2.7$\times$ \\
-    NL.IMBAG.Pand.0772100000295227 & Eindhoven Station & 1378.7 & 2013.4 & 1.5$\times$ \\
-    NL.IMBAG.Pand.0153100000261851 & Enschede Station & 1070.4 & 2058.8 & 1.9$\times$ \\
-    \midrule
-    \textbf{Average} & & \textbf{1012.9} & \textbf{2169.2} & \textbf{2.1$\times$} \\
-    \bottomrule
-  \end{tabular}
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{llccc}
+      \toprule
+      \textbf{Feature ID} & \textbf{Location} & \textbf{FCB\tnote{a}} & \textbf{API\tnote{b}} & \textbf{Ratio\tnote{c}} \\
+      & & \textbf{(ms)} & \textbf{(ms)} & \\
+      \midrule
+      NL.IMBAG.Pand.0503100000032914 & TU Delft BK building & 935.8 & 2412.5 & 2.6$\times$ \\
+      NL.IMBAG.Pand.0363100012185598 & Amsterdam Central Station & 858.0 & 2106.7 & 2.5$\times$ \\
+      NL.IMBAG.Pand.0014100010938997 & Groningen Station & 821.7 & 2254.8 & 2.7$\times$ \\
+      NL.IMBAG.Pand.0772100000295227 & Eindhoven Station & 1378.7 & 2013.4 & 1.5$\times$ \\
+      NL.IMBAG.Pand.0153100000261851 & Enschede Station & 1070.4 & 2058.8 & 1.9$\times$ \\
+      \midrule
+      \textbf{Average} & & \textbf{1012.9} & \textbf{2169.2} & \textbf{2.1$\times$} \\
+      \bottomrule
+    \end{tabular}%
+  }
 
   \begin{tablenotes}[flushleft]
     \footnotesize
   \item[a] FCB = FlatCityBuf
-  \item[b] API = 3DBAG API
-  \item[c] Ratio = 3DBAG API / FlatCityBuf (higher values indicate better FlatCityBuf performance)
+  \item[b] API = 3DBAG \ac{api}
+  \item[c] Ratio = 3DBAG \ac{api} / FlatCityBuf (higher values indicate better FlatCityBuf performance)
   \end{tablenotes}
 \end{table}
 
 \subsection{Bounding box query}
 \label{result:benchmark_over_the_web:bounding_box_query}
 
-For spatial query performance comparison, we selected a 2km $\times$ 2km bounding box around the Delft University of Technology campus, requesting the first 10 features within the area (matching the 3DBAG API's default limit). The benchmark results represent the average of 100 samples. The bounding box coordinates were \texttt{(84000.0, 444000.0, 86000.0, 446000.0)} in the Amersfoort / RD New + NAP height (EPSG:7415) coordinate system.
+For spatial query performance comparison, we selected a 2km $\times$ 2km bounding box around the Delft University of Technology campus, requesting the first 10 features within the area (matching the 3DBAG \ac{api}'s default limit). The benchmark results represent the average of 100 samples. The bounding box coordinates were \texttt{(84000.0, 444000.0, 86000.0, 446000.0)} in the Amersfoort / RD New + NAP height (EPSG:7415) coordinate system.
 
-FlatCityBuf demonstrated approximately 15.1$\times$ faster performance than the 3DBAG API for bounding box queries. This significant improvement over feature ID queries likely results from FlatCityBuf's Hilbert curve-based feature sorting, which enables spatially proximate features to be retrieved in batched operations.
+FlatCityBuf demonstrated approximately 15.1$\times$ faster performance than the 3DBAG \ac{api} for bounding box queries. This significant improvement over feature ID queries likely results from FlatCityBuf's Hilbert curve-based feature sorting, which enables spatially proximate features to be retrieved in batched operations.
 
 \begin{table}[ht]
   \centering

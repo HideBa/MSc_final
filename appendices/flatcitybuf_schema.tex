@@ -3,8 +3,7 @@
 
 \section{Header}
 \label{appendix:flatcitybuf_schema:header}
-\todo{add description of header}
-\begin{lstlisting}[caption={Header schema},  basicstyle=\small]
+\begin{lstlisting}[caption={Header schema of FlatCityBuf},  basicstyle=\small]
 
   include "geometry.fbs";
   include "extension.fbs";
@@ -171,7 +170,7 @@
 
 \section{Geometry}
 \label{appendix:flatcitybuf_schema:geometry}
-\begin{lstlisting}[caption={Geometry schema}, basicstyle=\small]
+\begin{lstlisting}[caption={Geometry schema of FlatCityBuf}, basicstyle=\small]
 
 enum SemanticSurfaceType:ubyte {
   // Building
@@ -292,8 +291,7 @@ table GeometryInstance {
 
 \section{Extension}
 \label{appendix:flatcitybuf_schema:extension}
-\todo{add description of extension}
-\begin{lstlisting}[caption={Extension schema}, basicstyle=\small]
+\begin{lstlisting}[caption={Extension schema of FlatCityBuf}, basicstyle=\small]
 // Extension is a struct that contains schema of the extension.
 // To simplify FlatBuffers schema, we just store stringified JSON schema.
 // This Extension can be derived from ExtensionMeta's url.
@@ -313,8 +311,7 @@ table Extension {
 
 \section{Feature}
 \label{appendix:flatcitybuf_schema:feature}
-\todo{add description of feature}
-\begin{lstlisting}[caption={Feature schema}, basicstyle=\small]
+\begin{lstlisting}[caption={Feature schema of FlatCityBuf}, basicstyle=\small]
 
   include "header.fbs";
   include "geometry.fbs";

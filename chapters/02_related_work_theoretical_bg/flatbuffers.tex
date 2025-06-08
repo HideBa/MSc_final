@@ -19,7 +19,7 @@ FlatBuffers employs a strongly typed, schema-based approach to data serialisatio
 
 This schema-first approach enforces data consistency and type safety, which is essential to be processed in various programming languages and environments. The generated code provides memory-efficient access patterns to the underlying binary data without requiring full deserialisation. FlatCityBuf utilises this capability to achieve a balance between parsing speed and storage efficiency.
 
-The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C\#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability \citep{flatbuffers_support}. This extensive language support enables developers to work with FlatBuffers data in their preferred environment. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics, memory safety guarantees, and excellent support for WebAssembly (WASM) compilation, which is beneficial for web-based deployment scenarios.
+The FlatBuffers compiler supports code generation for multiple programming languages, including C++, Java, C\#, Go, Python, JavaScript, TypeScript, Rust, and others, facilitating cross-platform interoperability \citep{flatbuffers_support}. This extensive language support enables developers to work with FlatBuffers data in their preferred environment. For FlatCityBuf, Rust was selected as the primary implementation language due to its performance characteristics, memory safety guarantees, and excellent support for \ac{wasm} compilation, which is beneficial for web-based deployment scenarios.
 
 \subsection{Data Type System}
 \label{tb:flatbuffers:data_type_system}
@@ -110,17 +110,22 @@ These features were essential for FlatCityBuf's implementation, enabling modular
 
 \subsection{Binary Structure and Memory Layout}
 \label{tb:flatbuffers:binary_structure}
-\todo{Ravi's comment "add a figure to illustrate a typical flatbuffer memory layout"}
 
 FlatBuffers organises serialised data in a flat binary buffer with the following characteristics:
 
 \begin{itemize}
-  \item \textbf{Zero-copy access} through a carefully designed memory layout that allows direct access to serialized data without intermediate parsing
-  \item \textbf{Vtable-based field access} where each table starts with an offset to its vtable, enabling efficient field lookup and schema evolution
+  \item \textbf{Zero-copy access} through a carefully designed memory layout that allows direct access to serialised data without intermediate parsing
+  \item \textbf{Vtable-based field access} where each table starts with an offset to its vtable, enabling efficient field lookup and schema evolution. \autoref{lst:flatbuffers_vtable} shows an example of a vtable.
   \item \textbf{Little-endian encoding} for all scalar values, with automatic conversion on big-endian platforms
   \item \textbf{Offset-based references} for all non-inline data (tables, strings, vectors), allowing efficient navigation within the buffer
 \end{itemize}
 
-\todo{add more detail for binary region refering to https://flatbuffers.dev/annotation/}
+\begin{lstlisting}[caption=Vtable of AnnotatedBinary.Bar sourced from \citet{flatbuffers_annotation}, label=lst:flatbuffers_vtable]
+  vtable (AnnotatedBinary.Bar):
+  +0x00A0 | 08 00      | uint16_t   | 0x0008 (8)   | size of this vtable
+  +0x00A2 | 13 00      | uint16_t   | 0x0013 (19)  | size of referring table
+  +0x00A4 | 08 00      | VOffset16  | 0x0008 (8)   | offset to field `a` (id: 0)
+  +0x00A6 | 04 00      | VOffset16  | 0x0004 (4)   | offset to field `b` (id: 1)
+\end{lstlisting}
 
 For complex data structures like 3D city models, FlatBuffers allows for modular schema composition through file inclusion. This capability enabled the separation of FlatCityBuf's schema into logical components (\texttt{header.fbs}, \texttt{feature.fbs}, \texttt{geometry.fbs}, etc.) while maintaining efficient serialisation. In our implementation, the \texttt{Header} and \texttt{CityFeature} tables serve as root types that anchor the overall data structure.

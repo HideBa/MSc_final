@@ -62,13 +62,11 @@ This sequence-based structure enables incremental file access through HTTP Range
 
 \subsection{Note on Binary Encoding}
 \label{methodology:overview:note_on_binary_encoding}
-\todo{add reference why these two}
 FlatCityBuf follows two key conventions for encoding binary data throughout the file format:
 
 \begin{enumerate}
-  \item \textbf{Size-prefixed FlatBuffers}: All FlatBuffers records (header and features) include a 4-byte unsigned integer prefix indicating the buffer size. This enables programs to know the size of the record without parsing the entire content. The FlatBuffers API implements this through \texttt{finish\_size\_prefixed} or equivalent language-specific methods.
+  \item \textbf{Size-prefixed FlatBuffers}: All FlatBuffers records (header and features) include a 4-byte unsigned integer prefix indicating the buffer size. This enables programs to know the size of the record without parsing the entire content. The FlatBuffers \ac{api} implements this through \texttt{finish\_size\_prefixed} or equivalent language-specific methods.
   \item \textbf{Little-endian encoding}: For data encoded outside FlatBuffers records (particularly in spatial and attribute indices), little-endian byte ordering is consistently applied, matching the endianness convention used within FlatBuffers records. This includes numeric values such as 32-bit and 64-bit integers, floating-point numbers, and offset values within indices.
 \end{enumerate}
 
-\todo{add reference}
-These conventions ensure consistency across the file format and maximise compatibility with modern CPU architectures, most of which use little-endian byte ordering. The size-prefixing mechanism is particularly important for cloud-based access patterns, as it facilitates precise HTTP Range Requests when retrieving specific file segments.
+These conventions ensure consistency across the file format and maximise compatibility with modern \acp{cpu} architectures, most of which use little-endian byte ordering. The size-prefixing mechanism is particularly important for cloud-based access patterns, as it facilitates precise HTTP Range Requests when retrieving specific file segments.

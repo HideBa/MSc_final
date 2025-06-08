@@ -95,5 +95,6 @@
   "files.watcherExclude": {
     "**/.aux/**": true,
     "**/.out/**": true
-  }
+  },
+  "latex-workshop.synctex.afterBuild.enabled": true
 }

@@ -162,10 +162,24 @@ The encoding strategy follows a dimensional hierarchy from lowest to highest dim
   \item \textbf{solids}: Array where each value indicates the number of shells in each solid
 \end{enumerate}
 
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{./figs/methodology/triangle.png}
+    \caption{Example of a triangle encoded as a hierarchical boundary.}
+    \label{fig:triangle_encoding}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{./figs/methodology/cube.png}
+    \caption{Example of a cube encoded as a hierarchical boundary.}
+    \label{fig:cube_encoding}
+  \end{minipage}
+\end{figure}
+
 For example, a simple triangle would be encoded as:
-
-\todo{draw figure here}
-
 \begin{lstlisting}[caption={Hierarchical boundary encoding for a simple triangle}, label={lst:triangle_encoding}, basicstyle=\small\ttfamily]
 boundaries: [0, 1, 2]       // Indices of three vertices
 strings: [3]                // Single string with 3 vertices
@@ -390,7 +404,6 @@ Attributes in FlatCityBuf are encoded as binary data with a schema defined throu
 
 FlatCityBuf encodes attributes as type-specific binary values with a corresponding schema definition. Each attribute is stored as a key-value pair where the key is the column index and the value is the binary representation of the attribute. This approach balances flexibility with reasonable performance while maintaining compatibility with the original CityJSON semantic model. The figure below illustrates how different attribute types are encoded in the binary format.
 
-\todo{replace with proper figure}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figs/methodology/attribute_structure.png}

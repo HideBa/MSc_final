@@ -176,7 +176,7 @@ Each extension must be documented and validated using a JSON Schema file. This s
 
 These characteristics, particularly JSON's absence of repetitive closing element tags and the implementation of coordinate quantisation, result in significantly smaller file sizes compared to CityGML, achieving compression factors of up to 7× \citep{ledoux_2019}.
 
-The proposed data format, FlatCityBuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantisation, and the extension mechanism. The strategy for encoding city objects in FlatCityBuf will be explained in \autoref{methodology}.
+The proposed data format I developed in this research, FlatCityBuf, inherits key concepts from CityJSON including semantic surfaces, geometry templates, coordinate quantisation, and the extension mechanism. The strategy for encoding city objects in FlatCityBuf will be explained in \autoref{methodology}.
 
 \subsection{CityJSON Text Sequences (CityJSONSeq)}
 \label{rw:cityjson_enhancements:cityjsonseq}
@@ -227,7 +227,7 @@ Despite CityJSONSeq's improvements for streaming applications, its text-based JS
 
 3DBAG is both a dataset and a project dedicated to generating 3D building models for the entire Netherlands \citep{3dbag}. This open data initiative leverages the Register of Buildings and Addresses (BAG) as building footprints and the Actueel Hoogtebestand Nederland (AHN) \citep{ahn}, which serves as the national height model (point cloud) of the Netherlands. The 3DBAG data is automatically generated through the integration of BAG and AHN datasets and is publicly available in multiple formats including CityJSON \citep{ledoux_2019}, Wavefront OBJ \citep{wavefront_obj}, GeoPackage \citep{geopackage}, and FlatGeobuf \citep{flatgeobuf}.
 
-The 3DBAG API \citep{3dbag_api} represents one of the project's key web services, providing programmatic access to the dataset by returning CityJSONFeature objects as responses.
+The 3DBAG \ac{api} \citep{3dbag_api} represents one of the project's key web services, providing programmatic access to the dataset by returning CityJSONFeature objects as responses.
 
 \subsection{Enhancements to CityJSON Performance}
 \label{rw:cityjson_enhancements:performance}
@@ -260,16 +260,6 @@ The preliminary implementation revealed potential advantages in several key area
 
 Building upon Peters' initial work, which focused solely on basic CityJSONFeature encoding, this research develops a comprehensive solution that incorporates essential capabilities including spatial indexing, attribute indexing, extensions, textures, and geometry templates. The implementation specifically targets cloud-native environments, prioritising both scalability and efficient data processing to address the limitations of the preliminary approach.
 
-\subsection{Research Gaps}
-\label{rw:research_gaps}
-
-While existing studies have made advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
-Several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}).
-
-Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats, their application to 3D city models has not been thoroughly investigated.
-For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
-This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies. These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimised binary encoding. The proposed approach is detailed in \autoref{methodology}.
-
 \section{Non-Geospatial Formats in Cloud Environments}
 \label{rw:non_geospatial_formats}
 
@@ -293,37 +283,44 @@ These include Protobuf \citep{protobuf} and JSON, in terms of deserialisation ef
 \label{rw:non_geospatial_formats:protobuf}
 
 Protobuf, developed by \citet{protobuf}, represents a binary serialisation framework.
-
 It employs schema-based encoding mechanisms for data serialisation.
-
 This framework implements similar fundamental operations to FlatBuffers.
-
 These include schema definition and binary encoding processes.
-
-Despite its advantages in simplicity and usability, Protobuf presents several operational constraints:
-\todo{improve this."Does flatbuffers offer compression? ie. why do you mention compression here but not in 2.3.1?"}
+Notable differences between Protobuf and FlatBuffers include several operational characteristics \citep{protobuf}:
 \begin{itemize}
   \item \textbf{Memory Limitations}: Requires complete dataset loading into memory, thereby limiting its applicability for large-scale data processing tasks.
-  \item \textbf{Compression Efficiency}: Lacks native compression capabilities, resulting in suboptimal performance compared to specialised formats like JPEG and PNG for image data.
-  \item \textbf{Structural Constraints}: Exhibits reduced efficiency when handling complex data structures, particularly large multidimensional arrays of floating-point numbers, making it unsuitable for 3D geometries.
+  \item \textbf{Data Parsing Requirements}: Unlike FlatBuffers' zero-copy access, Protobuf requires data parsing during deserialisation, introducing additional computational overhead.
+  \item \textbf{Mutability Constraints}: Protobuf allows data modification after deserialisation, whereas FlatBuffers maintains immutable data structures, affecting performance characteristics.
+  \item \textbf{Language Support and Community}: Protobuf benefits from broader language support and more extensive community adoption compared to FlatBuffers.
 \end{itemize}
 
 \subsection{Apache Parquet}
 \label{rw:non_geospatial_formats:parquet}
-\todo{add here, at least about paging system}
-\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes.
 
-These are used for managing extensive datasets.
-
-The Parquet ecosystem includes the \citet{parquet-format}, which serves as the specification for the Parquet format.
-
-It also includes various libraries for encoding and decoding Parquet files.
+\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes for managing extensive datasets.
+The Parquet ecosystem includes the specification for the Parquet format \citep{parquet-format}, and various libraries for encoding and decoding Parquet files.
 
 Parquet employs the record shredding and assembly algorithm \citep{dremel_2010} to effectively flatten nested data structures.
+Additionally, it implements efficient compression and encoding schemes tailored to column-level data, enhancing both storage efficiency and query performance.
 
-Additionally, it implements efficient compression and encoding schemes tailored to column-level data.
+The format utilises a hierarchical data organisation structure consisting of multiple levels:
+\begin{itemize}
+  \item \textbf{File}: The top-level container that includes metadata and may contain the actual data.
+  \item \textbf{Row Group}: A logical horizontal partitioning of data into rows, with each row group containing one column chunk per column in the dataset.
+  \item \textbf{Column Chunk}: A contiguous chunk of data for a particular column within a specific row group.
+  \item \textbf{Page}: The smallest indivisible unit within column chunks, serving as the fundamental unit for compression and encoding operations.
+\end{itemize}
 
-This enhances both storage efficiency and query performance.
+\autoref{fig:parquet_structure} shows the structure of the Parquet format.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/related_work_theoretical_bg/parquet_structure.png}
+  \caption[Parquet Structure]{Parquet structure. Source: \citet{parquet}}
+  \label{fig:parquet_structure}
+\end{figure}
+
+This hierarchical organisation enables efficient data access patterns and optimised compression strategies at different granularity levels.
 
 \subsection{Comparison of Non-Geospatial Formats}
 \label{rw:non_geospatial_formats:comparison}
@@ -375,7 +372,6 @@ GeoParquet integrates Parquet's columnar storage architecture to facilitate opti
   \item \textbf{Optimised Read Operations}: The columnar architecture enables selective column access and efficient data filtering via predicate pushdown mechanisms, thereby enhancing performance in read-intensive workflows.
 \end{itemize}
 
-\todo{check ravi's comment}
 \subsection{3D Tiles}
 \label{rw:cloud_optimised_implementations:3d_tiles}
 3D Tiles, an Open Geospatial Consortium (OGC) standard \citep{3d_tiles}, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements GLTF \citep{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
@@ -384,60 +380,71 @@ The data structure employs spatial partitioning through bounding volumes, enabli
 
 \subsection{Comparative Analysis of Cloud-Optimised Geospatial Formats}
 \label{rw:cloud_optimised_implementations:comparison}
-While acknowledging the inherent limitations of direct format comparisons due to their distinct design objectives and application domains, \autoref{tab:format-comparison} presents a systematic analysis of key operational characteristics across various cloud-optimised geospatial formats. The evaluation criteria and their corresponding scales are detailed in \autoref{tab:criteria-scale}. This analysis facilitates the understanding of format-specific capabilities within their respective operational contexts.
+While acknowledging the inherent limitations of direct format comparisons due to their distinct design objectives and application domains, \autoref{tab:format-comparison} presents a systematic analysis of key operational characteristics across various cloud-optimised geospatial formats. The evaluation criteria and their corresponding scales are detailed in \autoref{tab:criteria-legend}. This analysis facilitates the understanding of format-specific capabilities within their respective operational contexts.
 
-\todo{consider if this table is the best way to compare the formats. It is a bit subjective}
+This comparison provides a general overview but is inherently subjective. Direct comparisons may not be entirely fair as each format employs different optimisation strategies and targets different use cases. For example, comparing serialisation performance across formats with varying spatial indexing approaches may not yield meaningful insights, as the indexing overhead varies significantly between implementations.
+
 \begin{table}[htbp]
   \centering
-  \caption{Comparative Analysis of Cloud-Optimised Geospatial Formats (Scale: 1-5)}
+  \caption{Comparative Analysis of Cloud-Optimised Geospatial Formats}
   \label{tab:format-comparison}
   \footnotesize
   \begin{tabular}{p{3cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}}
     \hline
     \textbf{Characteristics} & \textbf{FlatGeobuf} & \textbf{MVT} & \textbf{GeoParquet} & \textbf{GeoJSON} & \textbf{3D Tiles} \\
     \hline
-    \textbf{Serialisation Performance} & 3 & 4 & 3 & 2 & -- \\
+    \textbf{Serialisation Performance} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
     \hline
-    \textbf{Deserialisation Performance} & 4 & 3 & 5 & 1 & 4\footnotemark[1] \\
+    \textbf{Deserialisation Performance} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}}$^a$ \\
     \hline
-    \textbf{Storage Efficiency} & 3 & 4 & 5 & 1 & -- \\
+    \textbf{Storage Efficiency} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
     \hline
-    \textbf{Memory Utilisation} & 5 & 4 & 5 & 1 & -- \\
+    \textbf{Memory Utilisation} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
     \hline
-    \textbf{Implementation Complexity} & 2 & 2 & 2 & 5 & -- \\
+    \textbf{Implementation Complexity} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} \\
     \hline
-    \textbf{Spatial Indexing} & 5 & 3\footnotemark[2] & 3\footnotemark[3] & 1 & 3\footnotemark[4] \\
+    \textbf{Spatial Indexing} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^b$ & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^c$ & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^d$ \\
     \hline
-    \textbf{Random Access Support} & 5 & 1 & 4 & 1 & 1 \\
+    \textbf{Random Access Support} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} \\
     \hline
   \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \footnotesize
+  \item[a] Optimised for GPU rendering
+  \item[b] Tile-based partitioning
+  \item[c] Random access to the internal chunks
+  \item[d] Volumetric hierarchical partitioning
+  \end{tablenotes}
 \end{table}
-
-\footnotetext[1]{Optimised for GPU rendering}
-\footnotetext[2]{Tile-based partitioning}
-\footnotetext[3]{Random access to the internal chunks}
-\footnotetext[4]{Volumentric hierarchical partitioning}
 
 \begin{table}[htbp]
-  \caption{Evaluation Criteria Scale (1-5)}
-  \label{tab:criteria-scale}
-  \begin{tabular}{p{3cm}|p{12cm}}
+  \centering
+  \caption{Evaluation Criteria Color Legend}
+  \label{tab:criteria-legend}
+  \footnotesize
+  \begin{tabular}{p{2cm}|p{3cm}|p{9cm}}
     \hline
-    \textbf{Criterion} & \textbf{Scale Description} \\
+    \textbf{Color} & \textbf{Performance Level} & \textbf{Description} \\
     \hline
-    Serialisation Performance & 1: Very slow, 2: Slow, 3: Moderate, 4: Fast, 5: Very fast \\
+    \textcolor{red}{\rule{1.5em}{1.5em}} Red & Poor & Very slow performance, high resource usage, or not supported \\
     \hline
-    Deserialisation Performance & 1: Very slow, 2: Slow, 3: Moderate, 4: Fast, 5: Very fast \\
+    \textcolor{orange}{\rule{1.5em}{1.5em}} Orange & Below Average & Slow performance or high complexity \\
     \hline
-    Storage Efficiency & 1: No compression, 3: Moderate compression, 5: Very high compression \\
+    \textcolor{yellow}{\rule{1.5em}{1.5em}} Yellow & Average & Moderate performance, compression, or basic support \\
     \hline
-    Memory Utilisation & 1: Very high memory usage, 2: High usage, 3: Moderate usage, 4: Low usage, 5: Very low usage \\
+    \textcolor{green}{\rule{1.5em}{1.5em}} Green & Excellent & Very fast performance, high efficiency, or full support \\
     \hline
-    Implementation Complexity & 1: Complex, 3: Moderate, 5: Simple \\
-    \hline
-    Spatial Indexing & 1: Not supported, 3: Basic support, 5: Indexing with arbitrary spatial extent \\
-    \hline
-    Random Access Support & 1: Not supported, 3: Partial support, 5: Full random access \\
+    \textcolor{gray}{\rule{1.5em}{1.5em}} Gray & Not Applicable & Feature not available or not applicable to this format \\
     \hline
   \end{tabular}
 \end{table}
+
+\section{Research Gaps}
+\label{rw:research_gaps}
+
+While existing studies have made advances in optimising CityJSON through various encoding techniques, there remains a deficiency in approaches specifically tailored for 3D city models in cloud environments.
+Several geospatial data formats have successfully implemented cloud-native optimisations (as discussed in \autoref{rw:cloud_optimised_implementations}).
+
+Specifically, while advanced serialisation frameworks like FlatBuffers (detailed in \autoref{tb:flatbuffers}) have proven effective in cloud-optimised geospatial formats, their application to 3D city models has not been thoroughly investigated.
+For example, FlatGeobuf for Simple Features \citep{flatgeobuf} has shown success.
+This research endeavours to address this gap by systematically evaluating and implementing encoding methodologies. These methodologies aim to enhance decoding efficiency and query flexibility within cloud infrastructures, with the potential to achieve file size reduction through optimised binary encoding. The proposed approach is detailed in \autoref{methodology}.
