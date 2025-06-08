@@ -11,19 +11,17 @@ numbers=noenddot,cleardoublepage=empty]{scrbook}
 \usepackage[authoryear]{natbib}
 \usepackage{subcaption}
 \usepackage{xspace}
+\usepackage[breaklinks=true,
+  colorlinks=true,
+  linktocpage=true,
+allcolors=colorforlinks]{hyperref}
 
 \usepackage[ruled,vlined,algochapter,linesnumbered]{algorithm2e}
 \usepackage{calc}
 \usepackage{ccicons}
-\usepackage{xspace}
 \usepackage{booktabs}
 \usepackage[english]{babel}
 \usepackage{listings}
-\usepackage{color}
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 \lstdefinestyle{mystyle}{
   backgroundcolor=\color{backcolour},
   commentstyle=\color{codegreen},
@@ -45,7 +43,11 @@ numbers=noenddot,cleardoublepage=empty]{scrbook}
 \lstset{style=mystyle,basicstyle=\ttfamily\footnotesize,breaklines=true}
 \usepackage{scrhack} % ignore warnings about deprecated KOMA-Script
 \usepackage[printonlyused,smaller,withpage]{acronym}
-% \usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 \usepackage{graphicx}
 \usepackage{pdfpages}
 \usepackage{todonotes}
@@ -54,11 +56,6 @@ numbers=noenddot,cleardoublepage=empty]{scrbook}
 \usepackage{threeparttable}
 \usepackage{tabularx}
 \usepackage{lmodern}
-\usepackage[breaklinks=true,
-  colorlinks=true,
-  linktocpage=true,
-allcolors=colorforlinks]{hyperref}
-\usepackage{bookmark}
 
 \input{mysettings}
 
