@@ -12,11 +12,10 @@ This section examines the most appropriate application scenarios for the FlatCit
 \label{flexible_data_download}
 
 Providing users with the ability to download specific data of interest represents one of the most valuable applications of 3D city models, particularly within open data initiatives. Existing services such as 3DBAG offer download functionality for CityJSON data in various formats including CityJSON, OBJ, and GeoPackage. However, these services typically constrain users to downloading predefined tiles rather than precisely the data matching their specific requirements.
-
 \href{https://fcb-web-prototype.netlify.app}{This web prototype} demonstrates that users can download precisely the data they require. This implementation successfully showcases FlatCityBuf's capability to facilitate targeted data retrieval. Through its attribute indexing mechanism, users can download filtered datasets based on specific criteria, such as features exceeding 100 metres in height.
 
-\subsection{Data Analysis}
-\label{data_analysis}
+\subsection{Data Processing}
+\label{data_processing}
 
 As demonstrated by the performance benchmarks, FlatCityBuf excels in read operations compared to alternative data formats, making it particularly suitable for analysing large-scale datasets. This performance advantage is especially valuable in data processing pipelines where \ac{io} operations constitute a significant bottleneck.
 
@@ -34,7 +33,7 @@ FlatCityBuf introduces significant opportunities for simplifying server architec
 
 Conventional server architectures for 3D city models typically employ both application and database servers. For example, \citet{3dcitydb} utilises PostgreSQL or Oracle as the database server with PostgREST API \citep{postgrest} providing data access through its toolchain. Similarly, the 3DBAG \ac{api} uses PostgreSQL as its database server and Flask (Python web framework) as the application server.
 
-In contrast, FlatCityBuf operates as a static file, requiring only a basic HTTP server such as Nginx \citep{nginx} for data distribution. This approach aligns with modern cloud service offerings, where providers like AWS S3 \citep{s3} and Google Cloud Storage \citep{gsc} offer optimised solutions for serving static content.
+In contrast, FlatCityBuf operates as a static file, requiring only a basic \ac{http} server such as Nginx \citep{nginx} for data distribution. This approach aligns with modern cloud service offerings, where providers like AWS S3 \citep{s3} and Google Cloud Storage \citep{gsc} offer optimised solutions for serving static content.
 
 \subsection{Cloud Architecture Advantages}
 \label{cloud_architecture_achieved}

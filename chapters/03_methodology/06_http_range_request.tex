@@ -8,12 +8,12 @@ A critical component of cloud-optimised geospatial formats is their ability to s
 \subsection{Principles of Partial Data Retrieval}
 \label{methodology:http_range_requests:partial_retrieval_principles}
 
-HTTP Range Requests, defined in RFC 7233 \citep{rfc_7233}, allow clients to request specific byte ranges from server resources instead of entire files. This capability is fundamental to FlatCityBuf's cloud-optimised design. Since each feature in FlatCityBuf is length-prefixed, once the client knows the byte offset to a specific feature, can request precisely the bytes needed. While data access patterns vary—from sequential access to spatially or attribute-indexed retrieval—the core principle remains consistent: fetch only the necessary data.
+\ac{http} Range Requests, defined in RFC 7233 \citep{rfc_7233}, allow clients to request specific byte ranges from server resources instead of entire files. This capability is fundamental to FlatCityBuf's cloud-optimised design. Since each feature in FlatCityBuf is length-prefixed, once the client knows the byte offset to a specific feature, can request precisely the bytes needed. While data access patterns vary—from sequential access to spatially or attribute-indexed retrieval—the core principle remains consistent: fetch only the necessary data.
 
 \subsection{Range Request Workflow}
 \label{methodology:http_range_requests:range_request_workflow}
 
-The HTTP Range Request workflow in FlatCityBuf follows a carefully optimised sequential process:
+The \ac{http} Range Request workflow in FlatCityBuf follows a carefully optimised sequential process:
 
 \begin{enumerate}
   \item \textbf{Header Retrieval}: The client first requests the magic bytes (8 bytes) and \texttt{Header} (described in \autoref{methodology:header:schema_indexing}). This initial request provides essential metadata including coordinate reference systems, transformations, the total number of features, and index structure information \etc.
@@ -34,14 +34,14 @@ This workflow enables efficient partial data retrieval by leveraging indexing st
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=1.0\textwidth]{figs/methodology/http_range.png}
-  \caption{HTTP Range Request workflow in FlatCityBuf showing the sequential process of header retrieval, index navigation, and selective feature retrieval. The client makes targeted requests for specific byte ranges rather than downloading the entire dataset.}
+  \caption{\ac{http} Range Request workflow in FlatCityBuf showing the sequential process of header retrieval, index navigation, and selective feature retrieval. The client makes targeted requests for specific byte ranges rather than downloading the entire dataset.}
   \label{fig:methodology:http_range_requests:range_request_workflow}
 \end{figure}
 
 \subsection{Optimisation Techniques}
 \label{methodology:http_range_requests:range_request_optimisations}
 
-Network latency often dominates performance when accessing data over HTTP, with each request incurring significant overhead regardless of payload size. FlatCityBuf implements several techniques to minimise this overhead:
+Network latency often dominates performance when accessing data over \ac{http}, with each request incurring significant overhead regardless of payload size. FlatCityBuf implements several techniques to minimise this overhead:
 
 \begin{itemize}
   \item \textbf{Request Batching}: Multiple feature requests are grouped into larger, consolidated HTTP requests rather than making individual requests for each feature. This approach significantly reduces the number of HTTP round trips, improving overall performance while minimising network overhead.
@@ -49,8 +49,8 @@ Network latency often dominates performance when accessing data over HTTP, with 
 
   \item \textbf{Streaming Process of Indices}: Both spatial and attribute indices implement a streaming approach where only the necessary node items in the tree structure are loaded when needed. Rather than loading entire index structures upfront, the system traverses the tree on demand, requesting only the relevant portions required for the current query.
 
-  \item \textbf{Buffered HTTP Client}: The implementation leverages a buffered HTTP client library developed by \citet{buffered_http_range_client} that efficiently caches previously fetched data ranges, avoiding redundant requests when overlapping ranges are accessed.
+  \item \textbf{Buffered \ac{http} Client}: The implementation leverages a buffered \ac{http} client library developed by \citet{buffered_http_range_client} that efficiently caches previously fetched data ranges, avoiding redundant requests when overlapping ranges are accessed.
 
 \end{itemize}
 
-These optimisations work in concert to minimise the number of HTTP requests, resulting in significantly improved performance for cloud-based 3D city model applications.
+These optimisations work in concert to minimise the number of \ac{http} requests, resulting in significantly improved performance for cloud-based 3D city model applications.

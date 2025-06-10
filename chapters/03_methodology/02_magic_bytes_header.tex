@@ -24,13 +24,13 @@ Here are the core header fields with their data types and significance:
 \begin{itemize}
   \item \textbf{version} - \textit{string (required)} - CityJSON version identifier (\eg, "2.0"), required field from CityJSON specification \citep{cityjson_spec}
 
-  \item \textbf{transform} - \textit{Transform struct} - Contains scale and translation vectors enabling efficient storage of vertex coordinates through quantization, derived from CityJSON's transform object \citep{cityjson_spec}
+  \item \textbf{transform} - \textit{Transform struct} - Contains scale and translation vectors enabling efficient storage of vertex coordinates through quantisation, derived from CityJSON's transform object \citep{cityjson_spec}
 
-  \item \textbf{reference\_system} - \textit{ReferenceSystem table} - Coordinate reference system information including:
+  \item \textbf{reference\_system} - \textit{ReferenceSystem table} - \ac{crs} information including:
     \begin{itemize}
       \item \textbf{authority} - \textit{string} - Authority name, typically "EPSG"
-      \item \textbf{code} - \textit{string} - Numeric identifier of the CRS
-      \item \textbf{version} - \textit{string} - Version of the CRS definition
+      \item \textbf{code} - \textit{string} - Numeric identifier of the \ac{crs}
+      \item \textbf{version} - \textit{string} - Version of the \ac{crs} definition
     \end{itemize}
 
   \item \textbf{geographical\_extent} - \textit{GeographicalExtent struct} - 3D bounding box containing min/max coordinates for the dataset \citep{cityjson_spec}
@@ -109,7 +109,7 @@ Fields storing global appearance definitions:
     \end{itemize}
 \end{itemize}
 
-The appearance model standardizes visual properties of city objects, with materials defining surface properties and textures mapping images onto geometry. This separation from geometry allows efficient storage through shared material and texture references.
+The appearance model standardises visual properties of city objects, with materials defining surface properties and textures mapping images onto geometry. This separation from geometry allows efficient storage through shared material and texture references.
 
 \subsection{Geometry Templates}
 \label{methodology:header:geometry_templates}
@@ -166,7 +166,7 @@ Fields supporting attribute interpretation and efficient querying:
 
   \item \textbf{features\_count} - \textit{ulong} - Total number of features in the dataset, enables client applications to pre-allocate resources
 
-  \item \textbf{index\_node\_size} - \textit{ushort} - Number of entries per node in the spatial index, defaults to 16, tuned for typical HTTP request sizes
+  \item \textbf{index\_node\_size} - \textit{ushort} - Number of entries per node in the spatial index, defaults to 16, tuned for typical \ac{http} request sizes
 
   \item \textbf{attribute\_index} - \textit{Array of AttributeIndex structs} - Metadata for each attribute index, containing:
     \begin{itemize}

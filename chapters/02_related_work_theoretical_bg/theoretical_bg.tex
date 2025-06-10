@@ -37,13 +37,13 @@ In geospatial domains, prominent examples of text-based formats include GeoJSON 
 
 \section{WebAssembly}
 \label{tb:webassembly}
-\ac{wasm} is a low-level assembly-like language with a compact binary format that enables near-native performance execution in modern web browsers \citep{WebAssembly}. Standardised by the W3C \citep{WebAssemblyCoreSpecification1, WebAssemblyCoreSpecification2}, WebAssembly provides a compilation target for languages such as C/C++, C\#, and Rust, allowing code written in these languages to run efficiently on the web platform.
+\ac{wasm} is a low-level assembly-like language with a compact binary format that enables near-native performance execution in modern web browsers \citep{WebAssembly}. Standardised by the \citet{WebAssemblyCoreSpecification1, WebAssemblyCoreSpecification2}, \ac{wasm} provides a compilation target for languages such as C/C++, C\#, and Rust, allowing code written in these languages to run efficiently on the web platform.
 
-WebAssembly is designed to complement and run alongside JavaScript rather than replace it. Through the WebAssembly JavaScript APIs, developers can load WebAssembly modules into JavaScript applications and share functionality between the two environments \citep{WebAssembly}. This interoperability enables developers to leverage WebAssembly's performance characteristics for computationally intensive tasks while maintaining JavaScript's expressiveness and flexibility for application logic and user interface development.
+\ac{wasm} is designed to complement and run alongside JavaScript rather than replace it. Through the WebAssembly JavaScript APIs, developers can load \ac{wasm} modules into JavaScript applications and share functionality between the two environments \citep{WebAssembly}. This interoperability enables developers to leverage \ac{wasm}'s performance characteristics for computationally intensive tasks while maintaining JavaScript's expressiveness and flexibility for application logic and user interface development.
 
-A key advantage of WebAssembly is its ability to enable code reuse across platforms. Developers can compile existing codebases written in languages like C/C++, Rust, and C\# for browser deployment, eliminating the need to rewrite performance-critical components in JavaScript.
+A key advantage of \ac{wasm} is its ability to enable code reuse across platforms. Developers can compile existing codebases written in languages like C/C++, Rust, and C\# for browser deployment, eliminating the need to rewrite performance-critical components in JavaScript.
 
-In this research, WebAssembly enables the compilation of Rust libraries for 3D city model processing to run with near-native performance in web browsers. This approach bridges the performance gap between desktop and web-based geospatial applications while maintaining the accessibility and cross-platform benefits of web deployment.
+In this research, \ac{wasm} enables the compilation of Rust libraries for 3D city model processing to run with near-native performance in web browsers. This approach bridges the performance gap between desktop and web-based geospatial applications while maintaining the accessibility and cross-platform benefits of web deployment.
 
 \section{Row-based and column-based data storage}
 \label{tb:row_based_column_based_data_storage}
@@ -79,9 +79,9 @@ In the context of geospatial data, column-based storage is particularly well-sui
 
 \section{CPU Caches}
 \label{tb:cache}
-Modern computing systems face a fundamental challenge to software performance due to the disparity between the speed of \acp{cpu} and the latency of main memory. \acp{cpu} operate at clock speeds that far exceed the access speeds of dynamic random-access memory (DRAM), which typically serves as main memory. Consequently, the \acp{cpu} frequently idles while waiting for data from the slower memory subsystem. To mitigate this performance bottleneck, \acp{cpu} caches were developed. These caches utilise a small amount of very fast Static RAM (SRAM) to store temporary copies of data and instructions that are likely to be used again soon \citep{drepper_2007}.
+Modern computing systems face a fundamental challenge to software performance due to the disparity between the speed of \ac{cpu} and the latency of main memory. \ac{cpu} operates at clock speeds that far exceed the access speeds of dynamic random-access memory (DRAM), which typically serves as main memory. Consequently, the \ac{cpu} frequently idles while waiting for data from the slower memory subsystem. To mitigate this performance bottleneck, \ac{cpu} caches were developed. These caches utilise a small amount of very fast Static RAM (SRAM) to store temporary copies of data and instructions that are likely to be used again soon \citep{drepper_2007}.
 
-The effectiveness of \acp{cpu} caches hinges on two fundamental principles of program behaviour: temporal locality and spatial locality. Temporal locality refers to the tendency of a program to access data that has been recently accessed again in the near future. Spatial locality refers to the tendency of a program to access data that is located nearby in memory to previously accessed data. In other words, small chunks of data that have been accessed recently or are located nearby in memory are likely to be accessed again soon. Modern processors employ multiple levels of caches to maximise the effectiveness of these principles. This hierarchy typically consists of L1, L2, L3 caches, and main memory. The lower levels of the cache hierarchy are faster and smaller, while the higher levels are slower and larger \citep{drepper_2007}.
+The effectiveness of \ac{cpu} caches hinges on two fundamental principles of program behaviour: temporal locality and spatial locality. Temporal locality refers to the tendency of a program to access data that has been recently accessed again in the near future. Spatial locality refers to the tendency of a program to access data that is located nearby in memory to previously accessed data. In other words, small chunks of data that have been accessed recently or are located nearby in memory are likely to be accessed again soon. Modern processors employ multiple levels of caches to maximise the effectiveness of these principles. This hierarchy typically consists of L1, L2, L3 caches, and main memory. The lower levels of the cache hierarchy are faster and smaller, while the higher levels are slower and larger \citep{drepper_2007}.
 
 Data is not loaded into caches byte by byte. Instead, it is loaded in blocks called cache lines, typically 64 bytes in size. This design reduces the number of separate memory transactions and effectively amortises the substantial latency involved in accessing main memory \citep{drepper_2007}.
 
@@ -113,7 +113,7 @@ In conventional I/O operations, data typically traverses multiple memory regions
   \item For network transmission, data may be copied again to network buffers
 \end{itemize}
 
-This multi-stage copying introduces significant overhead, particularly for large datasets or high-throughput applications. Each copy operation consumes \acp{cpu} cycles, memory bandwidth, and increases latency \citep{song2012performance}. For applications working with large 3D city models, this overhead can substantially degrade performance.
+This multi-stage copying introduces significant overhead, particularly for large datasets or high-throughput applications. Each copy operation consumes \ac{cpu} cycles, memory bandwidth, and increases latency \citep{song2012performance}. For applications working with large 3D city models, this overhead can substantially degrade performance.
 
 Zero-copy approaches optimise this data path by eliminating unnecessary copy operations. While "zero-copy" as a term suggests complete elimination of copying, in practice, different techniques achieve varying degrees of copy reduction:
 
@@ -146,14 +146,14 @@ Binary search is a fundamental algorithm for finding elements in a sorted array.
 
 The time complexity of binary search is logarithmic—the height of the implicit binary search tree is $\log_2(n)$ for an array of size $n$. While this is theoretically efficient, the actual performance suffers when implemented on modern hardware due to memory access patterns. Each comparison requires the processor to fetch a new element, potentially causing a cache miss (cache miss is explained in \autoref{tb:cache}). In the worst case, the number of memory read operations will be proportional to the height of the tree, with each read potentially requiring access to a different cache line or disk block \citep{binary_search}.
 
-This inefficiency is particularly problematic when binary search is implemented on external memory or over HTTP, where each access incurs significant latency. The sorted array representation with binary search does not take advantage of \acp{cpu} cache locality, as consecutive comparisons frequently access distant memory locations.
+This inefficiency is particularly problematic when binary search is implemented on external memory or over \ac{http}, where each access incurs significant latency. The sorted array representation with binary search does not take advantage of \ac{cpu} cache locality, as consecutive comparisons frequently access distant memory locations.
 
 \subsection{Eytzinger Layout}
 \label{tb:eytzinger_layout}
 
 While preserving the same algorithmic idea as binary search, the Eytzinger layout (also known as a complete binary tree layout or level-order layout) rearranges the array elements to match the access pattern of a binary search \citep{binary_search}. Instead of storing elements in sorted order, it places them in the order they would be visited during a level-order traversal of a complete binary tree.
 
-This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. This layout also proves beneficial for managing data fetched over networks, as consecutive elements accessed during binary search are more likely to be retrieved in the same HTTP range request, thereby reducing the number of network roundtrips and overall latency. This spatial locality enables effective hardware prefetching, allowing the \acp{cpu} to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
+This layout significantly improves memory access patterns. When the array is accessed in the sequence of a binary search operation, adjacent accesses often refer to elements that are in the same or adjacent cache lines. This layout also proves beneficial for managing data fetched over networks, as consecutive elements accessed during binary search are more likely to be retrieved in the same \ac{http} range request, thereby reducing the number of network roundtrips and overall latency. This spatial locality enables effective hardware prefetching, allowing the \ac{cpu} to anticipate and load required data before it is explicitly accessed, thus reducing latency \citep{binary_search}.
 
 \autoref{fig:eytzinger_layout} shows how the layout appears when applied to binary search. \autoref{fig:eytzinger_layout2} shows that the algorithm starts from the first element and then jumps to either $2k$ or $2k+1$ depending on the comparison result. The heatmap represents the expected frequency of comparisons for search (the closer to the top, the more frequent the comparison).
 
@@ -214,7 +214,7 @@ As the figure \ref{fig:btree_bplus_tree} shows, the B+Tree has pointers to the n
 \subsection{\texorpdfstring{\ac{s+tree}}{S+tree}}
 \label{tb:stree}
 
-The S+Tree (Static B+Tree), introduced by Algorithmica \citep{static_b_trees}, builds upon the B+Tree concept but is specifically designed for static datasets where the tree structure never changes after construction. Unlike traditional B+Trees that use explicit pointers between nodes, the S+Tree uses an implicit structure where child positions are calculated mathematically.
+The S+Tree (Static B+Tree), introduced by \citet{static_b_trees}, builds upon the B+Tree concept but is specifically designed for static datasets where the tree structure never changes after construction. Unlike traditional B+Trees that use explicit pointers between nodes, the S+Tree uses an implicit structure where child positions are calculated mathematically.
 This is possible because:
 \begin{itemize}
   \item The tree is constructed once and never modified (static)
@@ -228,8 +228,8 @@ For a \ac{s+tree} with block size $B$, a node with index $k$ has its children at
 The S+Tree layout aligns with modern hardware characteristics where:
 \begin{itemize}
   \item The latency of fetching a single byte is comparable to fetching an entire cache line (64 bytes)
-  \item Disk and network I/O operations have high initial latency but relatively low marginal cost for additional bytes
-  \item \acp{cpu} cache lines typically hold multiple array elements (e.g., 16 integers in a 64-byte cache line)
+  \item Disk and network \ac{io} operations have high initial latency but relatively low marginal cost for additional bytes
+  \item \ac{cpu} cache lines typically hold multiple array elements (e.g., 16 integers in a 64-byte cache line)
 \end{itemize}
 
 By loading a block of $B$ elements at once and performing a local search within that block, S+Trees reduce the total number of cache misses or disk accesses to $\log_B(n)$ instead of $\log_2(n)$—a significant reduction for large datasets.

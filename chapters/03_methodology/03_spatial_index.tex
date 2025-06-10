@@ -17,9 +17,9 @@ The spatial indexing mechanism implemented in FlatCityBuf directly adapts the pa
   \item A flattened tree storage format that enables efficient streaming and remote access
 \end{itemize}
 
-The implementation details, including the Hilbert curve encoding algorithm and tree construction process, were sourced from FlatGeoBuf's reference implementation \citep{flatgeobuf_github}. Also, FlatGeoBuf's implementation is also inspired by Vladimir Agafonkin's flatbush library written in JavaScript \citep{vladimir_2018}. The Hilbert curve encoding algorithm, which converts 2D coordinates into a 1D space-filling curve, is based on a non-recursive algorithm described in \citet{hacker_delight_2012}. This approach, known as "2D-C" in spatial indexing literature \citep{hacker_delight_2012}, ensures that features with high spatial locality also have high storage locality, optimising I/O operations for both local and remote access patterns.
+The implementation details, including the Hilbert curve encoding algorithm and tree construction process, were sourced from FlatGeoBuf's reference implementation \citep{flatgeobuf_github}. Also, FlatGeoBuf's implementation is also inspired by Vladimir Agafonkin's flatbush library written in JavaScript \citep{vladimir_2018}. The Hilbert curve encoding algorithm, which converts 2D coordinates into a 1D space-filling curve, is based on a non-recursive algorithm described in \citet{hacker_delight_2012}. This approach, known as "2D-C" in spatial indexing literature \citep{hacker_delight_2012}, ensures that features with high spatial locality also have high storage locality, optimising \ac{io} operations for both local and remote access patterns.
 
-The spatial indexing system is designed to support cloud-native access patterns, allowing efficient retrieval of data directly from cloud storage without requiring a persistent server process. This is achieved through a combination of the Hilbert-sorted feature ordering and the packed R-tree structure, which enables piecemeal access to both the index and feature data over HTTP requests.
+The spatial indexing system is designed to support cloud-native access patterns, allowing efficient retrieval of data directly from cloud storage without requiring a persistent server process. This is achieved through a combination of the Hilbert-sorted feature ordering and the packed R-tree structure, which enables piecemeal access to both the index and feature data over \ac{http} requests.
 
 It is important to explicitly acknowledge that the spatial indexing code in FlatCityBuf is a direct adaptation of FlatGeoBuf's implementation, with modifications primarily focused on integration with the 3D city model data structure rather than fundamental algorithmic changes. The original implementation by Björn Harrtell and other FlatGeoBuf contributors \citep{flatgeobuf} provided an excellent foundation that has been proven effective for cloud-optimised geospatial data.
 
@@ -28,7 +28,7 @@ While the original FlatGeoBuf implementation targets 2D vector geometries, FlatC
 \subsection{Feature sorting}
 \label{methodology:spatial_index:feature_sorting}
 
-A key optimisation in FlatCityBuf's indexing strategy is the spatial ordering of features using a Hilbert space-filling curve. This technique enhances data locality by ensuring that features which are spatially proximate in 2D (and 3D) space are also stored close together in the file, thereby optimising both disk access patterns and HTTP range requests \citep{horance_2022_detail}.
+A key optimisation in FlatCityBuf's indexing strategy is the spatial ordering of features using a Hilbert space-filling curve. This technique enhances data locality by ensuring that features which are spatially proximate in 2D (and 3D) space are also stored close together in the file, thereby optimising both disk access patterns and \ac{http} range requests \citep{horance_2022_detail}.
 
 The Hilbert curve encoding process for FlatCityBuf follows these steps:
 
@@ -54,7 +54,7 @@ This approach differs from traditional R-tree construction where nodes are built
 \subsection{Index structure}
 \label{methodology:spatial_index:index_structure}
 
-The spatial index in FlatCityBuf is implemented as a packed Hilbert R-tree, with a flattened, level-ordered storage structure optimised for efficient traversal over HTTP range requests \citep{horance_2022_detail}. The index is built bottom-up from the sorted features, creating a hierarchical structure where each node represents a spatial region containing its children.
+The spatial index in FlatCityBuf is implemented as a packed Hilbert R-tree, with a flattened, level-ordered storage structure optimised for efficient traversal over \ac{http} range requests \citep{horance_2022_detail}. The index is built bottom-up from the sorted features, creating a hierarchical structure where each node represents a spatial region containing its children.
 
 Each index node in the spatial index is represented by a fixed-size binary structure containing:
 

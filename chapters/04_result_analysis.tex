@@ -4,47 +4,29 @@
 \label{result:overview}
 This chapter presents comprehensive evaluations of the FlatCityBuf format, demonstrating its performance characteristics and practical applicability through multiple assessment approaches. The evaluation encompasses both technical performance metrics and real-world implementation scenarios to provide a holistic understanding of the format's capabilities.
 
-The chapter is structured around several key evaluation components. First, a web prototype implementation is presented to demonstrate FlatCityBuf's practical capabilities in browser environments, showcasing how the format enables partial data access for large 3D city models through HTTP Range Requests.
+The chapter is structured around several key evaluation components. First, a web prototype implementation is presented to demonstrate FlatCityBuf's practical capabilities in browser environments, showcasing how the format enables partial data access for large 3D city models through \ac{http} Range Requests.
 
 Second, the datasets used throughout the evaluation are described, including both the established benchmark datasets from \citet{ledoux_2024} and additional PLATEAU datasets from the Takeshiba district of Tokyo, providing context for the performance comparisons and ensuring reproducibility of results.
 
 Third, file size comparisons are conducted across different encoding formats to evaluate storage efficiency and compression characteristics of FlatCityBuf relative to existing CityJSON variants.
 
-Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of HTTP Range Requests for selective data access, providing insights into bandwidth optimisation and response times critical for web-based 3D city model applications.
+Finally, web environment evaluations demonstrate real-world performance characteristics by measuring data retrieval times and network efficiency in browser-based scenarios. These tests specifically evaluate the effectiveness of \ac{http} Range Requests for selective data access, providing insights into bandwidth optimisation and response times critical for web-based 3D city model applications.
 
 The following sections present detailed results from each evaluation component, culminating in integrated analyses that synthesise findings to provide comprehensive insights into FlatCityBuf's performance characteristics and practical benefits for 3D city model applications.
 
 \subsection{Web Prototype}
 \label{result:web_prototype}
 
-\subsection{Cross-Platform Implementation}
-\label{result:cross_platform_implementation}
-
-FlatCityBuf provides range request capabilities across multiple platforms to maximise accessibility and integration options:
-\subsubsection{Cross-Platform Support}
-\label{result:cross_platform_implementation:cross_platform}
-
-FlatCityBuf is implemented primarily as a Rust library that can be used in both native environments and web browsers. The same codebase is compiled to:
-
-\begin{itemize}
-  \item Native Rust library for server-side applications and desktop GIS tools
-  \item \ac{wasm} module for browser-based applications with JavaScript interoperability
-\end{itemize}
-
-This cross-platform approach enables FlatCityBuf to work with both Rust's native HTTP clients and browser-based Fetch \ac{api} implementations. The \ac{wasm} implementation has one notable limitation: current browser \ac{wasm} implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming \ac{wasm} Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
-\subsubsection{Web prototype}
-\label{result:cross_platform_implementation:web_prototype}
-
 To demonstrate FlatCityBuf's capabilities in web environments and illustrate practical user interactions with the data, a functional web prototype was developed. The prototype is publicly accessible at \url{https://fcb-web-prototype.netlify.app/}. It leverages the WebAssembly module of FlatCityBuf combined with TypeScript and React for the frontend implementation, with Cesium serving as the 3D map rendering engine.
 
-The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilising the HTTP range request capabilities described in \autoref{result:cross_platform_implementation:cloud_integration}. Users can interact with the data through several query mechanisms:
+The prototype operates on a substantial dataset covering approximately 20km $\times$ 20km of South Holland, Netherlands, stored as a single 3.4GB FlatCityBuf file. This file is delivered directly from Google Cloud Storage\citep{gcs}, a serverless storage service, where it exists as a static file similar to images or videos, requiring no specialized server-side processing. Despite this large file size, the application remains responsive by utilising the \ac{http} range request capabilities described in \autoref{result:cross_platform_implementation:cloud_integration}. Users can interact with the data through several query mechanisms:
 
 \begin{itemize}
   \item \textbf{Spatial queries}: Users can filter features either by defining a spatial bounding box or by placing a point on the map to retrieve features based on intersection or nearest-neighbor relationships.
 
   \item \textbf{Attribute queries}: The interface supports filtering features through attribute conditions (\eg, \texttt{building id = 1, height > 10m}), demonstrating the attribute index capabilities.
 
-  \item \textbf{Data export}: Users can download the filtered subset of features in CityJSONSeq format, showcasing the format conversion capabilities.
+  \item \textbf{Data export}: Users can download the filtered subset of features in \ac{cjseq} format, showcasing the format conversion capabilities.
 \end{itemize}
 
 This prototype effectively demonstrates how FlatCityBuf enables browser-based applications to work with large 3D city models without downloading the entire dataset, providing responsive performance even on consumer-grade hardware and network connections.
@@ -56,10 +38,24 @@ This prototype effectively demonstrates how FlatCityBuf enables browser-based ap
   \label{fig:result:cross_platform_implementation:web_prototype}
 \end{figure}
 
+\subsection{Cross-Platform Implementation}
+\label{result:cross_platform_implementation}
+
+FlatCityBuf provides range request capabilities across multiple platforms to maximise accessibility and integration options:
+
+FlatCityBuf is implemented primarily as a Rust library that can be used in both native environments and web browsers. The same codebase is compiled to:
+
+\begin{itemize}
+  \item Native Rust library for server-side applications and desktop GIS tools
+  \item \ac{wasm} module for browser-based applications with JavaScript interoperability
+\end{itemize}
+
+This cross-platform approach enables FlatCityBuf to work with both Rust's native \ac{http} clients and browser-based Fetch \ac{api} implementations. The \ac{wasm} implementation has one notable limitation: current browser \ac{wasm} implementations use a 32-bit memory model (4GB limit), which may constrain processing of country-level datasets. This limitation will be resolved with the upcoming \ac{wasm} Memory64 proposal \citep{WebAssemblyCoreSpecification2}.
+
 \subsection{Integration with Cloud Infrastructure}
 \label{result:cross_platform_implementation:cloud_integration}
 
-The HTTP Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
+The \ac{http} Range Request mechanism integrates seamlessly with modern cloud infrastructure. FlatCityBuf files can be served from standard object storage services like AWS S3, Google Cloud Storage, or Azure Blob Storage, all of which support range requests without additional server-side processing. This enables a serverless architecture where the client-side filtering approach eliminates the need for dedicated server-side processing. This infrastructure compatibility ensures that FlatCityBuf can be deployed in cost-effective cloud environments without requiring specialised application servers and databases.
 
 \begin{figure}[ht]
   \centering
@@ -80,7 +76,7 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
 \subsection{File size results}
 \label{result:overview:filesize_comparison}
 
-\autoref{tab:dataset_comparison} presents a comparison of datasets in both CityJSONSeq and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16.36\%, 19.09\%, and 20.17\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with CityJSONSeq format demonstrating better storage efficiency.
+\autoref{tab:dataset_comparison} presents a comparison of datasets in both \ac{cjseq} and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16.36\%, 19.09\%, and 20.17\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with \ac{cjseq} format demonstrating better storage efficiency.
 \begin{table*}
   \centering
   \begin{threeparttable}
@@ -164,6 +160,24 @@ The results demonstrate that while file sizes increase with higher levels of det
 
 To assess the impact of attributes on file size, we tested simple cube models from \citep{cityjson_dataset} with varying numbers of attributes. We systematically generated random attributes for each test case, examining both integer and string data types to determine their effect on compression efficiency. \autoref{tab:attribute_comparison} presents the results of this analysis.
 
+The randomly generated attributes in our test datasets followed a consistent pattern, as shown in the example below:
+
+\begin{lstlisting}[caption={Example of a CityJSON feature with attributes},  basicstyle=\small]
+{
+  "type": "Building",
+  "geometry": [...],
+  "attributes": {
+    "attr_1": "value_1",
+    "attr_2": "value_2",
+    "attr_3": "value_3",
+    "attr_4": "value_4",
+    "attr_5": "value_5",
+    ...
+    "attr_n": "value_n"
+  }
+}
+\end{lstlisting}
+
 \begin{table}[htbp]
   \centering
   \caption{Comparison of file sizes with varying numbers of attributes for simple cube models.}
@@ -186,24 +200,6 @@ To assess the impact of attributes on file size, we tested simple cube models fr
   \item[b] Average feature size in bytes in CityJSONSeq: $\frac{\text{Total CityJSONSeq size}}{\text{Number of features}}$
   \end{tablenotes}
 \end{table}
-
-The randomly generated attributes in our test datasets followed a consistent pattern, as shown in the example below:
-
-\begin{lstlisting}[caption={Example of a CityJSON feature with attributes},  basicstyle=\small]
-{
-  "type": "Building",
-  "geometry": [...],
-  "attributes": {
-    "attr_1": "value_1",
-    "attr_2": "value_2",
-    "attr_3": "value_3",
-    "attr_4": "value_4",
-    "attr_5": "value_5",
-    ...
-    "attr_n": "value_n"
-  }
-}
-\end{lstlisting}
 
 For integer attribute tests, all values were randomly generated integers between 0 and 1000. For string attribute tests, values were randomly generated strings of varying lengths between 5 and 15 characters. This approach ensured a realistic representation of typical attribute data while maintaining controlled test conditions.
 
@@ -337,7 +333,6 @@ All benchmarks were executed within a consistent hardware and software configura
 \label{result:benchmark_on_local_environment:measurement_parameters}
 
 The benchmark framework captured multiple performance dimensions through the following key indicators:
-\todo{Ravi's comment "you could also look at write performance here"}
 
 \begin{itemize}
   \item \textbf{Read Performance:} Time required to deserialise the file and map the data into memory using zero-copy techniques, measured in milliseconds with microsecond precision
@@ -649,7 +644,7 @@ We acknowledge that this comparison is not entirely equitable due to fundamental
 \subsection{Benchmark environment}
 \label{result:benchmark_over_the_web:benchmark_environment}
 
-For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with HTTP range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG \ac{api}, publicly available at \url{https://api.3dbag.nl/}, operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}.
+For the web-based benchmark, we used the 3DBAG dataset. The FlatCityBuf implementation utilised a static file encoding the entire Netherlands dataset, resulting in a 70.4 GB file containing all features, attribute indices for all attributes, and spatial indexing. Data retrieval was performed using a Rust program with \ac{http} range requests (browser-based testing was avoided due to disk caching effects). The 3DBAG \ac{api}, publicly available at \url{https://api.3dbag.nl/}, operates on a Flask backend with PostgreSQL and PostGIS extension for database management \citep{powalka_2023}.
 
 To account for network variability and potential outliers, we collected 100 samples for each method with 10 warmup samples.
 

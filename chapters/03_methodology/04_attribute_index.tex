@@ -13,7 +13,7 @@ The attribute indexing system in FlatCityBuf was designed to support query patte
 \subsubsection{Common Query Operators in Geospatial Standards}
 \label{methodology:attribute_index:query_requirements:standards}
 
-Two major OGC standards provide guidance on common query operators: Filter Encoding Standard \citep{ogc_filter_encoding_2010} and Common Query Language \citep{ogc_cql2_2024}. These standards define operators in several categories, as summarized in Table~\ref{tab:query_operators}.
+Two major \ac{ogc} standards provide guidance on common query operators: Filter Encoding Standard \citep{ogc_filter_encoding_2010} and Common Query Language \citep{ogc_cql2_2024}. These standards define operators in several categories, as summarized in Table~\ref{tab:query_operators}.
 
 \begin{table}[ht]
   \centering
@@ -73,7 +73,7 @@ Based on this analysis and the practical constraints of optimising for cloud-bas
 
 While typical SQL supports more various operators (\eg, LIKE operators), these were not prioritised in the initial implementation as they are not part of either OGC Filter Encoding or OGC CQL standards, or because they require more complex index structures that are less commonly used in typical 3D city model queries.
 
-By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full OGC compliance \citep{3dbag_api}.
+By focusing on these high-priority operators, FlatCityBuf's attribute indexing system aims to support the most common query patterns while maintaining efficient performance for cloud-based access. This approach provides capabilities that exceed current offerings such as the 3DBAG API, which primarily supports feature retrieval by identification attribute (\texttt{identificatie}) and is still working toward full \ac{ogc} compliance \citep{3dbag_api}.
 
 % \todo{Ravi's comment "FYI this has mostly to do with the OGC requirement that states that geometry should be fetchable in WGS84 (aside from the Dutch CRS), so not really relevant here I think. Instead you can point out that 1) it requires persistence server process and 2) does not support attribute queries aside from ID lookup"}
 
@@ -83,7 +83,7 @@ By focusing on these high-priority operators, FlatCityBuf's attribute indexing s
 After evaluating alternatives, a \ac{s+tree} with significant modifications was adopted for FlatCityBuf's attribute indexing. \ac{s+tree} is a variant of the Static B+Tree that is specialised for read-only access patterns. Its theoretical background is described in \autoref{tb:static_btree}. This decision was based on the following considerations:
 
 \begin{itemize}
-  \item \textbf{\ac{io} Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common \acp{cpu} cache sizes, offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of \ac{io} operations and network roundtrips compared to binary search, making it ideal for HTTP Range Requests where each roundtrip incurs substantial latency.
+  \item \textbf{\ac{io} Efficiency and Balanced Performance}: B+trees organise data into fixed-size nodes matching common \ac{cpu} cache sizes, offering $O(\log_B n)$ search complexity where $B$ is the branching factor. This significantly reduces both the number of \ac{io} operations and network roundtrips compared to binary search, making it ideal for \ac{http} Range Requests where each roundtrip incurs substantial latency.
 
   \item \textbf{Query Versatility}: Unlike specialised data structures such as hash tables (optimised for exact matches) or sorted arrays (better for range queries), the B+tree structure provides a balanced performance across both exact match and range queries. While not achieving the optimal performance of specialised structures for specific query types, this balanced approach makes it well-suited for the diverse query patterns common in 3D city model applications.
 \end{itemize}
@@ -114,7 +114,7 @@ The original S+tree algorithm as described by \citet{static_b_trees} provides an
 
   \item \textbf{Explicit Node Offsets}: While the original S+tree uses mathematical calculations to determine node positions, FlatCityBuf's implementation stores explicit byte offsets to child nodes. This modification simplifies the implementation without compromising performance. The parent node item has a 64-bit offset to the first child item of left child node.
 
-  \item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimises both the storage overhead and redundant HTTP requests for unique keys while enabling support for duplicate keys.
+  \item \textbf{Payload Pointer Mechanism}: To efficiently handle duplicate keys, the implementation uses a tag bit in the offset value to distinguish between direct feature references and pointers to the payload section. When the most significant bit is set, the remaining bits encode an offset to the payload section where multiple feature offsets are stored consecutively. This approach minimises both the storage overhead and redundant \ac{http} requests for unique keys while enabling support for duplicate keys.
 
 \end{itemize}
 
@@ -211,17 +211,17 @@ These fundamental functions support both exact match and range queries. Range qu
 
 For complex logical operations, the implementation supports compound queries by executing multiple index lookups and combining the results. For \texttt{AND} operations, it computes the intersection of result sets, while \texttt{OR} operations would use the union of results. Currently, only the \texttt{AND} logical operator is fully implemented.
 
-\subsection{Streaming \texorpdfstring{\ac{s+tree}}{S+tree} over HTTP}
+\subsection{Streaming \texorpdfstring{\ac{s+tree}}{S+tree} over \texorpdfstring{\ac{http}}{HTTP}}
 \label{methodology:attribute_index:streaming_s_tree}
 
-The index is structured to optimize for HTTP Range Requests, with several techniques employed to minimize network overhead:
+The index is structured to optimize for \ac{http} Range Requests, with several techniques employed to minimize network overhead:
 
 \begin{itemize}
   \item \textbf{Streaming search}: The search algorithm operates in a streaming fashion, requesting only the nodes necessary for query evaluation in sequential order. This approach ensures that even with large indices, the system avoids loading the entire tree structure into memory, significantly reducing resource requirements.
-  \item \textbf{Payload Prefetching}: Proactively caches parts of the payload section during initial query execution, reducing HTTP requests for duplicate keys.
-  \item \textbf{Batch Payload Resolution}: Collects multiple payload references during tree traversal and resolves them with consolidated HTTP requests.
+  \item \textbf{Payload Prefetching}: Proactively caches parts of the payload section during initial query execution, reducing \ac{http} requests for duplicate keys.
+  \item \textbf{Batch Payload Resolution}: Collects multiple payload references during tree traversal and resolves them with consolidated \ac{http} requests.
   \item \textbf{Request Batching}: Groups adjacent node requests to minimise network roundtrips.
-  \item \textbf{Block Alignment}: Nodes are aligned to fixed size boundaries to match typical file system and HTTP caching patterns.
+  \item \textbf{Block Alignment}: Nodes are aligned to fixed size boundaries to match typical file system and \ac{http} caching patterns.
 \end{itemize}
 
 During query execution, the system interprets the provided condition (\eg, \texttt{building\_height > 25}) and traverses the appropriate attribute index to find matching features. The search algorithm selects between \texttt{find\_exact\_match} for equality conditions or \texttt{find\_partition\_point} for range queries, adapting the traversal strategy accordingly. Results are returned as a set of feature offsets, which can then be used to retrieve the actual feature data from the features section of the file.

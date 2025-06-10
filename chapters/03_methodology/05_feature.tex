@@ -25,7 +25,7 @@ FlatCityBuf implements the core structure of \ac{cjseq} using the following Flat
         \midrule
         id & string (key, required) & Required string identifier, marked as a key field for fast lookup \\
         objects & Array of CityObject tables & Collection of individual 3D features \\
-        vertices & Array of Vertex structs & Quantized X,Y,Z coordinates (int32) \\
+        vertices & Array of Vertex structs & Quantised X,Y,Z coordinates (int32) \\
         appearance & Appearance table & Optional visual styling information \\
         \bottomrule
       \end{tabularx}
@@ -128,7 +128,7 @@ Geometry in FlatCityBuf follows CityJSON's boundary representation (B-rep) model
       \end{tabularx}
     \end{table}
 
-  \item \textbf{Vertex} - \textit{struct} - Quantized 3D coordinates with properties detailed in \autoref{tab:vertex_properties}
+  \item \textbf{Vertex} - \textit{struct} - Quantised 3D coordinates with properties detailed in \autoref{tab:vertex_properties}
 
     \begin{table}[h]
       \centering
@@ -395,7 +395,7 @@ Attributes in FlatCityBuf are encoded as binary data with a schema defined throu
       \item \textit{Numeric types} - Native binary representation (little-endian)
       \item \textit{String} - Length-prefixed UTF-8 encoding
       \item \textit{Boolean} - Single byte (0 = false, 1 = true)
-      \item \textit{Date/DateTime} - Standardized binary format
+      \item \textit{Date/DateTime} - Standardised binary format
       \item \textit{Byte array} - Length-prefixed binary data
       \item \textit{Nested JSON} - Length-prefixed JSON string encoding of complex nested structures
       \item \textit{Null} - Not encoded to save space (null attributes are omitted from the binary representation)

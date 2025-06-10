@@ -18,7 +18,7 @@ This chapter addresses these limitations through three interconnected objectives
 \begin{enumerate}
   \item Development of a binary encoding strategy using FlatBuffers that preserves semantic richness while achieving faster read performance
   \item Implementation of dual indexing mechanisms—spatial (packed Hilbert R-tree) and attribute-based (\ac{s+tree}) that accelerate query performance
-  \item Integration of cloud-native data access patterns through HTTP Range Requests, enabling partial data retrieval
+  \item Integration of cloud-native data access patterns through \ac{http} Range Requests, enabling partial data retrieval
 \end{enumerate}
 
 \subsection{Outcomes of the Methodology}
@@ -31,7 +31,7 @@ Before delving into the methodological details, it is important to highlight the
 
   \item \textbf{Reference implementation}: A comprehensive Rust library for encoding, decoding, and querying FlatCityBuf files, accompanied by command-line interface (CLI) tools for conversion and validation.
 
-  \item \textbf{Web demonstration}: A web-based prototype application that showcases the partial data retrieval capabilities of FlatCityBuf through HTTP range requests, demonstrating practical performance improvements in real-world scenarios.
+  \item \textbf{Web demonstration}: A web-based prototype application that showcases the partial data retrieval capabilities of FlatCityBuf through \ac{http} range requests, demonstrating practical performance improvements in real-world scenarios.
 
   \item \textbf{Performance evaluation}: A comprehensive performance evaluation of the proposed methodology, demonstrating the benefits of the proposed approach in terms of file size, query latency, memory usage, and other relevant metrics.
 \end{itemize}
@@ -58,7 +58,7 @@ The FlatCityBuf format implements a structured binary encoding with five sequent
   \label{fig:methodology:file-structure}
 \end{figure}
 
-This sequence-based structure enables incremental file access through HTTP Range Requests—critical for cloud-based applications where minimising data transfer is essential.
+This sequence-based structure enables incremental file access through \ac{http} Range Requests—critical for cloud-based applications where minimising data transfer is essential.
 
 \subsection{Note on Binary Encoding}
 \label{methodology:overview:note_on_binary_encoding}
@@ -69,4 +69,4 @@ FlatCityBuf follows two key conventions for encoding binary data throughout the 
   \item \textbf{Little-endian encoding}: For data encoded outside FlatBuffers records (particularly in spatial and attribute indices), little-endian byte ordering is consistently applied, matching the endianness convention used within FlatBuffers records. This includes numeric values such as 32-bit and 64-bit integers, floating-point numbers, and offset values within indices.
 \end{enumerate}
 
-These conventions ensure consistency across the file format and maximise compatibility with modern \acp{cpu} architectures, most of which use little-endian byte ordering. The size-prefixing mechanism is particularly important for cloud-based access patterns, as it facilitates precise HTTP Range Requests when retrieving specific file segments.
+These conventions ensure consistency across the file format and maximise compatibility with modern \ac{cpu} architectures, most of which use little-endian byte ordering. The size-prefixing mechanism is particularly important for cloud-based access patterns, as it facilitates precise \ac{http} Range Requests when retrieving specific file segments.

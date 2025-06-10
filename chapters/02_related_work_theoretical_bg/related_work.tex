@@ -23,7 +23,7 @@ These include Cloud Optimised GeoTIFF, Cloud Optimised Point Cloud, GeoParquet, 
 
 \subsection{CityGML}
 \label{rw:citygml}
-CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. Figure \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialised modelling capabilities applicable across all thematic modules. The encoding standard uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
+CityGML is an \ac{ogc} standard \citep{CityGML} that defines a comprehensive data model for representing 3D city models. The standard encompasses both geometric properties and rich semantic information through a modular structure. From version 3.0.0, CityGML separates its conceptual model from its encoding standard. \autoref{fig:citygml_modules} shows an overview of its modules. The conceptual model defines the semantics and data model through a Core module and eleven thematic extension modules (Building, Bridge, Tunnel, Construction, CityFurniture, CityObjectGroup, LandUse, Relief, Transportation, Vegetation, and WaterBody). Additionally, five extension modules (Appearance, PointCloud, Generics, Versioning, and Dynamizer) provide specialised modelling capabilities applicable across all thematic modules. The encoding standard uses GML application schema for the Geography Markup Language (GML) \citep{gml} to encode the data. This modular design allows implementations to support specific subsets of modules based on their application requirements, ensuring flexibility while maintaining standard compliance.
 
 \begin{figure}[htbp]
   \centering
@@ -35,7 +35,7 @@ CityGML is an OGC standard \citep{CityGML} that defines a comprehensive data mod
 \subsection{CityJSON}
 \label{rw:cityjson}
 
-CityJSON is a JSON-based \citep{json} encoding format that implements a subset of the CityGML conceptual model \citep{CityGML}. It is an official OGC community standard \citep{ogc} currently at version 2.0.1, supporting CityGML 3.0.0. While both CityGML and CityJSON implement the CityGML conceptual model, CityJSON exhibits several notable differences.
+CityJSON is a JSON-based \citep{json} encoding format that implements a subset of the CityGML conceptual model \citep{CityGML}. It is an official \ac{ogc} community standard \citep{ogc} currently at version 2.0.1, supporting CityGML 3.0.0. While both CityGML and CityJSON implement the CityGML conceptual model, CityJSON exhibits several notable differences.
 
 The following properties of CityJSON are derived from \citet{ledoux_2019}:
 
@@ -82,7 +82,7 @@ This is an example of how the semantic surfaces look like (derived from \citet{l
 \subsubsection{Geometry Templates}
 \label{rw:cityjson:geometry_templates}
 
-CityJSON implements CityGML's Implicit Geometry concept through "geometry templates." The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilising these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
+CityJSON implements CityGML's Implicit Geometry concept through "geometry templates". The format includes \texttt{geometry-templates} fields with a \texttt{templates} array that stores reusable geometries. City objects utilising these templates specify \texttt{"GeometryInstance"} in their geometry's \texttt{type} field to indicate template reuse.
 
 This code shows an example of a geometry template derived from \citet{ledoux_2019}:
 
@@ -182,15 +182,7 @@ The proposed data format I developed in this research, FlatCityBuf, inherits key
 \label{rw:cityjson_enhancements:cityjsonseq}
 
 \citet{ledoux_2024} optimises CityJSON for streaming applications by decomposing objects into independent sequences.
-
-The fundamental unit of CityJSONSeq is the \texttt{CityJSONFeature}, which represents a single feature encompassing a complete city object and its hierarchical children. For instance, a \texttt{CityJSONFeature} representing a \texttt{"Building"} includes its associated \texttt{"BuildingPart"} and \texttt{"BuildingInstallation"} objects. Unlike standard CityJSON objects that share vertices and appearances across multiple features, each \texttt{CityJSONFeature} maintains local vertex lists and appearance data, ensuring complete self-containment of geometric and visual information. Throughout this research, \texttt{CityJSONFeature} objects are referred to simply as \texttt{"features"}. Figure \autoref{fig:cityjsonseq_idea} (sourced from \citet{ledoux_2024}) demonstrates how CityJSONSeq's vertices are stored as local vertices arrays per each feature, contrasting with the shared vertex approach of standard CityJSON.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figs/related_work_theoretical_bg/cj_idea.pdf}
-  \caption[CityJSONSeq Local Vertices]{Comparison of CityJSON and CityJSONSeq showing how vertices are stored. Source: \citep{ledoux_2024}}
-  \label{fig:cityjsonseq_idea}
-\end{figure}
+The fundamental unit of CityJSONSeq is the \texttt{CityJSONFeature}, which represents a single feature encompassing a complete city object and its hierarchical children. For instance, a \texttt{CityJSONFeature} representing a \texttt{"Building"} includes its associated \texttt{"BuildingPart"} and \texttt{"BuildingInstallation"} objects. Unlike standard CityJSON objects that share vertices and appearances across multiple features, each \texttt{CityJSONFeature} maintains local vertex lists and appearance data, ensuring complete self-containment of geometric and visual information. Throughout this research, \texttt{CityJSONFeature} objects are referred to simply as \texttt{"features"}. \autoref{fig:cityjsonseq_idea} (sourced from \citet{ledoux_2024}) demonstrates how CityJSONSeq's vertices are stored as local vertices arrays per each feature, contrasting with the shared vertex approach of standard CityJSON.
 
 CityJSONSeq adheres to the Newline Delimited JSON specification \citep{jsonnd}, implementing a structured file format with specific requirements. The first line of a CityJSONSeq file must contain a CityJSON object that stores commonly used data shared across all features, including coordinate transformation parameters (\texttt{transform}), format version information (\texttt{version}), metadata (\texttt{metadata}), reusable geometry templates (\texttt{geometry-templates}), and extension definitions (\texttt{extensions}). This initialisation object establishes the global context for subsequent features.
 The example below shows how a \texttt{CityJSONFeature} is represented (derived from \citet{ledoux_2024}):
@@ -205,19 +197,25 @@ The example below shows how a \texttt{CityJSONFeature} is represented (derived f
         "attributes": {
           "roofType": "gabled roof",
           "children": ["my balcony"]
-        },
+          },
         "geometry": [ ... ]
-      },
+        },
       "my balcony": {
         "type": "BuildingInstallation",
         "parents": ["id-1"],
         "geometry": [ ... ]
-      }
-    },
+        }
+      },
     "vertices": [ ... ],
     "appearance": { ... }
   }
 \end{lstlisting}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figs/related_work_theoretical_bg/cj_idea.pdf}
+  \caption[CityJSONSeq Local Vertices]{Comparison of CityJSON and CityJSONSeq showing how vertices are stored. Source: \citep{ledoux_2024}}
+  \label{fig:cityjsonseq_idea}
+\end{figure}
 While CityJSONSeq generally provides improved compression and memory efficiency compared to standard CityJSON, it may produce larger file sizes in scenarios where features share minimal vertex counts or extensively share vertices and textures, due to the necessity of localising previously shared resources.
 
 Despite CityJSONSeq's improvements for streaming applications, its text-based JSON format exhibits several limitations that impede optimal cloud-native performance. The format lacks explicit data typing, storing all values as text strings irrespective of their semantic type (integers, floating-point numbers, booleans), resulting in increased storage overhead and requiring additional parsing operations. Moreover, the JSON structure demands complete data parsing and copying during processing operations, thereby constraining memory efficiency. The absence of built-in indexing mechanisms further restricts efficient spatial and attribute-based querying capabilities. These limitations create opportunities for enhanced cloud-native optimisation through binary encoding schemes that preserve native data types and enable zero-copy access patterns, complemented by integrated indexing mechanisms for efficient data retrieval operations.
@@ -273,7 +271,7 @@ These include serialisation/deserialisation speed, memory utilisation and data c
 \subsection{FlatBuffers}
 \label{rw:non_geospatial_formats:flatbuffers}
 
-\citet{flatbuffers} is a cross-platform serialisation library developed by \citet{google_flatbuffers}.
+FlatBuffers is a cross-platform serialisation library developed by \citet{google_flatbuffers}.
 It is optimised for efficient data access and transfer.
 The detailed characteristics and technical implementation of FlatBuffers is explained in \autoref{tb:flatbuffers}.
 Benchmark analyses \citep{flatbuffers_benchmark} indicate that FlatBuffers outperforms alternative serialisation formats.
@@ -297,7 +295,7 @@ Notable differences between Protobuf and FlatBuffers include several operational
 \subsection{Apache Parquet}
 \label{rw:non_geospatial_formats:parquet}
 
-\citet{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes for managing extensive datasets.
+Apache Parquet \citep{parquet} is a columnar storage format designed to support high-performance compression and encoding schemes for managing extensive datasets.
 The Parquet ecosystem includes the specification for the Parquet format \citep{parquet-format}, and various libraries for encoding and decoding Parquet files.
 
 Parquet employs the record shredding and assembly algorithm \citep{dremel_2010} to effectively flatten nested data structures.
@@ -312,6 +310,7 @@ The format utilises a hierarchical data organisation structure consisting of mul
 \end{itemize}
 
 \autoref{fig:parquet_structure} shows the structure of the Parquet format.
+This hierarchical organisation enables efficient data access patterns and optimised compression strategies at different granularity levels.
 
 \begin{figure}[htbp]
   \centering
@@ -320,19 +319,13 @@ The format utilises a hierarchical data organisation structure consisting of mul
   \label{fig:parquet_structure}
 \end{figure}
 
-This hierarchical organisation enables efficient data access patterns and optimised compression strategies at different granularity levels.
-
 \subsection{Comparison of Non-Geospatial Formats}
 \label{rw:non_geospatial_formats:comparison}
 
 Existing research has evaluated the performance characteristics of non-geospatial formats within cloud environments.
-
 \citet{daniel_persson_2020} conducted a comparative analysis of FlatBuffers and Protobuf.
-
 This focused on metrics such as serialisation/deserialisation efficiency, memory utilisation, and message size optimisation.
-
 Their investigation utilised randomised message sizes to assess format performance in vehicle-to-server communication scenarios.
-
 The analysis yielded the following observations:
 
 \begin{itemize}
@@ -349,11 +342,11 @@ Contemporary cloud-optimised geospatial implementations encompass formats such a
 
 \subsection{Mapbox Vector Tiles (MVT)}
 \label{rw:cloud_optimised_implementations:mvt}
-\citet{mapbox-vector-tiles} implements a vector tile specification optimised for web-based data delivery. The format utilises Protobuf for the serialisation of two-dimensional geospatial data and adopts a tile pyramid structure to enhance data retrieval operations.
+\citet{mapbox-vector-tiles} implements a vector tile specification optimised for web-based data delivery. The format utilises Protobuf \citep{protobuf} for the serialisation of two-dimensional geospatial data and adopts a tile pyramid structure to enhance data retrieval operations.
 
 \subsection{PMTiles}
 \label{rw:cloud_optimised_implementations:pmtiles}
-PMTiles offers a standardised format for managing tile data addressed through Z/X/Y coordinates, supporting both vector and raster tile implementations. The format leverages HTTP Range Requests \citep{http_range_requests} to facilitate selective tile retrieval, thereby optimising network resource utilisation.
+PMTiles offers a standardised format for managing tile data addressed through Z/X/Y coordinates, supporting both vector and raster tile implementations. The format leverages \ac{http} Range Requests \citep{http_range_requests} to facilitate selective tile retrieval, thereby optimising network resource utilisation.
 
 \subsection{FlatGeobuf}
 \label{rw:cloud_optimised_implementations:flatgeobuf}
@@ -374,7 +367,7 @@ GeoParquet integrates Parquet's columnar storage architecture to facilitate opti
 
 \subsection{3D Tiles}
 \label{rw:cloud_optimised_implementations:3d_tiles}
-3D Tiles, an Open Geospatial Consortium (OGC) standard \citep{3d_tiles}, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements GLTF \citep{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
+3D Tiles, an \ac{ogc} standard \citep{3d_tiles}, provides specifications for streaming and rendering extensive three-dimensional urban models. The format implements GLTF \citep{gltf}, a WebGL-optimised specification designed for efficient streaming in web environments.
 
 The data structure employs spatial partitioning through bounding volumes, enabling selective rendering based on camera viewpoint requirements. While this architecture demonstrates optimal performance for visual rendering tasks, it presents limitations in two key areas: (1) arbitrary spatial extent retrieval and (2) attribute-based feature querying capabilities.
 
