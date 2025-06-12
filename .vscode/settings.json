@@ -96,5 +96,8 @@
     "**/.aux/**": true,
     "**/.out/**": true
   },
-  "latex-workshop.synctex.afterBuild.enabled": true
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "markdown.marp.themes": [
+    "./presentation/theme.css"
+  ]
 }

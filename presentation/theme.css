@@ -1,0 +1,76 @@
+/* @theme hideba */
+
+@import 'uncover';
+
+* {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+
+html {
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 1.rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-size: 1.0rem;
+}
+
+h4 {
+  font-size: 0.9rem;
+}
+
+h2, h3, h4, h5, p {
+  text-align: left;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+ul, ol, p, table {
+  font-size: 0.7rem;
+}
+
+table {
+  font-size: 0.4rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 4px 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  font-weight: bold;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gap-4 {
+    gap: 0.5rem;
+}
+
+.grid img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.index ul {
+  font-size: 0.5rem;
+}
