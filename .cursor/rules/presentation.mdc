@@ -1,0 +1,44 @@
+---
+description: 
+globs: presentation/**
+alwaysApply: false
+---
+
+# Guideline
+
+- Follow strict syntax rules
+- Use Marp Markdown syntax. document is available at https://marpit.marp.app/markdown
+- Use HTML only when Marp is not sufficient
+- Maintain clarity and simplicity
+
+---
+
+# General Rules
+
+- Clear, concise, and consistent style
+- Try to have less text
+- Avoid unnecessary complexity
+
+---
+
+
+# When Using HTML
+
+* Only use HTML if Markdown cannot express the layout
+* Keep HTML minimal and standards-compliant
+* Example:
+
+```html
+<div style="text-align:center">
+  <h2>Important Notice</h2>
+</div>
+```
+
+---
+
+# ✅ Summary
+
+* Simple
+* Readable
+* Maintainable
+* Safe
