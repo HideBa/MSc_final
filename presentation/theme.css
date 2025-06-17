@@ -81,6 +81,8 @@ section.columns > ul {
   gap: 1em;
 }
 
+
+
 section.columns > ul > li {
   flex: 1;
   margin: 0;
@@ -92,43 +94,3 @@ section.center  p, div, img{
   justify-content: center;
   align-items: center;
 }
-
-/*
-.grid {
-    display: grid;
-}
-
-.grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.gap-4 {
-    gap: 0.5rem;
-}
-
-.grid img {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
-}
-
-.index ul {
-  font-size: 0.5rem;
-}
-
-.logo {
-  width: 300px;
-}
-
-.header-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  align-items: center;
-  justify-items: center;
-  gap: 1.5rem;
-}
-
-.header-grid img {
-  width: 200px;
-  height: auto;
-} */
