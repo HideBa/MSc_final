@@ -76,7 +76,7 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
 \subsection{File size results}
 \label{result:overview:filesize_comparison}
 
-\autoref{tab:dataset_comparison} presents a comparison of datasets in both \ac{cjseq} and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16.36\%, 19.09\%, and 20.17\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with \ac{cjseq} format demonstrating better storage efficiency.
+\autoref{tab:dataset_comparison} presents a comparison of datasets in both \ac{cjseq} and FlatCityBuf formats. The results demonstrate that FlatCityBuf encoding achieves superior compression for several datasets, including Helsinki, Ingolstadt, and New York City, with compression factors of 16\%, 19\%, and 20\% respectively. Conversely, the PLATEAU datasets exhibit the opposite trend, with \ac{cjseq} format demonstrating better storage efficiency.
 \begin{table*}
   \centering
   \begin{threeparttable}
@@ -90,22 +90,22 @@ To comprehensively evaluate FlatCityBuf, we utilised diverse PLATEAU models incl
       \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-11}
       & CityObj & CityFeat & app.$^{\text{(a)}}$ & CityJSONSeq & FlatCityBuf & compr.$^{\text{(b)}}$ & verts & avg$^{\text{(c)}}$ & obj$^{\text{(d)}}$ & sem$^{\text{(e)}}$ \\
       \midrule
-      \textbf{3DBAG}          & 2221    & 1110   &      & \qty{5.87}{\mega\byte}  & \qty{6.23}{\mega\byte}  & $-6.02\%$  & 82612    & 74.43    & 37 & 1 \\
-      \textbf{3DBV}           & 71634   & 71634  &      & \qty{317.34}{\mega\byte}& \qty{280.92}{\mega\byte}& $11.48\%$  & 4992893  & 69.70    & 64 & 0 \\
-      \textbf{Helsinki}       & 77267   & 77231  &      & \qty{412.44}{\mega\byte}& \qty{344.96}{\mega\byte}& $16.36\%$  & 3039107  & 39.35    & 27 & 9 \\
-      \textbf{Helsinki\_tex}  & 77267   & 77231  & tex  & \qty{643.70}{\mega\byte}& \qty{545.29}{\mega\byte}& $15.29\%$  & 3039107  & 39.35    & 28 & 9 \\
-      \textbf{Ingolstadt}     & 379     & 55     &      & \qty{3.84}{\mega\byte}  & \qty{3.11}{\mega\byte}  & $19.09\%$  & 88001    & 1600.02  & 33 & 13 \\
-      \textbf{Montréal}       & 294     & 294    & tex  & \qty{4.60}{\mega\byte}  & \qty{4.80}{\mega\byte}  & $-4.38\%$  & 32242    & 109.67   & 0  & 0 \\
-      \textbf{NYC}            & 23777   & 23777  &      & \qty{95.45}{\mega\byte} & \qty{76.20}{\mega\byte} & $20.17\%$  & 1044145  & 43.91    & 3  & 3 \\
-      \textbf{Rotterdam}      & 853     & 853    & tex  & \qty{2.69}{\mega\byte}  & \qty{2.80}{\mega\byte}  & $-3.98\%$  & 26679    & 31.28    & 5  & 0 \\
-      \textbf{Vienna}         & 1322    & 307    &      & \qty{4.81}{\mega\byte}  & \qty{4.12}{\mega\byte}  & $14.32\%$  & 47229    & 153.84   & 7  & 4 \\
-      \textbf{Zürich}         & 198699  & 52834  &      & \qty{247.12}{\mega\byte}& \qty{188.63}{\mega\byte}& $23.67\%$  & 3564542  & 67.47    & 8  & 0 \\
-      \textbf{PLATEAU (Building)}  & 10405   & 4307   &      & \qty{76.94}{\mega\byte} & \qty{79.41}{\mega\byte} & $-3.22\%$  & 147754   & 34.31    & 14 & 2 \\
-      \textbf{PLATEAU (Bridge)}  & 60      & 8      &      & \qty{4.78}{\mega\byte}  & \qty{5.21}{\mega\byte}  & $-9.09\%$  & 16357    & 2044.62  & 5  & 2 \\
-      \textbf{PLATEAU (Railway)}   & 412     & 412    &      & \qty{4.15}{\mega\byte}  & \qty{4.23}{\mega\byte}  & $-1.90\%$  & 5846     & 14.19    & 3  & 2 \\
-      \textbf{PLATEAU (Transport)}  & 8136    & 8136   &      & \qty{26.47}{\mega\byte} & \qty{26.62}{\mega\byte} & $-0.54\%$  & 45992    & 5.65     & 3  & 2 \\
-      \textbf{PLATEAU (Tunnels)}   & 21      & 3      &      & \qty{4.86}{\mega\byte}  & \qty{4.64}{\mega\byte}  & $4.41\%$   & 12306    & 4102.00  & 4  & 1 \\
-      \textbf{PLATEAU (Vegetation)}   & 936     & 936    &      & \qty{1.78}{\mega\byte}  & \qty{2.32}{\mega\byte}  & $-30.50\%$ & 2567     & 2.74     & 3  & 0 \\
+      \textbf{3DBAG}          & 2221    & 1110   &      & \qty{6}{\mega\byte}  & \qty{6}{\mega\byte}  & $-6\%$  & 82612    & 74    & 37 & 1 \\
+      \textbf{3DBV}           & 71634   & 71634  &      & \qty{317}{\mega\byte}& \qty{281}{\mega\byte}& $12\%$  & 4992893  & 69.70    & 64 & 0 \\
+      \textbf{Helsinki}       & 77267   & 77231  &      & \qty{412}{\mega\byte}& \qty{345}{\mega\byte}& $16\%$  & 3039107  & 39.35    & 27 & 9 \\
+      \textbf{Helsinki\_tex}  & 77267   & 77231  & tex  & \qty{644}{\mega\byte}& \qty{545}{\mega\byte}& $15\%$  & 3039107  & 39.35    & 28 & 9 \\
+      \textbf{Ingolstadt}     & 379     & 55     &      & \qty{4}{\mega\byte}  & \qty{3}{\mega\byte}  & $19\%$  & 88001    & 1600  & 33 & 13 \\
+      \textbf{Montréal}       & 294     & 294    & tex  & \qty{5}{\mega\byte}  & \qty{5}{\mega\byte}  & $-4\%$  & 32242    & 110   & 0  & 0 \\
+      \textbf{NYC}            & 23777   & 23777  &      & \qty{95}{\mega\byte} & \qty{76}{\mega\byte} & $20\%$  & 1044145  & 44    & 3  & 3 \\
+      \textbf{Rotterdam}      & 853     & 853    & tex  & \qty{3}{\mega\byte}  & \qty{3}{\mega\byte}  & $-4\%$  & 26679    & 31    & 5  & 0 \\
+      \textbf{Vienna}         & 1322    & 307    &      & \qty{5}{\mega\byte}  & \qty{4}{\mega\byte}  & $14\%$  & 47229    & 154   & 7  & 4 \\
+      \textbf{Zürich}         & 198699  & 52834  &      & \qty{247}{\mega\byte}& \qty{189}{\mega\byte}& $24\%$  & 3564542  & 6.6    & 8  & 0 \\
+      \textbf{PLATEAU (Building)}  & 10405   & 4307   &      & \qty{77}{\mega\byte} & \qty{79}{\mega\byte} & $-3\%$  & 147754   & 34    & 14 & 2 \\
+      \textbf{PLATEAU (Bridge)}  & 60      & 8      &      & \qty{5}{\mega\byte}  & \qty{5}{\mega\byte}  & $-9\%$  & 16357    & 2045  & 5  & 2 \\
+      \textbf{PLATEAU (Railway)}   & 412     & 412    &      & \qty{4}{\mega\byte}  & \qty{4}{\mega\byte}  & $-2\%$  & 5846     & 14    & 3  & 2 \\
+      \textbf{PLATEAU (Transport)}  & 8136    & 8136   &      & \qty{26}{\mega\byte} & \qty{26}{\mega\byte} & $-1\%$  & 45992    & 5.65     & 3  & 2 \\
+      \textbf{PLATEAU (Tunnels)}   & 21      & 3      &      & \qty{5}{\mega\byte}  & \qty{5}{\mega\byte}  & $4\%$   & 12306    & 4102  & 4  & 1 \\
+      \textbf{PLATEAU (Vegetation)}   & 936     & 936    &      & \qty{2}{\mega\byte}  & \qty{2}{\mega\byte}  & $-31\%$ & 2567     & 2.74     & 3  & 0 \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}[flushleft]
@@ -130,7 +130,7 @@ To examine how \ac{lod} affects file size, I conducted a series of tests using t
 
 Since each test dataset contains only a single city feature, we compare feature sizes rather than total file sizes. This approach is necessary because FlatCityBuf incorporates a larger header structure, which would disproportionately affect comparisons involving minimal features.
 
-The results demonstrate that while file sizes increase with higher levels of detail, the compression factor remains largely independent of \ac{lod}. Both formats show similar proportional growth in size as geometric complexity increases, with FlatCityBuf consistently achieving approximately 24-25\% size reduction compared to CityJSONSeq regardless of the \ac{lod} level. This suggests that the compression efficiency is determined by the underlying format design rather than the geometric complexity of the data.
+The results demonstrate that while file sizes increase with higher levels of detail, the compression factor remains largely independent of \ac{lod}. Both formats show similar proportional growth in size as geometric complexity increases, with FlatCityBuf consistently achieving approximately 25\% size reduction compared to CityJSONSeq regardless of the \ac{lod} level. This suggests that the compression efficiency is determined by the underlying format design rather than the geometric complexity of the data.
 
 \begin{table}[htbp]
   \centering
@@ -140,11 +140,11 @@ The results demonstrate that while file sizes increase with higher levels of det
     \toprule
     \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Vertices} \\
     \midrule
-    TUD BK All & \qty{139.75}{\kilo\byte} & \qty{189.01}{\kilo\byte} & $26.08\%$ & 4549 \\
-    TUD BK \ac{lod}0 & \qty{12.77}{\kilo\byte} & \qty{20.72}{\kilo\byte} & $38.11\%$ & 785 \\
-    TUD BK \ac{lod}1.2 & \qty{37.45}{\kilo\byte} & \qty{49.40}{\kilo\byte} & $24.23\%$ & 1350 \\
-    TUD BK \ac{lod}1.3 & \qty{44.66}{\kilo\byte} & \qty{59.25}{\kilo\byte} & $24.67\%$ & 1600 \\
-    TUD BK \ac{lod}2.2 & \qty{62.02} {\kilo\byte} & \qty{82.74}{\kilo\byte} & $25.07\%$ & 2168 \\
+    TUD BK All & \qty{140}{\kilo\byte} & \qty{189}{\kilo\byte} & $26\%$ & 4549 \\
+    TUD BK \ac{lod}0 & \qty{13}{\kilo\byte} & \qty{21}{\kilo\byte} & $38\%$ & 785 \\
+    TUD BK \ac{lod}1.2 & \qty{37}{\kilo\byte} & \qty{49}{\kilo\byte} & $25\%$ & 1350 \\
+    TUD BK \ac{lod}1.3 & \qty{45}{\kilo\byte} & \qty{60}{\kilo\byte} & $25\%$ & 1600 \\
+    TUD BK \ac{lod}2.2 & \qty{62} {\kilo\byte} & \qty{83}{\kilo\byte} & $25\%$ & 2168 \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -186,12 +186,12 @@ The randomly generated attributes in our test datasets followed a consistent pat
     \toprule
     \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression}  \\
     \midrule
-    10 attributes (int) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ \\
-    100 attributes (int) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ \\
-    1000 attributes (int) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ \\
-    10 attributes (string) & \qty{580}{\byte} & \qty{611}{\byte} & $5.07\%$ \\
-    100 attributes (string) & \qty{1.62}{\kilo\byte} & \qty{2.44}{\kilo\byte} & $33.65\%$ \\
-    1000 attributes (string) & \qty{12.17}{\kilo\byte} & \qty{21.78}{\kilo\byte} & $44.13\%$ \\
+    10 attributes (int) & \qty{580}{\byte} & \qty{611}{\byte} & $5\%$ \\
+    100 attributes (int) & \qty{2}{\kilo\byte} & \qty{2}{\kilo\byte} & $33\%$ \\
+    1000 attributes (int) & \qty{12}{\kilo\byte} & \qty{22}{\kilo\byte} & $44\%$ \\
+    10 attributes (string) & \qty{580}{\byte} & \qty{611}{\byte} & $5\%$ \\
+    100 attributes (string) & \qty{2}{\kilo\byte} & \qty{2}{\kilo\byte} & $33\%$ \\
+    1000 attributes (string) & \qty{12}{\kilo\byte} & \qty{22}{\kilo\byte} & $44\%$ \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -210,7 +210,7 @@ For integer attribute tests, all values were randomly generated integers between
   \label{fig:simple_cube}
 \end{figure}
 
-The results reveal a clear pattern: FlatCityBuf's compression advantage over CityJSONSeq increases substantially with the number of attributes. With only 10 attributes, the compression benefit is minimal at 5.07\%, but rises markedly to 33.65\% with 100 attributes and reaches 44.13\% with 1000 attributes.
+The results reveal a clear pattern: FlatCityBuf's compression advantage over CityJSONSeq increases substantially with the number of attributes. With only 10 attributes, the compression benefit is minimal at 5\%, but rises markedly to 33\% with 100 attributes and reaches 44\% with 1000 attributes.
 
 This efficiency stems from FlatCityBuf's architectural design, which stores the attribute schema once in the file header. Each feature subsequently references attributes using only a 2-byte (u16) index, while CityJSONSeq must replicate identical attribute keys across all features. Although additional attributes increase the header size, this overhead is distributed across all features in the dataset. The header remains relatively compact—even with 1000 attributes, it occupies only a few tens of kilobytes.
 
@@ -229,8 +229,8 @@ To evaluate how geometric complexity influences file size, we analysed models wi
     \toprule
     \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Vertices/Feature} \\
     \midrule
-    TUD BK & \qty{139.75}{\kilo\byte} & \qty{189.01}{\kilo\byte} & $26.06\%$ & 4549 \\
-    TUD Simple & \qty{13.12}{\kilo\byte} & \qty{15.42}{\kilo\byte} & $14.94\%$ & 340 \\
+    TUD BK & \qty{140}{\kilo\byte} & \qty{189}{\kilo\byte} & $26\%$ & 4549 \\
+    TUD Simple & \qty{13}{\kilo\byte} & \qty{15}{\kilo\byte} & $15\%$ & 340 \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -259,7 +259,7 @@ To evaluate how geometric complexity influences file size, we analysed models wi
   \label{fig:geometry_comparison}
 \end{figure}
 
-The results demonstrate that geometric complexity significantly affects compression efficiency, with FlatCityBuf achieving better compression for more intricate models. The TU Delft BK building model, containing 4549 vertices per feature, exhibits a higher compression rate of 26.06\% compared to the simpler model with 340 vertices at 14.94\%.
+The results demonstrate that geometric complexity significantly affects compression efficiency, with FlatCityBuf achieving better compression for more intricate models. The TU Delft BK building model, containing 4549 vertices per feature, exhibits a higher compression rate of 26\% compared to the simpler model with 340 vertices at 15\%.
 
 This differential appears to result from the expanding boundary field as geometry becomes more complex. FlatCityBuf employs a strongly typed representation of boundaries (using u32 integers) that maintains a constant size for encoding each vertex, whereas CityJSONSeq requires additional bytes due to its text-based format. This fundamental difference in geometry encoding becomes increasingly advantageous for FlatCityBuf as geometric complexity rises.
 
@@ -276,10 +276,10 @@ To investigate how coordinate scale affects file size, I conducted tests using i
     \toprule
     \textbf{Dataset} & \textbf{FlatCityBuf}$^{\text{(a)}}$ & \textbf{CityJSONSeq}$^{\text{(b)}}$ & \textbf{Compression} & \textbf{Scale} \\
     \midrule
-    Cube (1) & \qty{476}{\byte} & \qty{370}{\byte} & $-28.65\%$ & 1 \\
-    Cube (10) & \qty{476}{\byte} & \qty{459}{\byte} & $-3.70\%$ & 10 \\
-    Cube (1k) & \qty{476}{\byte} & \qty{507}{\byte} & $6.11\%$ & 1,000 \\
-    Cube (1M) & \qty{476}{\byte} & \qty{579}{\byte} & $17.79\%$ & 1,000,000 \\
+    Cube (1) & \qty{476}{\byte} & \qty{370}{\byte} & $-29\%$ & 1 \\
+    Cube (10) & \qty{476}{\byte} & \qty{459}{\byte} & $-4\%$ & 10 \\
+    Cube (1k) & \qty{476}{\byte} & \qty{507}{\byte} & $6\%$ & 1,000 \\
+    Cube (1M) & \qty{476}{\byte} & \qty{579}{\byte} & $18\%$ & 1,000,000 \\
     \bottomrule
   \end{tabular}
   \begin{tablenotes}[flushleft]
@@ -291,7 +291,7 @@ To investigate how coordinate scale affects file size, I conducted tests using i
 
 The results reveal an intriguing relationship between coordinate scale and file size in both formats. FlatCityBuf maintains a consistent size of 476 bytes regardless of coordinate magnitude, demonstrating its fixed-size binary encoding for numeric values. In contrast, CityJSONSeq's file size increases proportionally with larger coordinate values, growing from 370 bytes with single-digit coordinates to 579 bytes with million-scale coordinates.
 
-This behaviour occurs because both FlatCityBuf and CityJSONSeq use integer values as coordinates, which are quantised by the \texttt{Transform} field as explained in \autoref{rw:cityjson:coordinate_quantisation}. However, FlatCityBuf stores these coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-28.65\%) to substantially more efficient for large coordinate values (17.79\%).
+This behaviour occurs because both FlatCityBuf and CityJSONSeq use integer values as coordinates, which are quantised by the \texttt{Transform} field as explained in \autoref{rw:cityjson:coordinate_quantisation}. However, FlatCityBuf stores these coordinates as fixed-size 32-bit integers, while CityJSONSeq, being a text-based format, requires more characters to represent larger numbers. Consequently, FlatCityBuf transitions from being less efficient than CityJSONSeq for small coordinate values (-29\%) to substantially more efficient for large coordinate values (18\%).
 
 This characteristic explains the pattern observed in \autoref{result:overview:filesize_comparison}. FlatCityBuf demonstrates lower storage efficiency for PLATEAU datasets, likely because these datasets employ geographic coordinate systems with values typically between -180 and 180. Since CityJSON quantises coordinates through the \texttt{Transform} field, latitude and longitude values can be represented as relatively small integers. Conversely, datasets where FlatCityBuf performs better—such as NYC and Helsinki—use local coordinate systems (in metres) with larger internal values, resulting in improved compression efficiency with FlatCityBuf.
 
@@ -301,13 +301,13 @@ This characteristic explains the pattern observed in \autoref{result:overview:fi
 The comprehensive analysis of various factors affecting file size reveals distinct patterns in the compression performance of FlatCityBuf compared to CityJSONSeq:
 
 \begin{itemize}
-  \item \textbf{Level of Detail:} The analysis demonstrates that geometric detail levels have minimal impact on compression efficiency. While file sizes naturally increase with higher \ac{lod}s, the compression advantage of FlatCityBuf remains relatively consistent at approximately 24-25\% across different levels of geometric complexity.
+  \item \textbf{Level of Detail:} The analysis demonstrates that geometric detail levels have minimal impact on compression efficiency. While file sizes naturally increase with higher \ac{lod}s, the compression advantage of FlatCityBuf remains relatively consistent at approximately 25\% across different levels of geometric complexity.
 
-  \item \textbf{Attribute Quantity:} The number of attributes significantly influences compression performance. FlatCityBuf's efficiency increases dramatically with attribute count, from minimal compression (5.07\%) with 10 attributes to substantial compression (44.13\%) with 1000 attributes. This progressive advantage stems from FlatCityBuf's schema-based approach that eliminates redundant attribute key storage.
+  \item \textbf{Attribute Quantity:} The number of attributes significantly influences compression performance. FlatCityBuf's efficiency increases dramatically with attribute count, from minimal compression (5\%) with 10 attributes to substantial compression (44\%) with 1000 attributes. This progressive advantage stems from FlatCityBuf's schema-based approach that eliminates redundant attribute key storage.
 
-  \item \textbf{Geometric Complexity:} More intricate geometries benefit from improved compression with FlatCityBuf. As boundary fields expand with geometric complexity, FlatCityBuf's fixed-size numeric representation provides greater efficiency compared to the text-based encoding of CityJSONSeq, increasing compression from 14.94\% for simple geometries to 26.06\% for complex models.
+  \item \textbf{Geometric Complexity:} More intricate geometries benefit from improved compression with FlatCityBuf. As boundary fields expand with geometric complexity, FlatCityBuf's fixed-size numeric representation provides greater efficiency compared to the text-based encoding of CityJSONSeq, increasing compression from 15\% for simple geometries to 26\% for complex models.
 
-  \item \textbf{Coordinate Scale:} The magnitude of coordinate values has a significant impact on compression efficiency. FlatCityBuf's constant-size integer representation maintains consistent file sizes regardless of coordinate scale, while CityJSONSeq requires more space for larger values. This creates a transition from inferior compression (-28.65\%) with small coordinate values to superior compression (17.79\%) with large coordinate values.
+  \item \textbf{Coordinate Scale:} The magnitude of coordinate values has a significant impact on compression efficiency. FlatCityBuf's constant-size integer representation maintains consistent file sizes regardless of coordinate scale, while CityJSONSeq requires more space for larger values. This creates a transition from inferior compression (-29\%) with small coordinate values to superior compression (18\%) with large coordinate values.
 \end{itemize}
 
 These findings elucidate the observed variations in compression performance across different datasets in \autoref{tab:dataset_comparison}. FlatCityBuf demonstrates optimal performance for datasets with numerous attributes, complex geometries, and large-scale coordinate systems, while CityJSONSeq may retain advantages for simpler datasets with limited attributes and smaller coordinate values.

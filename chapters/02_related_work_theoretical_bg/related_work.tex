@@ -382,32 +382,34 @@ This comparison provides a general overview but is inherently subjective. Direct
   \caption{Comparative Analysis of Cloud-Optimised Geospatial Formats}
   \label{tab:format-comparison}
   \footnotesize
-  \begin{tabular}{p{3cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}}
-    \hline
-    \textbf{Characteristics} & \textbf{FlatGeobuf} & \textbf{MVT} & \textbf{GeoParquet} & \textbf{GeoJSON} & \textbf{3D Tiles} \\
-    \hline
-    \textbf{Serialisation Performance} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
-    \hline
-    \textbf{Deserialisation Performance} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}}$^a$ \\
-    \hline
-    \textbf{Storage Efficiency} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
-    \hline
-    \textbf{Memory Utilisation} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
-    \hline
-    \textbf{Implementation Complexity} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} \\
-    \hline
-    \textbf{Spatial Indexing} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^b$ & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^c$ & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^d$ \\
-    \hline
-    \textbf{Random Access Support} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} \\
-    \hline
-  \end{tabular}
-  \begin{tablenotes}[flushleft]
-    \footnotesize
-  \item[a] Optimised for GPU rendering
-  \item[b] Tile-based partitioning
-  \item[c] Random access to the internal chunks
-  \item[d] Volumetric hierarchical partitioning
-  \end{tablenotes}
+  \begin{threeparttable}
+    \begin{tabular}{p{3cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}}
+      \hline
+      \textbf{Characteristics} & \textbf{FlatGeobuf} & \textbf{MVT} & \textbf{GeoParquet} & \textbf{GeoJSON} & \textbf{3D Tiles} \\
+      \hline
+      \textbf{Serialisation Performance} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
+      \hline
+      \textbf{Deserialisation Performance} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}}$^a$ \\
+      \hline
+      \textbf{Storage Efficiency} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
+      \hline
+      \textbf{Memory Utilisation} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{gray}{\rule{1.2em}{1.2em}}} \\
+      \hline
+      \textbf{Implementation Complexity} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{orange}{\rule{1.2em}{1.2em}}} \\
+      \hline
+      \textbf{Spatial Indexing} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^b$ & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^c$ & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}}$^d$ \\
+      \hline
+      \textbf{Random Access Support} & \makebox[1.8cm]{\textcolor{green}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{yellow}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} & \makebox[1.8cm]{\textcolor{red}{\rule{1.2em}{1.2em}}} \\
+      \hline
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+    \item[a] Optimised for GPU rendering
+    \item[b] Tile-based partitioning
+    \item[c] Random access to the internal chunks
+    \item[d] Volumetric hierarchical partitioning
+    \end{tablenotes}
+  \end{threeparttable}
 \end{table}
 
 \begin{table}[htbp]
