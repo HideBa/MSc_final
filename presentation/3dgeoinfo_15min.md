@@ -419,33 +419,385 @@ Immutable format, limited query flexibility, and
 
 ---
 
-## Appendix
+# Appendix
 
 ---
 
-## Feature & Geometry Encoding
+# Appendix (related work)
+
+---
+
+## Example of Cloud-Optimised Geospatial Formats (2D): FlatGeobuf
+
+<video width="1000" controls style="display: block; margin: 0 auto;">
+
+  <source src="https://storage.googleapis.com/flatcitybuf/flatgeobuf_demo.mp4" type="video/mp4">
+</video>
+
+---
+
+# Appendix (Theoretical)
+
+---
+
+## Appendix (Theoretical): Eytzinger Layout (1/2)
+
+![w:700px center](./figures/appendix/eytzinger_layout.png)
+
+---
+
+## Appendix (Theoretical): Eytzinger Layout (2/2)
+
+![w:1000px center](./figures/appendix/eytzinger_layout2.png)
+
+---
+
+### Appendix (Theoretical): Column-oriented and Row-oriented storage
+
+#### Example data
+
+| id  | city      | country        |
+| --- | --------- | -------------- |
+| 1   | Tokyo     | Japan          |
+| 2   | London    | United Kingdom |
+| 3   | Amsterdam | Netherlands    |
+
+#### Row-oriented storage
+
+```
+1, Tokyo, Japan , 2, London, UK, 3, Amsterdam, Netherlands
+```
+
+#### Column-oriented storage
+
+```
+1, 2, 3, Tokyo, London, Amsterdam, Japan, UK, Netherlands
+```
+
+---
 
 <!-- _class: columns -->
 
-- ### Preserving CityJSON Structure
+## Appendix (Theoretical): Endianness
 
-  - **CityFeature**: Contains city objects, vertices, appearance
-  - **CityObject**: Geometry, attributes, semantics
-  - **Flattened arrays**: Handles nested geometries
+- #### Little Endian
 
-  **Example geometry encoding:**
+  - Least significant byte is stored first
+  - Example: 0x12345678
+  - Stored as: 0x78 0x56 0x34 0x12
+  - e.g. (31 December 2050) in calendar date format
 
-  ```text
-  boundaries: [0,1,2,3,0,3,7,4...]
-  strings: [4,4,4,4,4,4]
-  surfaces: [1,1,1,1,1,1]
+- #### Big Endian
+
+  - Most significant byte is stored first
+  - Example: 0x12345678
+  - Stored as: 0x12 0x34 0x56 0x78
+  - e.g. (2025-12-31) in calendar date format
+
+---
+
+<!-- _class: columns -->
+
+## B-Tree/B+Tree
+
+B-Tree and its variants, B+Tree are self-balancing binary search trees.
+With block size B, trees achieve log_B(n) instead of log_2(n) memory accesses.
+
+- #### B-Tree
+
+  ![w:500px center](./figures/tb_rw/btree.png)
+
+- #### B+Tree
+
+  ![w:600px center](./figures/tb_rw/bplus_tree.png)
+
+---
+
+<!-- _class: columns -->
+
+## Appendix (Theoretical): WebAssembly
+
+- ![w:200px center](./figures/appendix/wasm.png)
+- WebAssembly is a binary instruction format that enables high-performance execution of code in web browsers. It allows languages like C, C++, and Rust to run at near-native speed on the web.
+
+---
+
+## Appendix (Theoretical): FlatBuffers
+
+![w:1100px center](./figures/appendix/flatbuffers.png)
+
+---
+
+<!-- _class: columns -->
+
+## FlatBuffers: Zero-copy
+
+- #### Multiple Copies of the Same Data
+
+  When data is processed on a machine, it is often copied multiple times.
+
+  ![h:300px center](./figures/tb_rw/zero_copy.png)
+  _([Zhenyuan (Zane) Zhang, 2024](https://medium.com/@kaixin667689/zero-copy-principle-and-implementation-9a5220a62ffd))_
+
+- #### Zero-copy
+
+  Zero-copy avoids data copying between memory locations, reducing I/O overhead. Formats like FlatBuffers enable direct access to serialised data without deserialisation.
+  **Though the term "zero" is often used, it's not necessarily zero. It implies the data is copied much less than other approaches.**
+
+---
+
+## Appendix: Scope of the Research
+
+- **In scope:**
+
+  - FlatCityBuf format design and implementation (Rust)
+  - Spatial and attribute indexing
+  - HTTP Range Request data retrieval
+  - Performance evaluation vs CityJSONSeq
+  - Web-based demo
+
+- **Out of scope:**
+  - Implementing libraries in other programming languages
+  - Exploring alternative serialisation frameworks like Parquet or Protocol Buffers
+  - Optimising for write operations
+
+---
+
+# Appendix: Methodology
+
+---
+<!-- _class: columns -->
+
+## Spatial Indexing (1/4): General Idea
+
+- #### R-tree
+
+  R-tree is a spatial index structure for 2D and 3D data.
+  ![h:300px center](./figures/tb_rw/rtree.png)
+  _([Wikipedia, 2025](https://en.wikipedia.org/wiki/R-tree))_
+
+- #### Space-filling Curves
+
+  Space-filling curves such as Hilbert curve map multi-dimensional data to one dimension while preserving spatial locality.
+  ![h:250px center](./figures/tb_rw/hilbert_sort.png)
+  _([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
+
+## Spatial Indexing (2/4): Structure
+
+**Spatial Index in the file**
+
+![w:1000px center](./figures/methodology/spatial_index.png)
+
+**Packed Hilbert R-tree**
+
+![w:900px center](./figures/methodology/packed_rtree.png)
+_([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
+
+---
+
+## Spatial Indexing (3/4): Construction Steps
+
+1. **Calculate bounding boxes**: Compute BBox for each feature
+2. **Hilbert curve mapping**: Map BBox centres to Hilbert curve positions
+3. **Sort by Hilbert value**: Order features to maintain spatial locality
+4. **Build R-tree bottom-up**: Group features into leaf nodes, build parent nodes
+5. **Pack into linear array**: Serialise tree into contiguous memory layout
+
+---
+
+<!-- _class: columns -->
+
+## Spatial Indexing (4/4): Supported Queries
+
+### Spatial indexing in a streaming manner
+
+- #### Bounding Box
+
+  ![w:500px center](./figures/methodology/bbox_query.png)
+
+- #### Point/Nearest Neighbour
+
+  ![w:500px center](./figures/methodology/point_intersect.png)
+
+---
+
+## Attribute Indexing (1/3): Structure
+
+**Attribute Index in the file**
+
+![w:900px center](./figures/methodology/file_structure_attribute.png)
+
+**Static B+Tree**
+
+![w:1100px center](./figures/methodology/attribute_index.png)
+
+---
+
+## Attribute Indexing (2/3): Construction Steps
+
+1. **Sort features by attribute**: Order features by the indexed attribute value (e.g. `1.apple`, `2.banana`, `3.cherry`)
+2. **Build B+Tree bottom-up**: Create leaf nodes with sorted features, build internal nodes
+3. **Store keys and pointers**: Internal nodes store keys and child pointers, leaves store actual data
+4. **Pack into linear array**: Serialise tree structure for efficient disk storage
+5. **Create index metadata**: Store root offset, node size, and branching factor
+
+---
+
+## Attribute Indexing (3/3): Supported Queries
+
+**Attribute indexing is also in a streaming manner!**
+
+- **Exact Match Queries**
+
+  - Find features with specific attribute values
+  - Example: `city = "Tokyo"`
+
+- **Range Queries**
+
+  - Find features within attribute value ranges (`<`, `<=`, `>`, `>=`)
+  - Example: `construction_year BETWEEN 1990 AND 2000`
+
+- **Logical Combinations**
+
+  - Find features that satisfy multiple conditions
+  - Example: `(construction_year > 1990) AND (height > 100)`
+
+---
+
+<!-- _class: columns -->
+
+## Feature Encoding (2/3): Geometry Encoding
+
+FlatBuffers does not support nested arrays. We use flattened arrays to represent nested geometries.
+
+- **Example (Triangle)**
+
+  ```
+  boundaries : [0 , 1 , 2]
+  strings : [3]
+  surfaces : [1]
   ```
 
-- ### Attribute Encoding
+  ![w:300px center](./figures/methodology/triangle.png)
 
-  - Binary representation (little endian)
-  - Typed attribute schema
-  - Compact storage format
-  - Self-describing structure
+- **Example (Cube)**
 
-  ![w:500px center](./figures/methodology/attribute_structure.png)
+  ```
+  boundaries : [0 , 1 , 2 , 3 , 0 , 3 , 7 , 4 ...]
+  strings : [4 , 4 , 4 , 4 , 4 , 4]
+  surfaces : [1 , 1 , 1 , 1 , 1 , 1]
+  shells : [6]
+  solids : [1]
+  ```
+
+  ![w:250px center](./figures/methodology/cube.png)
+
+---
+
+---
+
+<!-- _class: columns -->
+
+## 2.6 Feature Encoding (2/3): Geometry Encoding
+
+FlatBuffers does not support nested arrays. We use flattened arrays to represent nested geometries.
+
+- **Example (Triangle)**
+
+  ```
+  boundaries : [0 , 1 , 2]
+  strings : [3]
+  surfaces : [1]
+  ```
+
+  ![w:300px center](./figures/methodology/triangle.png)
+
+- **Example (Cube)**
+
+  ```
+  boundaries : [0 , 1 , 2 , 3 , 0 , 3 , 7 , 4 ...]
+  strings : [4 , 4 , 4 , 4 , 4 , 4]
+  surfaces : [1 , 1 , 1 , 1 , 1 , 1]
+  shells : [6]
+  solids : [1]
+  ```
+
+  ![w:250px center](./figures/methodology/cube.png)
+
+---
+
+## Feature Encoding (3/3): Attribute Encoding
+
+Attributes are encoded with their own binary representation. (in little endian)
+
+![w:1100px center](./figures/methodology/attribute_structure.png)
+
+---
+
+# Appendix A: Results & Evaluation
+
+---
+
+## Appendix A: File Size Comparison (Level of Detail)
+
+![w:1100px center](./figures/appendix/file_size_lod.png)
+
+---
+
+<!-- _class: columns -->
+
+## Appendix A: File Size Comparison (Attribute Quantity)
+
+- #### Data
+
+  ```json
+  {
+    "type ": "Building",
+    "geometry ": [ . . . ] ,
+    "attributes ": {
+    "attr_1": "value_1",
+    "attr_2": "value_2",
+    "attr_3": "value_3",
+    "attr_4": "value_4",
+    "attr_5": "value_5",
+    ...
+    "attr_n": " value_n"
+    }
+  }
+  ```
+
+- #### Result
+
+  ![w:600px center](./figures/appendix/file_size_attr.png)
+
+---
+
+<!-- _class: columns -->
+
+## Appendix A: File Size Comparison (Geometric Complexity)
+
+- #### Data
+
+  ![w:600px center](./figures/appendix/geom_data.png)
+
+- #### Result
+
+  ![w:600px center](./figures/appendix/file_size_geom.png)
+
+---
+
+## Appendix A: File Size Comparison (Coordinate Scale)
+
+![w:1100px center](./figures/appendix/file_size_scale.png)
+
+--
+
+## Appendix A: Read Performance (vs CityJSONSeq)
+
+![w:1100px center](./figures/results/bench_cjseq.png)
+
+---
+
+## Appendix A: Read Performance (vs CBOR)
+
+![w:1100px center](./figures/results/bench_cbor.png)
