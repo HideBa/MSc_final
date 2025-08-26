@@ -10,88 +10,70 @@ paginate: true
 
 - ![w:500px](./figures/logos/logo.png)
 
-- **Hidemichi Baba**
-
-  Co-authors: Hugo Ledoux, and Ravi Peters
+- **Hidemichi Baba,  Hugo Ledoux, and Ravi Peters**
 
   ![bg contrast:280%](./figures/tb_rw/3dbag.png)
 
   Delft University of Technology, Netherlands
 
-  **3DGeoInfo 2025**
+  3DGeoInfo 2025
+
+---
+<!-- _class: image-center -->
+
+## Goal
+
+<br/>
+
+![w:1100px](./figures/3dgeoinfo/objective.png)
 
 ---
 
-# Motivation and Problem Statement
-
----
-
-## Traditional vs Cloud-Optimized Geospatial Formats
+## Traditional vs Cloud-Optimised Geospatial Formats
 
 <!-- _class: columns -->
 
 - ### Traditional Formats
 
-  **Download → Process → Use**
-
-  - Download entire dataset
-  - Process locally
-  - High bandwidth usage
-  - Storage requirements
+  **Download → Parse → Use**
 
   Examples: Shapefile, GeoJSON, GeoTIFF
 
-- ### Cloud-Optimized Formats
+- ### Cloud-Optimised Formats
 
   **Query → Stream → Use**
-
-  - Partial data retrieval
-  - Direct access via HTTP
-  - Reduced latency
-  - No local storage
 
   Examples: COG, FlatGeobuf, GeoParquet
 
 ---
 
-## The 2D Revolution: Cloud-Optimized Formats
+## A 2D Revolution: Cloud-Optimized Formats
 
 ### **A paradigm shift in geospatial data delivery**
 
-- **Cloud Optimized GeoTIFF (COG)**: Raster data with internal tiling
-- **FlatGeobuf**: Vector features with spatial indexing
-- **GeoParquet**: Columnar storage for analytics
-- **PMTiles**: Single-file map tiles
+- **Cloud Optimized GeoTIFF (COG)**
+- **FlatGeobuf**
+- **GeoParquet**
+- **PMTiles**
 
 **Key Innovation**:
 
-- **Object storage instead of databases** - Static files on S3/CDN
-- **Web-optimized delivery** - HTTP Range Requests for partial access
-- **No backend infrastructure** - Direct client-to-storage queries
-
-<!-- ---
-
-## Example: FlatGeobuf in Action
-
-<video width="1000" controls style="display: block; margin: 0 auto;">
-  <source src="https://storage.googleapis.com/flatcitybuf/flatgeobuf_demo.mp4" type="video/mp4">
-</video>
-
-**Static file + HTTP Range Requests = Dynamic queries** -->
+- **Object storage instead of databases**
+- **Web-optimized delivery**
+- **No backend infrastructure**
 
 ---
 
-## The Gap: 3D City Models Still Behind
+## The Gap we fill: 3D City Models Still Behind
 
 <!-- _class: columns -->
 
 - ### Current 3D Distribution
 
-  **3DBAG Example:**
-  - Tile-based downloads
-  - Choose tiles manually
-  - Download complete tiles
-  - No partial access
+  **Current Issues:**
+  - CityJSON uses tile-based distribution
+  - Manual tile selection required
+  - Text format not web-optimized
 
   ![h:250px center](./figures/tb_rw/3dbag_tile.png)
 
@@ -99,18 +81,15 @@ paginate: true
 
   **No cloud-optimized format for 3D city models**
 
-  - CityJSON: Text-based, no indexing
-  - CityJSONSeq: Streaming, but no spatial queries
+  - CityGML: Text-based, no indexing
+  - CityJSON(Seq): Streaming, but no spatial queries
   - 3DCityDB: Database-centric, complex setup
-
-  **Research Question:**
-  **_"How can we bring cloud optimization to 3D city models?"_**
 
 ---
 
-## Solution: FlatCityBuf: A Cloud-Optimised CityJSON Format
+## FlatCityBuf: A Cloud-Optimised CityJSON Format
 
-### **10-20× faster performance with cloud-native streaming**
+#### **2-15x faster performance with cloud-native streaming**
 
   <video width="800" controls style="display: block; margin: 0 auto;">
     <source src="https://storage.googleapis.com/flatcitybuf/demo_1k.mov" type="video/mp4">
@@ -120,18 +99,13 @@ paginate: true
 
 ---
 
-# Methodology
-
----
-
 <!-- _class: columns -->
 
 ## FlatBuffers: General Idea
 
 - #### FlatBuffers
 
-  FlatBuffers is a binary serialisation framework developed by Google.
-  Its main characteristics are:
+  Serialisation framework developed by Google.
 
   - Binary format
   - Access to serialised data without parsing
@@ -148,33 +122,12 @@ paginate: true
 
 ---
 
+<!-- _class: image-center -->
 ## File Structure Design
 
 The file consists of:
 
-1. Magic Bytes: `FCB10000` (Acronym of FlatCityBuf + Semantic versioning)
-2. Header: Common properties of CityJSON features and metadata (FlatBuffers root table)
-3. Index:
-   - Spatial Index: packed Hilbert R-tree
-   - Attribute Index: static B+Tree
-4. Features: array of CityJSON features (FlatBuffers root table)
-
-![w:1100px center](./figures/methodology/file_structure.png)
-
----
-
-## 2.3 Header
-
-The header encodes:
-
-- **Core fields**: CityJSON metadata (version, transform, reference system, geographical extent)
-- **Appearance**: Materials, textures, UV coordinates
-- **Geometry templates**: Reusable structures for compact representation
-- **Extension support**: Embedded schemas for self-containment
-- **Attribute schema**: Data structure for attributes
-- **Indexing metadata**: Metadata for spatial and attribute indexing (e.g. offset bytes and branching factor)
-
-![w:1100px center](./figures/methodology/header.png)
+![w:1150px center](./figures/methodology/file_structure.png)
 
 ---
 
@@ -184,7 +137,7 @@ The header encodes:
 
 - ### Construction
 
-  1. Calculate bounding boxes
+  1. Calculate BBox of city features
   2. Map to Hilbert curve
   3. Sort by spatial locality
   4. Build R-tree bottom-up
@@ -212,7 +165,7 @@ The header encodes:
   - **Store keys and pointers** efficiently
   - **Pack into linear array** for disk storage
 
-  ![w:600px center](./figures/methodology/attribute_index.png)
+  ![w:700px center](./figures/methodology/attribute_index.png)
 
 - ### Query Support
 
@@ -222,7 +175,7 @@ The header encodes:
 
 ---
 
-## 2.6 Feature Encoding: Structure
+## Feature Encoding: Structure
 
 ![w:1100px center](./figures/methodology/file_structure_feature.png)
 
@@ -255,23 +208,19 @@ The header encodes:
 
 ---
 
-## Results & Evaluation
-
----
 <!-- _class: columns -->
 
-## Outcomes: Software and Libraries
+## Real-World Scale: Netherlands Dataset
 
--
-  - ![w:320px center](./figures/results/fcb_core.png)
-    FlatCityBuf core library (Rust) published on [crates.io](https://crates.io/crates/fcb_core)
-  - ![w:320px center](./figures/results/fcb_cli.png)
-    FlatCityBuf CLI tool (Rust) published on [crates.io](https://crates.io/crates/fcb_cli)
--
-  - ![w:320px center](./figures/results/fcb_wasm.png)
-    FlatCityBuf WASM bindings for TypeScript published on [npm](https://www.npmjs.com/package/fcb_wasm)
-  - ![w:320px center](./figures/results/fcb_py.png)
-    FlatCityBuf Python bindings published on [pypi](https://pypi.org/project/flatcitybuf/)
+- ![h:500px center](./figures/results/netherlands.png)
+
+- #### 3DBAG's 10 million buildings are encoded in
+
+  ### **70.4 GB** (single file)
+
+  Data remains accessible for efficient subsetting despite the large file size.
+
+  (Indexed all attributes; without index: 63.9GB. CityJSONSeq: 65.2GB - slightly smaller.)
 
 ---
 
@@ -282,7 +231,7 @@ The header encodes:
 
 ---
 
-## Performance Results: over the network vs 3DBAG API
+## Performance Results (HTTP): vs 3DBAG API (RESTful API with DBMS)
 
 <!-- _class: columns -->
 
@@ -302,21 +251,18 @@ The header encodes:
 
 <!-- _class: columns -->
 
-## Real-World Scale: Netherlands Dataset
+## Outcomes: Software and Libraries
 
-- ![h:500px center](./figures/results/netherlands.png)
-
-- #### 3DBAG's 10 million buildings are encoded in
-
-  ### **70.4 GB** (single file)
-
-  Data remains accessible for efficient subsetting despite the large file size.
-
-  (Indexed all attributes; without index: 63.9GB. CityJSONSeq: 65.2GB - slightly smaller.)
-
----
-
-# Discussion & Conclusions
+-
+  - ![w:320px center](./figures/results/fcb_core.png)
+    FlatCityBuf core library (Rust) published on [crates.io](https://crates.io/crates/fcb_core)
+  - ![w:320px center](./figures/results/fcb_cli.png)
+    FlatCityBuf CLI tool (Rust) published on [crates.io](https://crates.io/crates/fcb_cli)
+-
+  - ![w:320px center](./figures/results/fcb_wasm.png)
+    FlatCityBuf WASM bindings for TypeScript published on [npm](https://www.npmjs.com/package/fcb_wasm)
+  - ![w:320px center](./figures/results/fcb_py.png)
+    FlatCityBuf Python bindings published on [pypi](https://pypi.org/project/flatcitybuf/)
 
 ---
 
@@ -325,28 +271,28 @@ The header encodes:
 
 - #### Flexible Data Download
 
-  As the web application showed, users can download only features they want with given queries, even in a data format they prefer e.g. CityJSON, CityJSONSeq, OBJ, etc.
+  Query-based subset retrieval with multi-format export (CityJSON, OBJ, glTF)
 
 - #### Data Processing Applications
 
-  As performance benchmarks showed, FlatCityBuf is particularly suitable for cases where data processing is I/O intensive such as 3DBAG generation pipeline.
+  Optimized for I/O intensive pipelines like 3DBAG generation
 
 ---
 <!-- _class: columns -->
 
 ## Impact on Server Architecture
 
-- #### Traditional Server Architecture
+- **Traditional Server Architecture**
 
   Complex, less scalable and expensive
 
-  ![w:600px center](./figures/discussion/server_architecture.png)
+  ![w:600px](./figures/discussion/server_architecture.png)
 
-- #### FlatCityBuf's Server Architecture
+- **FlatCityBuf's Server Architecture**
 
   Simple, scalable and cost-effective
 
-  ![w:500px center](./figures/discussion/server_architecture_fcb.png)
+  ![w:600px](./figures/discussion/server_architecture_fcb.png)
 
 ---
 
@@ -368,38 +314,13 @@ The header encodes:
 
 ---
 
-## Future Work
+## Bonus work: 3DBAG API with FlatCityBuf
 
-1. **Supporting multiple languages such as C++**
-   - Broader ecosystem adoption
-   - Performance-critical applications
+#### **No DBMS, just static file hosting and API**
 
-2. **Explore other encoding like Parquet**
-   - Columnar storage comparison
-   - Analytics-optimized formats
+`GET /collections/pand/items?bbox=minX, minY, maxX, maxY&limit=10`
 
-3. **Implementing web viewer**
-   - Progressive 3D visualization
-   - Interactive querying interface
-
----
-
-## Conclusions
-
-### **FlatCityBuf enables efficient 3D city model streaming**
-
-**Key Contributions:**
-
-- **read performance improvement** through zero-copy deserialization
-- **Partial data retrieval** with HTTP Range Requests
-- **Practical implementation** with Rust/WASM libraries
-
-**Impact:**
-Simplifies server architecture (static files only) and Reduces bandwidth requirements
-
-**Limitations:**
-Immutable format, limited query flexibility, and
-  complex client implementation
+![w:1100px center](./figures/discussion/server_architecture_3dbag.png)
 
 ---
 
@@ -412,7 +333,9 @@ Immutable format, limited query flexibility, and
 **Resources:**
 
 - Demo: [fcb-web-prototype.netlify.app](https://fcb-web-prototype.netlify.app/)
-- Code: [github.com/TUDelft-3D/FlatCityBuf](https://github.com/cityjson/flatcitybuf)
+- Code: [https://github.com/cityjson/flatcitybuf](https://github.com/cityjson/flatcitybuf)
+
+![w:200px source code](./figures/qr.png)
 
 **Contact:**
 <h.b.baba@tudelft.nl>

@@ -94,3 +94,9 @@ section.center  p, div, img{
   justify-content: center;
   align-items: center;
 }
+
+section.image-center img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
