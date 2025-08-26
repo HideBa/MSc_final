@@ -70,10 +70,7 @@ paginate: true
 
 - ### Current 3D Distribution
 
-  **Current Issues:**
-  - CityJSON uses tile-based distribution
-  - Manual tile selection required
-  - Text format not web-optimized
+  **Current Issues:** Tiled, Text format
 
   ![h:250px center](./figures/tb_rw/3dbag_tile.png)
 
@@ -81,9 +78,9 @@ paginate: true
 
   **No cloud-optimized format for 3D city models**
 
-  - CityGML: Text-based, no indexing
-  - CityJSON(Seq): Streaming, but no spatial queries
-  - 3DCityDB: Database-centric, complex setup
+  - CityGML: Text-based, no streaming
+  - CityJSON(Seq): Streaming, but no spatial index
+  - 3DCityDB: Not scallable
 
 ---
 
@@ -105,19 +102,18 @@ paginate: true
 
 - #### FlatBuffers
 
-  Serialisation framework developed by Google.
+  developed by Google.
 
-  - Binary format
-  - Access to serialised data without parsing
+  - No parsing needed (Zero-copy)
   - Low memory consumption
   - Strictly typed (Schema driven)
 
 - #### JSON
 
-  Compared with FlatBuffers, JSON is:
+  Compared with FlatBuffers, it's:
 
-  - Text-based (Human-readable and interoperable)
-  - Needs to parse (copying data is needed)
+  - Text-based
+  - Needs to parse
   - More code to access data
 
 ---
@@ -127,7 +123,7 @@ paginate: true
 
 The file consists of:
 
-![w:1150px center](./figures/methodology/file_structure.png)
+![w:1200px center](./figures/methodology/file_structure.png)
 
 ---
 
@@ -156,22 +152,11 @@ The file consists of:
 
 ## Attribute Indexing: Static B+Tree
 
-<!-- _class: columns -->
+### Structure
 
-- ### Structure
+**1.** Sort features **2.** Build B+Tree **3.** Store keys and pointers **4.** Pack into linear array
 
-  - **Sort features** by indexed attribute
-  - **Build B+Tree** bottom-up
-  - **Store keys and pointers** efficiently
-  - **Pack into linear array** for disk storage
-
-  ![w:700px center](./figures/methodology/attribute_index.png)
-
-- ### Query Support
-
-  - **Exact Match**: `city = "Tokyo"`
-  - **Range Queries**: `year BETWEEN 1990 AND 2000`
-  - **Logical Combinations**: `(year > 1990) AND (height > 100)`
+ ![w:1200px center](./figures/methodology/attribute_index.png)
 
 ---
 
@@ -239,13 +224,13 @@ The file consists of:
 
   ![w:550px](./figures/results/webbench_id.png)
 
-  **2× faster** than 3DBAG API for single feature retrieval
+  #### **2× faster**
 
 - ### Bounding Box Query
 
   ![w:550px](./figures/results/webbench_bbox.png)
 
-  **15× faster** than 3DBAG API for bounding box queries
+  #### **15× faster**
 
 ---
 
@@ -254,15 +239,20 @@ The file consists of:
 ## Outcomes: Software and Libraries
 
 -
-  - ![w:320px center](./figures/results/fcb_core.png)
-    FlatCityBuf core library (Rust) published on [crates.io](https://crates.io/crates/fcb_core)
-  - ![w:320px center](./figures/results/fcb_cli.png)
-    FlatCityBuf CLI tool (Rust) published on [crates.io](https://crates.io/crates/fcb_cli)
+  ![w:400px center](./figures/results/fcb_core.png)
+
+    Core library (Rust) [crates.io](https://crates.io/crates/fcb_core)
+
+  ![w:400px center](./figures/results/fcb_cli.png)
+
+    CLI tool (Rust) [crates.io](https://crates.io/crates/fcb_cli)
 -
-  - ![w:320px center](./figures/results/fcb_wasm.png)
-    FlatCityBuf WASM bindings for TypeScript published on [npm](https://www.npmjs.com/package/fcb_wasm)
-  - ![w:320px center](./figures/results/fcb_py.png)
-    FlatCityBuf Python bindings published on [pypi](https://pypi.org/project/flatcitybuf/)
+  ![w:400px center](./figures/results/fcb_wasm.png)
+
+    WASM bindings for TypeScript [npm](https://www.npmjs.com/package/fcb_wasm)
+  ![w:400px center](./figures/results/fcb_py.png)
+
+    Python bindings [pypi](https://pypi.org/project/flatcitybuf/)
 
 ---
 
@@ -300,15 +290,17 @@ The file consists of:
 
 <!-- _class: columns -->
 
-- **Good points:**
-  - **Read performance**: Up to 256× faster iteration, 6× lower memory usage
-  - **Web streaming**: HTTP Range Requests enable partial data retrieval
-  - **Static hosting**: No database servers needed, works with CDN/S3
+- #### **Good points:**
 
-- **Drawbacks:**
-  - **Immutable format**: Updates require rebuilding entire file
-  - **Limited query flexibility**: Only spatial and attribute indices supported
-  - **Complex client implementation**: client program needs to handle filtering features
+  - **Read performance**: Max 256× faster & 6× lower memory usage
+  - **Web streaming**: Partial data retrieval
+  - **Static hosting**: No DBMS, works with CDN/S3
+
+- #### **Drawbacks:**
+
+  - **Immutable format**
+  - **Limited query flexibility**
+  - **Complex client implementation**
 
   **Best for read-heavy, web-based applications**
 
