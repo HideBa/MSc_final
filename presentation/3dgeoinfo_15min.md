@@ -47,11 +47,11 @@ paginate: true
 
 ---
 
-## A 2D Revolution: Cloud-Optimized Formats
+## A 2D Revolution: Cloud-Optimised Formats
 
 ### **A paradigm shift in geospatial data delivery**
 
-- **Cloud Optimized GeoTIFF (COG)**
+- **Cloud Optimised GeoTIFF (COG)**
 - **FlatGeobuf**
 - **GeoParquet**
 - **PMTiles**
@@ -59,7 +59,7 @@ paginate: true
 **Key Innovation**:
 
 - **Object storage instead of databases**
-- **Web-optimized delivery**
+- **Web-optimised delivery**
 - **No backend infrastructure**
 
 ---
@@ -72,11 +72,11 @@ paginate: true
 
   **Current Issues:** Tiled, Text format
 
-  ![h:250px center](./figures/tb_rw/3dbag_tile.png)
+  ![h:250px centre](./figures/tb_rw/3dbag_tile.png)
 
 - ### The Problem
 
-  **No cloud-optimized format for 3D city models**
+  **No cloud-optimised format for 3D city models**
 
   - CityGML: Text-based, no streaming
   - CityJSON(Seq): Streaming, but no spatial index
@@ -123,7 +123,7 @@ paginate: true
 
 The file consists of:
 
-![w:1200px center](./figures/methodology/file_structure.png)
+![w:1200px centre](./figures/methodology/file_structure.png)
 
 ---
 
@@ -139,14 +139,14 @@ The file consists of:
   4. Build R-tree bottom-up
   5. Pack into linear array
 
-  ![w:350px center](./figures/tb_rw/hilbert_sort.png)_([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
+  ![w:350px centre](./figures/tb_rw/hilbert_sort.png)_([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
 
 - ### Query Support
 
   - **Bounding box queries** in O(log n)
-  - **Point/Nearest neighbor** search
+  - **Point/Nearest neighbour** search
 
-  ![w:500px center](./figures/methodology/bbox_query.png)
+  ![w:500px centre](./figures/methodology/bbox_query.png)
 
 ---
 
@@ -156,13 +156,13 @@ The file consists of:
 
 **1.** Sort features **2.** Build B+Tree **3.** Store keys and pointers **4.** Pack into linear array
 
- ![w:1200px center](./figures/methodology/attribute_index.png)
+ ![w:1200px centre](./figures/methodology/attribute_index.png)
 
 ---
 
 ## Feature Encoding: Structure
 
-![w:1100px center](./figures/methodology/file_structure_feature.png)
+![w:1100px centre](./figures/methodology/file_structure_feature.png)
 
 - **Feature encoding preserves CityJSON structure with FlatBuffers efficiency**
   - **CityFeature**: city objects array, vertices, appearance data
@@ -187,7 +187,7 @@ The file consists of:
   **Problem**: Downloads whole file, even if only a few features are needed
 
 - **FlatCityBuf Approach**
-  ![w:550px center](./figures/methodology/http_range.png)
+  ![w:550px centre](./figures/methodology/http_range.png)
 
   **Solution**: Only fetch required bytes
 
@@ -197,7 +197,7 @@ The file consists of:
 
 ## Real-World Scale: Netherlands Dataset
 
-- ![h:500px center](./figures/results/netherlands.png)
+- ![h:500px centre](./figures/results/netherlands.png)
 
 - #### 3DBAG's 10 million buildings are encoded in
 
@@ -212,7 +212,7 @@ The file consists of:
 ## Performance Results: Local environment
 
 **Read time 8.6-256.8x faster and 50-80% lower memory usage on local environemnt**
-![w:1100px center](./figures/results/bench_cjseq.png)
+![w:1100px centre](./figures/results/bench_cjseq.png)
 
 ---
 
@@ -239,18 +239,18 @@ The file consists of:
 ## Outcomes: Software and Libraries
 
 -
-  ![w:400px center](./figures/results/fcb_core.png)
+  ![w:400px centre](./figures/results/fcb_core.png)
 
     Core library (Rust) [crates.io](https://crates.io/crates/fcb_core)
 
-  ![w:400px center](./figures/results/fcb_cli.png)
+  ![w:400px centre](./figures/results/fcb_cli.png)
 
     CLI tool (Rust) [crates.io](https://crates.io/crates/fcb_cli)
 -
-  ![w:400px center](./figures/results/fcb_wasm.png)
+  ![w:400px centre](./figures/results/fcb_wasm.png)
 
     WASM bindings for TypeScript [npm](https://www.npmjs.com/package/fcb_wasm)
-  ![w:400px center](./figures/results/fcb_py.png)
+  ![w:400px centre](./figures/results/fcb_py.png)
 
     Python bindings [pypi](https://pypi.org/project/flatcitybuf/)
 
@@ -265,7 +265,7 @@ The file consists of:
 
 - #### Data Processing Applications
 
-  Optimized for I/O intensive pipelines like 3DBAG generation
+  Optimised for I/O intensive pipelines like 3DBAG generation
 
 ---
 <!-- _class: columns -->
@@ -312,7 +312,7 @@ The file consists of:
 
 `GET /collections/pand/items?bbox=minX, minY, maxX, maxY&limit=10`
 
-![w:1100px center](./figures/discussion/server_architecture_3dbag.png)
+![w:1100px centre](./figures/discussion/server_architecture_3dbag.png)
 
 ---
 
@@ -357,13 +357,13 @@ The file consists of:
 
 ## Appendix (Theoretical): Eytzinger Layout (1/2)
 
-![w:700px center](./figures/appendix/eytzinger_layout.png)
+![w:700px centre](./figures/appendix/eytzinger_layout.png)
 
 ---
 
 ## Appendix (Theoretical): Eytzinger Layout (2/2)
 
-![w:1000px center](./figures/appendix/eytzinger_layout2.png)
+![w:1000px centre](./figures/appendix/eytzinger_layout2.png)
 
 ---
 
@@ -420,11 +420,11 @@ With block size B, trees achieve log_B(n) instead of log_2(n) memory accesses.
 
 - #### B-Tree
 
-  ![w:500px center](./figures/tb_rw/btree.png)
+  ![w:500px centre](./figures/tb_rw/btree.png)
 
 - #### B+Tree
 
-  ![w:600px center](./figures/tb_rw/bplus_tree.png)
+  ![w:600px centre](./figures/tb_rw/bplus_tree.png)
 
 ---
 
@@ -432,14 +432,14 @@ With block size B, trees achieve log_B(n) instead of log_2(n) memory accesses.
 
 ## Appendix (Theoretical): WebAssembly
 
-- ![w:200px center](./figures/appendix/wasm.png)
+- ![w:200px centre](./figures/appendix/wasm.png)
 - WebAssembly is a binary instruction format that enables high-performance execution of code in web browsers. It allows languages like C, C++, and Rust to run at near-native speed on the web.
 
 ---
 
 ## Appendix (Theoretical): FlatBuffers
 
-![w:1100px center](./figures/appendix/flatbuffers.png)
+![w:1100px centre](./figures/appendix/flatbuffers.png)
 
 ---
 
@@ -451,7 +451,7 @@ With block size B, trees achieve log_B(n) instead of log_2(n) memory accesses.
 
   When data is processed on a machine, it is often copied multiple times.
 
-  ![h:300px center](./figures/tb_rw/zero_copy.png)
+  ![h:300px centre](./figures/tb_rw/zero_copy.png)
   _([Zhenyuan (Zane) Zhang, 2024](https://medium.com/@kaixin667689/zero-copy-principle-and-implementation-9a5220a62ffd))_
 
 - #### Zero-copy
@@ -488,24 +488,24 @@ With block size B, trees achieve log_B(n) instead of log_2(n) memory accesses.
 - #### R-tree
 
   R-tree is a spatial index structure for 2D and 3D data.
-  ![h:300px center](./figures/tb_rw/rtree.png)
+  ![h:300px centre](./figures/tb_rw/rtree.png)
   _([Wikipedia, 2025](https://en.wikipedia.org/wiki/R-tree))_
 
 - #### Space-filling Curves
 
   Space-filling curves such as Hilbert curve map multi-dimensional data to one dimension while preserving spatial locality.
-  ![h:250px center](./figures/tb_rw/hilbert_sort.png)
+  ![h:250px centre](./figures/tb_rw/hilbert_sort.png)
   _([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
 
 ## Spatial Indexing (2/4): Structure
 
 **Spatial Index in the file**
 
-![w:1000px center](./figures/methodology/spatial_index.png)
+![w:1000px centre](./figures/methodology/spatial_index.png)
 
 **Packed Hilbert R-tree**
 
-![w:900px center](./figures/methodology/packed_rtree.png)
+![w:900px centre](./figures/methodology/packed_rtree.png)
 _([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobuf/))_
 
 ---
@@ -528,11 +528,11 @@ _([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobu
 
 - #### Bounding Box
 
-  ![w:500px center](./figures/methodology/bbox_query.png)
+  ![w:500px centre](./figures/methodology/bbox_query.png)
 
 - #### Point/Nearest Neighbour
 
-  ![w:500px center](./figures/methodology/point_intersect.png)
+  ![w:500px centre](./figures/methodology/point_intersect.png)
 
 ---
 
@@ -540,11 +540,11 @@ _([m Williams, 2022](https://worace.works/2022/02/23/kicking-the-tires-flatgeobu
 
 **Attribute Index in the file**
 
-![w:900px center](./figures/methodology/file_structure_attribute.png)
+![w:900px centre](./figures/methodology/file_structure_attribute.png)
 
 **Static B+Tree**
 
-![w:1100px center](./figures/methodology/attribute_index.png)
+![w:1100px centre](./figures/methodology/attribute_index.png)
 
 ---
 
@@ -593,7 +593,7 @@ FlatBuffers does not support nested arrays. We use flattened arrays to represent
   surfaces : [1]
   ```
 
-  ![w:300px center](./figures/methodology/triangle.png)
+  ![w:300px centre](./figures/methodology/triangle.png)
 
 - **Example (Cube)**
 
@@ -605,7 +605,7 @@ FlatBuffers does not support nested arrays. We use flattened arrays to represent
   solids : [1]
   ```
 
-  ![w:250px center](./figures/methodology/cube.png)
+  ![w:250px centre](./figures/methodology/cube.png)
 
 ---
 
@@ -625,7 +625,7 @@ FlatBuffers does not support nested arrays. We use flattened arrays to represent
   surfaces : [1]
   ```
 
-  ![w:300px center](./figures/methodology/triangle.png)
+  ![w:300px centre](./figures/methodology/triangle.png)
 
 - **Example (Cube)**
 
@@ -637,7 +637,7 @@ FlatBuffers does not support nested arrays. We use flattened arrays to represent
   solids : [1]
   ```
 
-  ![w:250px center](./figures/methodology/cube.png)
+  ![w:250px centre](./figures/methodology/cube.png)
 
 ---
 
@@ -645,7 +645,7 @@ FlatBuffers does not support nested arrays. We use flattened arrays to represent
 
 Attributes are encoded with their own binary representation. (in little endian)
 
-![w:1100px center](./figures/methodology/attribute_structure.png)
+![w:1100px centre](./figures/methodology/attribute_structure.png)
 
 ---
 
@@ -655,7 +655,7 @@ Attributes are encoded with their own binary representation. (in little endian)
 
 ## Appendix A: File Size Comparison (Level of Detail)
 
-![w:1100px center](./figures/appendix/file_size_lod.png)
+![w:1100px centre](./figures/appendix/file_size_lod.png)
 
 ---
 
@@ -683,7 +683,7 @@ Attributes are encoded with their own binary representation. (in little endian)
 
 - #### Result
 
-  ![w:600px center](./figures/appendix/file_size_attr.png)
+  ![w:600px centre](./figures/appendix/file_size_attr.png)
 
 ---
 
@@ -693,26 +693,26 @@ Attributes are encoded with their own binary representation. (in little endian)
 
 - #### Data
 
-  ![w:600px center](./figures/appendix/geom_data.png)
+  ![w:600px centre](./figures/appendix/geom_data.png)
 
 - #### Result
 
-  ![w:600px center](./figures/appendix/file_size_geom.png)
+  ![w:600px centre](./figures/appendix/file_size_geom.png)
 
 ---
 
 ## Appendix A: File Size Comparison (Coordinate Scale)
 
-![w:1100px center](./figures/appendix/file_size_scale.png)
+![w:1100px centre](./figures/appendix/file_size_scale.png)
 
 --
 
 ## Appendix A: Read Performance (vs CityJSONSeq)
 
-![w:1100px center](./figures/results/bench_cjseq.png)
+![w:1100px centre](./figures/results/bench_cjseq.png)
 
 ---
 
 ## Appendix A: Read Performance (vs CBOR)
 
-![w:1100px center](./figures/results/bench_cbor.png)
+![w:1100px centre](./figures/results/bench_cbor.png)
