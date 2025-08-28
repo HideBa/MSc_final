@@ -29,6 +29,13 @@ paginate: true
 
 ---
 
+## There is even an community
+
+![w:1100px](./figures/3dgeoinfo/cng.png)
+_([The Cloud-Native Geospatial Forum, 2025](https://cloudnativegeo.org/))_
+
+---
+
 ## Traditional vs Cloud-Optimised Geospatial Formats
 
 <!-- _class: columns -->
@@ -61,6 +68,24 @@ paginate: true
 - **Object storage instead of databases**
 - **Web-optimised delivery**
 - **No backend infrastructure**
+
+---
+
+<!-- _class: columns -->
+
+## Server Architecture: Traditional vs Cloud Optimised
+
+- **Traditional Server Architecture**
+
+  Complex, less scalable and expensive
+
+  ![w:600px](./figures/discussion/server_architecture.png)
+
+- **FlatCityBuf's Server Architecture**
+
+  Simple, scalable and cost-effective
+
+  ![w:600px](./figures/discussion/server_architecture_fcb.png)
 
 ---
 
@@ -268,39 +293,16 @@ The file consists of:
   Optimised for I/O intensive pipelines like 3DBAG generation
 
 ---
-<!-- _class: columns -->
-
-## Impact on Server Architecture
-
-- **Traditional Server Architecture**
-
-  Complex, less scalable and expensive
-
-  ![w:600px](./figures/discussion/server_architecture.png)
-
-- **FlatCityBuf's Server Architecture**
-
-  Simple, scalable and cost-effective
-
-  ![w:600px](./figures/discussion/server_architecture_fcb.png)
-
----
 
 ## Limitations & Trade-offs
 
 <!-- _class: columns -->
 
-- #### **Good points:**
+#### Immutable format
 
-  - **Read performance**: Max 256× faster & 6× lower memory usage
-  - **Web streaming**: Partial data retrieval
-  - **Static hosting**: No DBMS, works with CDN/S3
+#### Limited query flexibility
 
-- #### **Drawbacks:**
-
-  - **Immutable format**
-  - **Limited query flexibility**
-  - **Complex client implementation**
+#### Complex client implementation (less interoperable)
 
   **Best for read-heavy, web-based applications**
 
